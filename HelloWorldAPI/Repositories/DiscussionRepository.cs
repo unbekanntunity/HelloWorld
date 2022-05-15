@@ -1,0 +1,27 @@
+﻿using HelloWorldAPI.Data;
+using HelloWorldAPI.Domain.Database;
+using Microsoft.EntityFrameworkCore;
+
+namespace HelloWorldAPI.Repositories
+{
+    public class DiscussionRepository : IDiscussionRepository
+    {
+        private readonly DataContext _dataContext;
+
+        public DiscussionRepository(DataContext dataContext)
+        {
+            _dataContext = dataContext;
+        }
+
+        public async Task<List<Discussion>> GetAllAsync()
+        {
+            return await _dataContext.Discussions
+                .Include(x => x.Tags)
+                .Include(x => x.Users)
+                .Include(x => x.Creator)
+                .ToListAsync();
+        }
+
+        public async Task<Discussion?> GetByIdAsync(Guid id) => await _dataContext.Discussions.Include(x => x.Tags).FirstOrDefaultAsync(x => x.Id == id);
+    }
+}
