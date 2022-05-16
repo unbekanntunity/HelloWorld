@@ -10,7 +10,6 @@
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
-
         public List<string> Roles { get; set; }
 
         public List<PartialProjectResponse> Projects { get; set; }

@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using HelloWorldAPI.Domain.Database.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace HelloWorldAPI.Domain.Database
 {
-    public class Project : IRateable
+    public class Project : IRateable, ITagable
     {
         [Key]
         public Guid Id { get; set; }

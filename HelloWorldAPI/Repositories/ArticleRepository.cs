@@ -16,10 +16,8 @@ namespace HelloWorldAPI.Repositories
         public async Task<List<Article>> GetAllAsync()
         {
             return await _dataContext.Articles
-                .Include(x => x.Creator)
-                .Include(x => x.Discussion)
                 .Include(x => x.UserLiked)
-                //.Include(x => x.Replies)
+                .Include(x => x.Replies)
                 .ToListAsync();
         }
 
@@ -29,7 +27,7 @@ namespace HelloWorldAPI.Repositories
                 .Include(x => x.Creator)
                 .Include(x => x.Discussion)
                 .Include(x => x.UserLiked)
-                //.Include(x => x.Replies)
+                .Include(x => x.Replies)
                 .FirstOrDefaultAsync(x => x.Id == articleId);
         }
     }

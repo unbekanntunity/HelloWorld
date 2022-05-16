@@ -18,6 +18,7 @@ namespace HelloWorldAPI.Controllers.V1
     {
         private readonly IIdentityService _identityService;
         private readonly IUriService _uriService;
+
         public UserController(IIdentityService identityService, IUriService uriService)
         {
             _identityService = identityService;
@@ -77,16 +78,15 @@ namespace HelloWorldAPI.Controllers.V1
         public async Task<IActionResult> GetAll([FromQuery] GetAllUserFilter filter, [FromQuery] PaginationFilter pagination)
         {
             var users = await _identityService.GetUsersAsync(filter, pagination);
-
-            var responses = new List<UserResponse>();
+            var responses = new List<PartialUserResponse>();
             foreach (var user in users)
             {
-                responses.Add(await user.ToResponseAsync(_identityService));
+                responses.Add(await user.ToPartialResponseAsync(_identityService));
             }
 
             if (pagination == null || pagination.PageNumber < 1 || pagination.PageSize < 1)
             {
-                return Ok(new PagedResponse<UserResponse>(responses));
+                return Ok(new PagedResponse<PartialUserResponse>(responses));
             }
 
             var paginationReponse = PaginationHelpers.CreatePaginatedResponse(_uriService, pagination, responses);
@@ -111,9 +111,7 @@ namespace HelloWorldAPI.Controllers.V1
             existingUser.UserName = request.UserName;
             existingUser.Description = request.Description;
 
-            //TODO: Tags
-
-            var result = await _identityService.UpdateUserAsync(existingUser);
+            var result = await _identityService.UpdateUserAsync(existingUser, request.TagNames);
             if (!result.Success)
             {
                 return BadRequest(result);

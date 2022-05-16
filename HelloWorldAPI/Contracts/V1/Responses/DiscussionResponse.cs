@@ -12,7 +12,6 @@ namespace HelloWorldAPI.Contracts.V1.Responses
 
 
         public List<TagResponse> Tags { get; set; }
-        public List<string> UserIds { get; set; }
         public List<ArticleResponse> Articles { get; set; }
     }
 }

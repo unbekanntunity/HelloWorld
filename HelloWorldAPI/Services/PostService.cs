@@ -58,7 +58,7 @@ namespace HelloWorldAPI.Services
         {
             post.UpdatedAt = DateTime.UtcNow;
 
-            var tagResult = await _tagService.UpdateTagsAsync(post, post.Tags, newTags);
+            var tagResult = await _tagService.UpdateTagsAsync(post, newTags);
             if(!tagResult.Success)
             {
                 return new Result<Post>

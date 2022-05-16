@@ -1,5 +1,6 @@
 ﻿using HelloWorldAPI.Domain;
 using HelloWorldAPI.Domain.Database;
+using HelloWorldAPI.Domain.Database.Interfaces;
 using HelloWorldAPI.Domain.Filters;
 
 namespace HelloWorldAPI.Services
@@ -15,6 +16,6 @@ namespace HelloWorldAPI.Services
         Task<Tag?> GetByNameAsync(string tagName);
         Task<List<Tag>> GetAllAsync(PaginationFilter pagination = null);
 
-        Task<Result<T>> UpdateTagsAsync<T>(T item, List<Tag> itemTags, IEnumerable<string> newTags);   
+        Task<Result<T>> UpdateTagsAsync<T>(T item, IEnumerable<string> newTags) where T : ITagable;   
     }
 }

@@ -83,11 +83,11 @@ namespace HelloWorldAPI.Controllers.V1
         public async Task<IActionResult> GetAll([FromQuery] GetAllProjectsFilter filter, [FromQuery] PaginationFilter pagination)
         {
             var projects = await _projectService.GetAllAsync(filter, pagination);
-            var responses = projects.Select(x => x.ToResponse()).ToList();
+            var responses = projects.Select(x => x.ToPartialResponse()).ToList();
 
             if (pagination == null || pagination.PageNumber < 1 || pagination.PageSize < 1)
             {
-                return Ok(new PagedResponse<ProjectResponse>(responses));
+                return Ok(new PagedResponse<PartialProjectResponse>(responses));
             }
 
             var paginationResponse = PaginationHelpers.CreatePaginatedResponse(_uriService, pagination, responses);

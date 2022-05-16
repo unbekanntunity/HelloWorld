@@ -1,6 +1,7 @@
 ﻿using HelloWorldAPI.Contracts;
 using HelloWorldAPI.Domain;
 using HelloWorldAPI.Domain.Database;
+using HelloWorldAPI.Domain.Database.Interfaces;
 using HelloWorldAPI.Domain.Filters;
 using HelloWorldAPI.Repositories;
 using System;
@@ -125,10 +126,9 @@ namespace HelloWorldAPI.Services
             };
         }
 
-        // TODO Rework Tags to not use reflection
-        public async Task<Result<T>> UpdateTagsAsync<T>(T item, List<Tag> itemTags, IEnumerable<string> newTags)
+        public async Task<Result<T>> UpdateTagsAsync<T>(T item, IEnumerable<string> newTags) where T : ITagable 
         {
-            if (!newTags.Any())
+            if (!newTags.Any() || !item.Tags.Select(x => x.Name).Except(newTags).Any())
             {
                 return new Result<T>
                 {
@@ -136,7 +136,8 @@ namespace HelloWorldAPI.Services
                 };
             }
 
-            var property = typeof(Tag).GetProperty($"{typeof(T).Name}s");
+            var genericProperties = typeof(Tag).GetProperties().Where(x => x.PropertyType.GenericTypeArguments.Length != 0);
+            var property = genericProperties.FirstOrDefault(x => x.PropertyType.GenericTypeArguments[0] == typeof(T));
             if (property == null)
             {
                 return new Result<T>
@@ -146,18 +147,19 @@ namespace HelloWorldAPI.Services
             }
 
             var tags = await _tagRepository.GetAllAsync();
-            var tagsToEdit = newTags.Where(x => !itemTags.Select(y => y.Name).Contains(x)).Select(x => new Tag { Name = x });
+            var tagsToEdit = newTags.Where(x => !item.Tags.Select(y => y.Name).Contains(x)).Select(x => new Tag { Name = x });
 
-            var tagsToRemove = itemTags.Where(x => !newTags.Contains(x.Name)).ToList();
+            var tagsToRemove = item.Tags.Where(x => !newTags.Contains(x.Name)).ToList();
             var tagsToAssign = tags.Where(x => newTags.Contains(x.Name)).ToList();
             var tagsToCreate = tagsToEdit.Where(x => !tags.Select(z => z.Name).Contains(x.Name)).ToList();
 
             var failedTags = new List<string>();
 
             var updated = true;
+
             for (int i = 0; i < tagsToRemove.Count; i++)
             {
-                itemTags.Remove(tagsToRemove[i]);
+                item.Tags.Remove(tagsToRemove[i]);
                 var itemsOfTag = (List<T>)property.GetValue(tagsToRemove[i]);
                 var tagResult = await RemoveItemFromTagAsync(tagsToRemove[i], itemsOfTag, item);
                 if(!tagResult.Success)
@@ -169,7 +171,7 @@ namespace HelloWorldAPI.Services
 
             for (int i = 0; i < tagsToAssign.Count; i++)
             {
-                itemTags.Remove(tagsToAssign[i]);
+                item.Tags.Remove(tagsToAssign[i]);
                 var itemsOfTag = (List<T>)property.GetValue(tagsToAssign[i]);
                 var tagResult = await AddItemToTagAsync(tagsToAssign[i], itemsOfTag, item);
                 if (!tagResult.Success)
@@ -181,7 +183,7 @@ namespace HelloWorldAPI.Services
 
             for (int i = 0; i < tagsToCreate.Count; i++)
             {
-                itemTags.Remove(tagsToCreate[i]);
+                item.Tags.Remove(tagsToCreate[i]);
                 var itemsOfTag = (List<T>)property.GetValue(tagsToCreate[i]);
                 itemsOfTag?.Add(item);
                 var tagResult = await CreateAsync(tagsToCreate[i]);

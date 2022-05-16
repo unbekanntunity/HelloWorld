@@ -13,8 +13,9 @@ namespace HelloWorldAPI.Repositories
             _dataContext = dataContext;
         }
 
+        //TODO Add Profile Pic and Username instead of Id to getallquery
         public async Task<List<Project>> GetAllAsync() => await _dataContext.Projects
-                .Include(x => x.Creator)
+                //.Include(x => x.Creator)
                 .Include(x => x.UserLiked)
                 .Include(x => x.Tags)
                 .ToListAsync();

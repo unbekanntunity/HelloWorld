@@ -4,6 +4,7 @@ using HelloWorldAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HelloWorldAPI.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220515113717_AddRepliesForArticles")]
+    partial class AddRepliesForArticles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,6 +67,21 @@ namespace HelloWorldAPI.Data.Migrations
                     b.HasIndex("TagsName");
 
                     b.ToTable("DiscussionTag");
+                });
+
+            modelBuilder.Entity("DiscussionUser", b =>
+                {
+                    b.Property<Guid>("DiscussionsJoinedId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UsersId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("DiscussionsJoinedId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("DiscussionUser");
                 });
 
             modelBuilder.Entity("HelloWorldAPI.Domain.Database.Article", b =>
@@ -657,6 +674,7 @@ namespace HelloWorldAPI.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("MessageId")
@@ -711,6 +729,21 @@ namespace HelloWorldAPI.Data.Migrations
                     b.HasOne("HelloWorldAPI.Domain.Database.Tag", null)
                         .WithMany()
                         .HasForeignKey("TagsName")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DiscussionUser", b =>
+                {
+                    b.HasOne("HelloWorldAPI.Domain.Database.Discussion", null)
+                        .WithMany()
+                        .HasForeignKey("DiscussionsJoinedId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HelloWorldAPI.Domain.Database.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

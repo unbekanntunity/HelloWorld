@@ -6,6 +6,7 @@ namespace HelloWorldAPI.Services
 {
     public interface IReplyService
     {
+        Task<Result<Reply>> AddReplyForArticleAsync(Article article, Reply reply);
         Task<Result<Reply>> AddReplyForReplyAsync(Reply repliedOn, Reply reply);
         Task<Result<Reply>> AddReplyForCommentAsync(Comment comment, Reply reply);
         Task<Result<Reply>> DeleteAsync(Reply reply);

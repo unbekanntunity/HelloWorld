@@ -13,15 +13,43 @@ namespace HelloWorldAPI.Controllers.V1
 {
     public class ReplyController : Controller
     {
+        private readonly IArticleService _articleService;
         private readonly ICommentService _commentService;
         private readonly IReplyService _replyService;
         private readonly IUriService _uriService;
 
-        public ReplyController(IReplyService replyService, IUriService uriService, ICommentService commentService)
+        public ReplyController(IReplyService replyService, IUriService uriService, ICommentService commentService, IArticleService articleService)
         {
             _replyService = replyService;
             _uriService = uriService;
             _commentService = commentService;
+            _articleService = articleService;
+        }
+
+        [HttpPost(ApiRoutes.Reply.CreateOnArticle)]
+        public async Task<IActionResult> CreateOnArticle([FromRoute] Guid id, [FromBody] CreateReplyRequest request)
+        {
+            var article = await _articleService.GetByIdAsync(id);
+            if (article == null)
+            {
+                return NotFound();
+            }
+
+            var reply = new Reply
+            {
+                CreatorId = HttpContext.GetUserId(),
+                Content = request.Content
+            };
+
+            var result = await _replyService.AddReplyForArticleAsync(article, reply);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            var response = result.Data.ToResponse();
+            var location = _uriService.GetUri(ApiRoutes.Reply.Get, result.Data.Id.ToString());
+            return Created(location, new Response<ReplyResponse>(response));
         }
 
         [HttpPost(ApiRoutes.Reply.CreateOnComment)]

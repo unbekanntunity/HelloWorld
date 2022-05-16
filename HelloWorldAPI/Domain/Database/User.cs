@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using HelloWorldAPI.Domain.Database.Interfaces;
+using Microsoft.AspNetCore.Identity;
 
 namespace HelloWorldAPI.Domain.Database
 {
-    public class User : IdentityUser
+    public class User : IdentityUser, ITagable
     {
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-
 
         public List<Article> Articles { get; set; } = new();
         public List<Comment> Comments { get; set; } = new();
@@ -19,7 +19,6 @@ namespace HelloWorldAPI.Domain.Database
         public List<Tag> Tags { get; set; } = new();
         public List<Discussion> Discussions { get; set; } = new();
 
-        public List<Discussion> DiscussionsJoined { get; set; } = new();
         public List<Project> ProjectsJoined { get; set; } = new();
 
         public List<Comment> CommentsLiked { get; set; } = new();

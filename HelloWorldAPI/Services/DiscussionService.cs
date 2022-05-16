@@ -25,7 +25,6 @@ namespace HelloWorldAPI.Services
             discussion.CreatedAt = DateTime.UtcNow;
             discussion.UpdatedAt = DateTime.UtcNow;
             var tagResult = await _tagService.CreateManyTagsForAsync(discussion, newTags);
-
             if (tagResult.Success)
             {
                 return new Result<Discussion>
@@ -67,7 +66,7 @@ namespace HelloWorldAPI.Services
         {
             discussion.UpdatedAt = DateTime.UtcNow;
 
-            await _tagService.UpdateTagsAsync(discussion, discussion.Tags, newTags);
+            await _tagService.UpdateTagsAsync(discussion, newTags);
 
             var result = await _nonQueryRepository.UpdateAsync(discussion);
             discussion.Tags.ForEach(x => x.Discussions.Clear());
@@ -76,7 +75,7 @@ namespace HelloWorldAPI.Services
             {
                 Success = true,
                 Data = true ? discussion : null,
-                Errors = true ? Array.Empty<string>() : new string[] { StaticErrorMessages<Discussion>.CreateOperationFailed },
+                Errors = true ? Array.Empty<string>() : new string[] { StaticErrorMessages<Discussion>.UpdateOperationFailed },
             };
         }
 
@@ -112,15 +111,6 @@ namespace HelloWorldAPI.Services
             {
                 queryable = queryable.Where(x => x.Articles.Select(y => y.Id).Contains(filter.ArticleId));
             }
-            if (!string.IsNullOrEmpty(filter.UserId))
-            {
-                queryable = queryable.Where(x => x.Users.Select(y => y.Id).Contains(filter.UserId));
-            }
-            if (!string.IsNullOrEmpty(filter.UserName))
-            {
-                queryable = queryable.Where(x => x.Users.Select(y => y.UserName).Contains(filter.UserName));
-            }
-         
             if (!string.IsNullOrEmpty(filter.Title))
             {
                 queryable = queryable.Where(x => x.Title == filter.Title);

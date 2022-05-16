@@ -8,9 +8,6 @@
         public string? Title { get; set; }
         public List<string> TagNames { get; set; } = new List<string>();
 
-        public string? UserId { get; set; }
-        public string? UserName { get; set; }
-
         public Guid ArticleId { get; set; }
         public string? ArticleContent { get; set; }
 

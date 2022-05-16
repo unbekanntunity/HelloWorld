@@ -15,7 +15,8 @@ namespace HelloWorldAPI.Extensions
                 CreatorId = article.CreatorId,
                 DiscussionId = article.DiscussionId,
                 Id = article.Id,
-                UserLikedIds = article.UserLiked.Select(x => x.Id).ToList()
+                UserLikedIds = article.UserLiked.Select(x => x.Id).ToList(),
+                Replies = article.Replies.Select(x  => x.ToResponse()).ToList()
             };
         }
 
@@ -45,7 +46,6 @@ namespace HelloWorldAPI.Extensions
                 StartMessage = discussion.StartMessage,
                 Tags = discussion.Tags.Select(x => x.ToResponse()).ToList(),
                 Title = discussion.Title,
-                UserIds = discussion.Users.Select(x => x.Id).ToList()
             };
         }
 
@@ -58,7 +58,7 @@ namespace HelloWorldAPI.Extensions
                 Id = discussion.Id,
                 Title = discussion.Title,
                 UpdatedAt = discussion.UpdatedAt,
-                Users = discussion.Users.Count
+                Tags = discussion.Tags.Select(x => x.ToResponse()).ToList(),
             };
         }
 
@@ -66,6 +66,7 @@ namespace HelloWorldAPI.Extensions
         {
             return new PostResponse
             {
+                Content = post.Content,
                 CreatedAt = post.CreatedAt,
                 CreatorId = post.CreatorId,
                 Comments = post.Comments.Count,
@@ -116,11 +117,9 @@ namespace HelloWorldAPI.Extensions
                 CreatorId = project.CreatorId,
                 Description = project.Desciption,
                 Id = project.Id,
-                Members = project.Members.Count,
                 Title = project.Title,
                 Tags = project.Tags.Select(x => x.ToResponse()).ToList(),
                 UpdatedAt = project.UpdatedAt,
-                UserLiked = project.UserLiked.Count
             };
         }
 
@@ -131,7 +130,7 @@ namespace HelloWorldAPI.Extensions
                 Content = reply.Content,
                 CreatorId = reply.CreatorId,
                 Id = reply.Id,
-                RepliedOnId = reply.RepliedOnCommentId != null ? reply.RepliedOnCommentId : reply.RepliedOnReplyId,
+                RepliedOnId = reply.RepliedOnCommentId ?? reply.RepliedOnArticleId ?? reply.RepliedOnReplyId,
                 Replies = reply.Replies?.Select(x => x.ToResponse()).ToList() ?? new List<ReplyResponse>()
             };
         }
@@ -158,6 +157,20 @@ namespace HelloWorldAPI.Extensions
                 Projects = user.Projects.Select(x => x.ToPartialResponse()).ToList(),
                 Roles = await identityService.GetAllRolesOfUserAsync(user),
                 Tags = user.Tags.Select(x => x.ToResponse()).ToList(),
+                UserName = user.UserName
+            };
+        }
+
+        public static async Task<PartialUserResponse> ToPartialResponseAsync(this User user, IIdentityService identityService)
+        {
+            return new PartialUserResponse
+            {
+                CreatedAt = user.CreatedAt,
+                Description = user.Description,
+                UpdatedAt = user.UpdatedAt,
+                Email = user.Email,
+                Id = user.Id,
+                Roles = await identityService.GetAllRolesOfUserAsync(user),
                 UserName = user.UserName
             };
         }

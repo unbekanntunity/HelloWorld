@@ -9,6 +9,6 @@
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
-        public int Users { get; set; }
+        public List<TagResponse> Tags { get; set; }
     }
 }

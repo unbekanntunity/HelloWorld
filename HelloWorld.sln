@@ -5,7 +5,9 @@ VisualStudioVersion = 17.1.32407.343
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloWorldAPI", "HelloWorldAPI\HelloWorldAPI.csproj", "{28D59CB4-7186-4402-810F-9F922304E813}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testing2", "Testing2\Testing2.csproj", "{7AFC6B6C-31B8-41ED-99CD-1CFEC2C810AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testing2", "Testing2\Testing2.csproj", "{7AFC6B6C-31B8-41ED-99CD-1CFEC2C810AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWorld.IntegrationTests", "HelloWorld.IntegrationTests\HelloWorld.IntegrationTests.csproj", "{3F03ED4D-CEB3-43F2-9FAD-D2EA817EDFE8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +33,14 @@ Global
 		{7AFC6B6C-31B8-41ED-99CD-1CFEC2C810AE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7AFC6B6C-31B8-41ED-99CD-1CFEC2C810AE}.Release|x86.ActiveCfg = Release|Any CPU
 		{7AFC6B6C-31B8-41ED-99CD-1CFEC2C810AE}.Release|x86.Build.0 = Release|Any CPU
+		{3F03ED4D-CEB3-43F2-9FAD-D2EA817EDFE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F03ED4D-CEB3-43F2-9FAD-D2EA817EDFE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F03ED4D-CEB3-43F2-9FAD-D2EA817EDFE8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3F03ED4D-CEB3-43F2-9FAD-D2EA817EDFE8}.Debug|x86.Build.0 = Debug|Any CPU
+		{3F03ED4D-CEB3-43F2-9FAD-D2EA817EDFE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F03ED4D-CEB3-43F2-9FAD-D2EA817EDFE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F03ED4D-CEB3-43F2-9FAD-D2EA817EDFE8}.Release|x86.ActiveCfg = Release|Any CPU
+		{3F03ED4D-CEB3-43F2-9FAD-D2EA817EDFE8}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

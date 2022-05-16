@@ -32,11 +32,10 @@ namespace HelloWorldAPI.Data
                .HasMany(x => x.UserLiked)
                .WithMany(x => x.ArticlesLiked);
 
-            //modelBuilder.Entity<Article>()
-            //   .HasOne(x => x.RepliedOn)
-            //   .WithMany(x => x.Replies)
-            //   .HasForeignKey(x => x.RepliedOnId)
-            //   .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Article>()
+              .HasMany(x => x.Replies)
+              .WithOne(x => x.RepliedOnArticle)
+              .HasForeignKey(x => x.RepliedOnArticleId);
 
             modelBuilder.Entity<Comment>()
                 .HasOne(x => x.Creator)
@@ -47,18 +46,14 @@ namespace HelloWorldAPI.Data
                 .HasMany(x => x.UserLiked)
                 .WithMany(x => x.CommentsLiked);
 
-            //modelBuilder.Entity<Comment>()
-            //    .HasMany(x => x.Replies)
-            //    .WithOne(x => x.Reply)
-            //    .HasForeignKey(x  => x.ReplyId);
+            modelBuilder.Entity<Comment>()
+                       .HasMany(x => x.Replies)
+                       .WithOne(x => x.RepliedOnComment)
+                       .HasForeignKey(x => x.RepliedOnCommentId);
 
             modelBuilder.Entity<Discussion>()
                 .HasMany(x => x.Tags)
                 .WithMany(x => x.Discussions);
-
-            modelBuilder.Entity<Discussion>()
-                .HasMany(x => x.Users)
-                .WithMany(x => x.DiscussionsJoined);
 
             modelBuilder.Entity<Discussion>()
                 .HasMany(x => x.Articles)
@@ -132,11 +127,6 @@ namespace HelloWorldAPI.Data
             modelBuilder.Entity<User>()
               .HasMany(x => x.RepliesLiked)
               .WithMany(x => x.UserLiked);
-
-            modelBuilder.Entity<Comment>()
-                .HasMany(x => x.Replies)
-                .WithOne(x => x.RepliedOnComment)
-                .HasForeignKey(x => x.RepliedOnCommentId);
 
             modelBuilder.Entity<Reply>()
                 .HasMany(x => x.Replies)

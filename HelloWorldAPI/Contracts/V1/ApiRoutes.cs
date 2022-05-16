@@ -66,11 +66,16 @@
 
             public const string Update = Base + "/discussion/update/{id}";
 
+            public const string UpdateMembers = Base + "/discussion/update_members/{id}";
+
             public const string Delete = Base + "/discussion/delete/{id}";
 
             public const string Get = Base + "/discussion/get/{id}";
 
             public const string GetAll = Base + "/discussion/get_all";
+
+            public const string GetAllFast = Base + "/discussion/get_all_fast";
+
         }
 
         public static class Project

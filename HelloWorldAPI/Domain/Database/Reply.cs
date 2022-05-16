@@ -14,14 +14,17 @@ namespace HelloWorldAPI.Domain.Database
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
+        public Guid? RepliedOnArticleId { get; set; }
+        public Article? RepliedOnArticle { get; set; }
+
         public Guid? RepliedOnCommentId { get; set; }
         public Comment? RepliedOnComment { get; set; }
 
         public Guid? RepliedOnReplyId { get; set; }
         public Reply? RepliedOnReply { get; set; }
 
-        public List<Reply> Replies { get; set; }
+        public List<Reply> Replies { get; set; } = new();
 
-        public List<User> UserLiked { get; set; }
+        public List<User> UserLiked { get; set; } = new();
     }
 }

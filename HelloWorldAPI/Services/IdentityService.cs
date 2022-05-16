@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Text;
 
@@ -19,10 +20,12 @@ namespace HelloWorldAPI.Services
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly JwtSettings _jwtSettings;
         private readonly TokenValidationParameters _tokenValidationParameters;
+
+        private readonly ITagService _tagService;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly INonQueryRepository<RefreshToken> _nonQueryRepository;
 
-        public IdentityService(UserManager<User> userManager, JwtSettings jwtSettings, TokenValidationParameters tokenValidationParameters, RoleManager<IdentityRole> roleManager, IRefreshTokenRepository refreshTokenRepository, INonQueryRepository<RefreshToken> nonQueryRepository)
+        public IdentityService(UserManager<User> userManager, JwtSettings jwtSettings, TokenValidationParameters tokenValidationParameters, RoleManager<IdentityRole> roleManager, IRefreshTokenRepository refreshTokenRepository, INonQueryRepository<RefreshToken> nonQueryRepository, ITagService tagService)
         {
             _userManager = userManager;
             _jwtSettings = jwtSettings;
@@ -30,6 +33,7 @@ namespace HelloWorldAPI.Services
             _roleManager = roleManager;
             _refreshTokenRepository = refreshTokenRepository;
             _nonQueryRepository = nonQueryRepository;
+            _tagService = tagService;
         }
 
         public async Task<AuthenticationResult> LoginAsync(string email, string password)
@@ -148,7 +152,7 @@ namespace HelloWorldAPI.Services
                 jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        public async Task<AuthenticationResult> RegisterAsync(string email, string password)
+        public async Task<AuthenticationResult> RegisterAsync(string userName, string email, string password)
         {
             var user = await _userManager.FindByEmailAsync(email);
 
@@ -163,7 +167,8 @@ namespace HelloWorldAPI.Services
             var new_user = new User
             {
                 Email = email,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                UserName = userName
             };
 
             var createdUser = await _userManager.CreateAsync(new_user, password);
@@ -277,19 +282,7 @@ namespace HelloWorldAPI.Services
         public async Task<User> GetUserByIdAsync(string userId) => await _userManager.FindByIdAsync(userId);
         public async Task<List<User>> GetUsersAsync(GetAllUserFilter filter = null, PaginationFilter pagination = null)
         {
-            var queryable = _userManager.Users
-                .Include(x => x.Articles)
-                .Include(x => x.Comments)
-                .Include(x => x.Posts)
-                .Include(x => x.Projects)
-                .Include(x => x.Discussions)
-                .Include(x => x.ArticlesLiked)
-                .Include(x => x.CommentsLiked)
-                .Include(x => x.PostsLiked)
-                .Include(x => x.ProjectsLiked)
-                .Include(x => x.Tags)
-                .Include(x => x.Replies)
-                .AsQueryable();
+            var queryable = _userManager.Users.AsQueryable();
 
             if (pagination == null)
             {
@@ -304,10 +297,22 @@ namespace HelloWorldAPI.Services
             return await queryable.Skip(skip).Take(pagination.PageSize).ToListAsync();
         }
 
-        public async Task<Result<User>> UpdateUserAsync(User user)
+        public async Task<Result<User>> UpdateUserAsync(User user, IEnumerable<string> TagNames = null)
         {
+            if (TagNames != null)
+            {
+                var result = await _tagService.UpdateTagsAsync(user, TagNames);
+                if (!result.Success)
+                {
+                    return new Result<User>
+                    {
+                        Errors = result.Errors
+                    };
+                }
+            }
+
             user.UpdatedAt = DateTime.UtcNow;
-            var updated = await _userManager.UpdateAsync(user); 
+            var updated = await _userManager.UpdateAsync(user);
 
             return new Result<User>
             {
@@ -363,16 +368,10 @@ namespace HelloWorldAPI.Services
 
         public async Task<List<string>> GetAllRolesOfUserAsync(User user) => (await _userManager.GetRolesAsync(user)).ToList();
 
-        public async Task<Result<User>> AddProjectToMemberAsync(User user, Project project, ProjectRole role)
+        public async Task<Result<User>> AddProjectToMemberAsync(User user, Project project)
         {
-            if (user.Projects == null)
-            {
-                user.Projects = new List<Project> { project };
-            }
-            else
-            {
-                user.ProjectsJoined.Add(project);
-            }
+            user.ProjectsJoined.Add(project);
+
             var updateResult = await _userManager.UpdateAsync(user);
             return new Result<User>
             {
@@ -382,16 +381,9 @@ namespace HelloWorldAPI.Services
             };
         }
 
-        public async Task<Result<User>> RemoveProjectFromMemberAsync(User user, Project project, ProjectRole role)
+        public async Task<Result<User>> RemoveProjectFromMemberAsync(User user, Project project)
         {
-            if (role == ProjectRole.Creator)
-            {
-                user.Projects.Remove(project);
-            }
-            else if (role == ProjectRole.Member)
-            {
-                user.ProjectsJoined.Remove(project);
-            }
+            user.ProjectsJoined.Remove(project);
 
             var updateResult = await _userManager.UpdateAsync(user);
             return new Result<User>
@@ -411,6 +403,10 @@ namespace HelloWorldAPI.Services
             if (filter.UpdatedAt != null)
             {
                 queryable = queryable.Where(x => x.UpdatedAt == filter.UpdatedAt);
+            }
+            if(filter.TagNames.Count != 0)
+            {
+                queryable = queryable.Include(x => x.Tags).Where(x => x.Tags.Select(x => x.Name).All(x => filter.TagNames.Contains(x)));
             }
 
             return queryable;

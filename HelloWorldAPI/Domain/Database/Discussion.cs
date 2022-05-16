@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using HelloWorldAPI.Domain.Database.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace HelloWorldAPI.Domain.Database
 {
-    public class Discussion
+    public class Discussion : ITagable
     {
         [Key]
         public Guid Id { get; set; }
@@ -16,7 +17,6 @@ namespace HelloWorldAPI.Domain.Database
         public User Creator { get; set; }
 
         public List<Tag> Tags { get; set; } = new();
-        public List<User> Users { get; set; } = new();
         public List<Article> Articles { get; set; } = new();
     }
 }

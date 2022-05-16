@@ -11,6 +11,6 @@
         public Guid DiscussionId { get; set; }
 
         public List<string> UserLikedIds { get; set; }
-        public List<ArticleResponse> Replies { get; set; }
+        public List<ReplyResponse> Replies { get; set; }
     }
 }

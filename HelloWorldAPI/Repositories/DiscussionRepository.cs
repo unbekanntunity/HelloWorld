@@ -17,8 +17,6 @@ namespace HelloWorldAPI.Repositories
         {
             return await _dataContext.Discussions
                 .Include(x => x.Tags)
-                .Include(x => x.Users)
-                .Include(x => x.Creator)
                 .ToListAsync();
         }
 

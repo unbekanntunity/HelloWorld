@@ -15,9 +15,9 @@ namespace HelloWorldAPI.Repositories
 
         public async Task<List<Post>> GetAllAsync() => await _dataContext.Posts
             .Include(x => x.Comments)
-            .Include(x => x.Creator)
             .Include(x => x.Tags)
-            .Include(x => x.UserLiked).ToListAsync();
+            .Include(x => x.UserLiked)
+            .ToListAsync();
 
         public async Task<Post?> GetByIdAsync(Guid id) => await _dataContext.Posts
             .Include(x => x.Comments)

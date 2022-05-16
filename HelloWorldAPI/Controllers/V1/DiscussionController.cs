@@ -6,6 +6,7 @@ using HelloWorldAPI.Domain.Database;
 using HelloWorldAPI.Domain.Filters;
 using HelloWorldAPI.Extensions;
 using HelloWorldAPI.Helpers;
+using HelloWorldAPI.Repositories;
 using HelloWorldAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -16,13 +17,15 @@ namespace HelloWorldAPI.Controllers.V1
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class DiscussionController : Controller
     {
+        private readonly IIdentityService _identityService;
         private readonly IUriService _uriService;
         private readonly IDiscussionService _discussionService;
 
-        public DiscussionController(IDiscussionService discussionService, IUriService uriService)
+        public DiscussionController(IDiscussionService discussionService, IUriService uriService, IIdentityService identityService)
         {
             _discussionService = discussionService;
             _uriService = uriService;
+            _identityService = identityService;
         }
 
         [HttpPost(ApiRoutes.Discussion.Create)]
@@ -94,6 +97,7 @@ namespace HelloWorldAPI.Controllers.V1
             var response = result.Data.ToResponse();
             return result.Success ? Ok(new Response<DiscussionResponse>(response)) : BadRequest(result);
         }
+
 
         [HttpDelete(ApiRoutes.Discussion.Delete)]
         public async Task<IActionResult> Delete([FromRoute] Guid id)

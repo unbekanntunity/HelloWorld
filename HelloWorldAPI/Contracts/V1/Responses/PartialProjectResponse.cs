@@ -11,8 +11,5 @@
 
         public string CreatorId { get; set; }
         public List<TagResponse> Tags { get; set; }
-
-        public int Members { get; set; }
-        public int UserLiked { get; set; }
     }
 }

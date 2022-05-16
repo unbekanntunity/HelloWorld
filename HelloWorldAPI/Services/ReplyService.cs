@@ -10,15 +10,37 @@ namespace HelloWorldAPI.Services
     public class ReplyService : IReplyService
     {
         private readonly IReplyRepository _replyRepository;
+        private readonly INonQueryRepository<Article> _nonQueryArticleRepository;
         private readonly INonQueryRepository<Reply> _nonQueryReplyRepository;
         private readonly INonQueryRepository<Comment> _nonQueryCommentRepository;
 
-        public ReplyService(IReplyRepository replyRepository, INonQueryRepository<Reply> nonQueryReplyRepository, INonQueryRepository<Comment> nonQueryCommentRepository)
+        public ReplyService(IReplyRepository replyRepository, INonQueryRepository<Reply> nonQueryReplyRepository, INonQueryRepository<Comment> nonQueryCommentRepository, INonQueryRepository<Article> nonQueryArticleRepository)
         {
             _replyRepository = replyRepository;
             _nonQueryReplyRepository = nonQueryReplyRepository;
             _nonQueryCommentRepository = nonQueryCommentRepository;
+            _nonQueryArticleRepository = nonQueryArticleRepository;
         }
+
+        public async Task<Result<Reply>> AddReplyForArticleAsync(Article article, Reply reply)
+        {
+            reply.CreatedAt = DateTime.UtcNow;
+            reply.UpdatedAt = DateTime.UtcNow;
+            article.Replies.Add(reply);
+
+            var updated = await _nonQueryArticleRepository.UpdateAsync(article);
+
+            reply.RepliedOnArticle = article;
+            reply.RepliedOnArticleId = article.Id;
+
+            return new Result<Reply>
+            {
+                Success = updated,
+                Data = updated ? reply : null,
+                Errors = updated ? Array.Empty<string>() : new string[] { StaticErrorMessages<Reply>.CreateOperationFailed }
+            };
+        }
+
         public async Task<Result<Reply>> AddReplyForReplyAsync(Reply repliedOn, Reply reply)
         {
             reply.CreatedAt = DateTime.UtcNow;
@@ -80,8 +102,13 @@ namespace HelloWorldAPI.Services
             {
                 queryable = AddFiltersOnQuery(filter, queryable);
             }
+
             var skip = (pagination.PageNumber - 1) * pagination.PageSize;
-            return await queryable.Skip(skip).Take(pagination.PageSize).ToListAsyncSafe();
+            return await queryable
+                .Skip(skip)
+                .Take(pagination.PageSize)
+                .Where(x => x.RepliedOnReply == null)
+                .ToListAsyncSafe();
         }
         public async Task<Reply?> GetByIdAsync(Guid id) => await _replyRepository.GetByIdAsync(id);
 
@@ -108,6 +135,10 @@ namespace HelloWorldAPI.Services
             if (!string.IsNullOrEmpty(filter.CreatorName))
             {
                 queryable = queryable.Where(x => x.Creator.UserName == filter.CreatorName);
+            }
+            if (filter.RepliedOnCommentId != Guid.Empty)
+            {
+                queryable = queryable.Where(x => x.RepliedOnArticleId == filter.RepliedOnArticleId);
             }
             if (filter.RepliedOnCommentId != Guid.Empty)
             {

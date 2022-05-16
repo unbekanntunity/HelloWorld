@@ -33,7 +33,7 @@ namespace HelloWorldAPI.Services
                 var user = await _identityService.GetUserByIdAsync(memberId);
                 if (user != null)
                 {
-                    updatedMember = (await _identityService.AddProjectToMemberAsync(user, project, ProjectRole.Member)).Success;
+                    updatedMember = (await _identityService.AddProjectToMemberAsync(user, project)).Success;
                 }
             }
 
@@ -92,23 +92,36 @@ namespace HelloWorldAPI.Services
         {
             project.UpdatedAt = DateTime.UtcNow;
 
-            await _tagService.UpdateTagsAsync(project, project.Tags, tagNames);
+            await _tagService.UpdateTagsAsync(project, tagNames);
 
             var users = await _identityService.GetUsersAsync();
             var usersToRemove = project.Members.Where(member => !memberIds.Contains(member.Id)).ToList();
             var usersToAdd = users.Where(user => memberIds.Contains(user.Id)).ToList();
 
+            var failed = new List<string>();
             var updatedMembers = false;
+            
             foreach (var user in usersToRemove)
             {
-                var removingResult = await _identityService.RemoveProjectFromMemberAsync(user, project, ProjectRole.Member);
-                updatedMembers = removingResult.Success ? removingResult.Success : updatedMembers;
+                var removingResult = await _identityService.RemoveProjectFromMemberAsync(user, project);
+                if(!removingResult.Success)
+                {
+                    failed.Add($"Failed to remove: {user.UserName} with {user.Id}");
+                    continue;
+                }
+
+                updatedMembers = true;    
             }
 
             foreach (var user in usersToAdd)
             {
-                var addResult = await _identityService.AddProjectToMemberAsync(user, project, ProjectRole.Member);
-                updatedMembers = addResult.Success ? addResult.Success : updatedMembers;
+                var addResult = await _identityService.AddProjectToMemberAsync(user, project);
+                if (!addResult.Success)
+                {
+                    failed.Add($"Failed to add: {user.UserName} with {user.Id}");
+                    continue;
+                }
+                updatedMembers = true;
             }
 
             var result = await _nonQueryRepository.UpdateAsync(project);
