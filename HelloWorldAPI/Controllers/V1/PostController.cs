@@ -37,7 +37,6 @@ namespace HelloWorldAPI.Controllers.V1
                 CreatorId = HttpContext.GetUserId(),
                 Content = request.Content,
                 Title = request.Title,
-                Tags = request.TagNames.Select(x => new Tag { Name = x }).ToList()
             };
 
             var result = await _postService.CreateAsync(post, request.TagNames);

@@ -266,10 +266,9 @@ namespace HelloWorldAPI.Services
             newUser.UpdatedAt = DateTime.UtcNow;
 
             var result = await _userManager.CreateAsync(newUser, newPassword);
-            var user = await GetUserByIdAsync(newUser.Id);
 
             roles = roles.Where(x => _roleManager.Roles.Select(x => x.Name).Contains(x)).ToArray();
-            await _userManager.AddToRolesAsync(user, roles);
+            await _userManager.AddToRolesAsync(newUser, roles);
 
             return new Result<User>
             {
@@ -280,6 +279,13 @@ namespace HelloWorldAPI.Services
         }
 
         public async Task<User> GetUserByIdAsync(string userId) => await _userManager.FindByIdAsync(userId);
+
+        public async Task<string?> GetIdByUserNameAsync(string userName)
+        { 
+            var user = await _userManager.FindByNameAsync(userName);
+            return user?.Id;
+        }   
+
         public async Task<List<User>> GetUsersAsync(GetAllUserFilter filter = null, PaginationFilter pagination = null)
         {
             var queryable = _userManager.Users.AsQueryable();

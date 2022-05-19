@@ -20,7 +20,7 @@ namespace HelloWorldAPI.Services
         }
 
 
-        public async Task<Result<List<string>>> CreateManyTagsForAsync<T>(T item, IEnumerable<string> tagNames)
+        public async Task<Result<List<string>>> CreateManyTagsForAsync<T>(T item, IEnumerable<string> tagNames) where T : ITagable
         {
             if (!tagNames.Any())
             {
@@ -41,6 +41,7 @@ namespace HelloWorldAPI.Services
 
             var failedTags = new List<string>();
             var success = true;
+
             foreach (var tagName in tagNames)
             {
                 var tagInDb = await GetByNameAsync(tagName);
@@ -76,7 +77,7 @@ namespace HelloWorldAPI.Services
             };
         }
 
-        public async Task<Result<Tag>> AddItemToTagAsync<T>(Tag tag, List<T> items, T item)
+        public async Task<Result<Tag>> AddItemToTagAsync<T>(Tag tag, List<T> items, T item) where T : ITagable
         {
             items.Add(item);
 
@@ -89,7 +90,7 @@ namespace HelloWorldAPI.Services
             };
         }
 
-        public async Task<Result<Tag>> RemoveItemFromTagAsync<T>(Tag tag, List<T> items, T item)
+        public async Task<Result<Tag>> RemoveItemFromTagAsync<T>(Tag tag, List<T> items, T item) where T : ITagable
         {
             items.Remove(item);
 
@@ -132,7 +133,8 @@ namespace HelloWorldAPI.Services
             {
                 return new Result<T>
                 {
-                    Errors = new string[] { "No tags to update" }
+                    Success = true,
+                    Data = item
                 };
             }
 
@@ -142,7 +144,7 @@ namespace HelloWorldAPI.Services
             {
                 return new Result<T>
                 {
-                    Errors = new string[] { "T is not a valid type." }
+                    Errors = new string[] { $"{nameof(T)} is not a valid type." }
                 };
             }
 

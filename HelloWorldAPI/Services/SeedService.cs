@@ -11,6 +11,8 @@ namespace HelloWorldAPI.Services
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<User> _userManager;
 
+        private readonly bool reset = false;
+
         public SeedService(RoleManager<IdentityRole> roleManager, UserManager<User> userManager, DataContext dataContext)
         {
             _roleManager = roleManager;
@@ -20,8 +22,11 @@ namespace HelloWorldAPI.Services
 
         public async Task SeedDatabase()
         {
-            //await _dataContext.Database.EnsureDeletedAsync();
-            //await _dataContext.Database.EnsureCreatedAsync();
+            if(reset)
+            {
+                await _dataContext.Database.EnsureDeletedAsync();
+                return;
+            }
 
             if (!await _roleManager.RoleExistsAsync("ContentAdmin"))
             {
@@ -53,6 +58,8 @@ namespace HelloWorldAPI.Services
                 var user = new User { UserName = "Admin", Email = "Admin@gmail.com" };
                 await _userManager.CreateAsync(user, "Admin1234!");
                 await _userManager.AddToRoleAsync(user, "RootAdmin");
+                await _userManager.AddToRoleAsync(user, "ContentAdmin");
+                await _userManager.AddToRoleAsync(user, "UserAdmin");
             }
             if (await _userManager.FindByNameAsync("ContentAdmin") == null)
             {
@@ -65,6 +72,11 @@ namespace HelloWorldAPI.Services
                 var user = new User { UserName = "UserAdmin", Email = "UserAdmin@gmail.com" };
                 await _userManager.CreateAsync(user, "Admin1234!");
                 await _userManager.AddToRoleAsync(user, "UserAdmin");
+            }
+            if (await _userManager.FindByNameAsync("NormalUser") == null)
+            {
+                var user = new User { UserName = "NormalUser", Email = "User@gmail.com" };
+                await _userManager.CreateAsync(user, "User1234!");
             }
         }
     }

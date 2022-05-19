@@ -1,4 +1,6 @@
-﻿namespace HelloWorldAPI.Contracts.V1
+﻿using Microsoft.Extensions.Options;
+
+namespace HelloWorldAPI.Contracts.V1
 {
     public static class ApiRoutes
     {
@@ -16,16 +18,19 @@
             public const string Login = Base + "/identity/login";
 
 
-
             public const string Create = Base + "/users/create";
 
             public const string Get = Base + "/users/get/{id}";
 
             public const string GetAll = Base + "/users/get_all";
 
+            public const string GetIdByName = Base + "/users/get_id/{userName}";
+
             public const string Delete = Base + "/users/delete/{id}";
 
-            public const string Update = Base + "/users/update/{id}";
+            public const string DeleteOwn = Base + "/users/delete_own";
+
+            public const string Update = Base + "/users/update/";
 
             public const string UpdateLogin = Base + "/users/update_login/{id}";
         }

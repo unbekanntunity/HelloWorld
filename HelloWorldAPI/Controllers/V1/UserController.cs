@@ -51,6 +51,13 @@ namespace HelloWorldAPI.Controllers.V1
             return Created(locationUri, new Response<UserResponse>(userResponse));
         }
 
+        [HttpDelete(ApiRoutes.Identity.DeleteOwn)]
+        public async Task<IActionResult> DeleteOwn()
+        {
+            var result = await _identityService.DeleteUserAsync(HttpContext.GetUserId());
+            return result.Success ? NoContent() : BadRequest(result);
+        }
+
         [Authorize(Roles = "UserAdmin")]
         [HttpDelete(ApiRoutes.Identity.Delete)]
         public async Task<IActionResult> Delete([FromRoute] string id)
@@ -60,9 +67,9 @@ namespace HelloWorldAPI.Controllers.V1
         }
 
         [HttpGet(ApiRoutes.Identity.Get)]
-        public async Task<IActionResult> Get([FromRoute] string userId)
+        public async Task<IActionResult> Get([FromRoute] string id)
         {
-            var user = await _identityService.GetUserByIdAsync(userId);
+            var user = await _identityService.GetUserByIdAsync(id);
             if (user == null)
             {
                 return NotFound();
@@ -70,8 +77,19 @@ namespace HelloWorldAPI.Controllers.V1
 
             var userResponse = await user.ToResponseAsync(_identityService);
             userResponse.Roles = await _identityService.GetAllRolesOfUserAsync(user);
+            return Ok(new Response<UserResponse>(userResponse));
+        }
 
-            return user != null ? Ok(new Response<UserResponse>(userResponse)) : NotFound();
+        [HttpGet(ApiRoutes.Identity.GetIdByName)]
+        public async Task<IActionResult> GetIdByName([FromRoute] string userName)
+        {
+            var userId = await _identityService.GetIdByUserNameAsync(userName);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return NotFound();
+            }
+
+            return Ok(new Response<string>(userId));
         }
 
         [HttpGet(ApiRoutes.Identity.GetAll)]
@@ -94,19 +112,9 @@ namespace HelloWorldAPI.Controllers.V1
         }
 
         [HttpPatch(ApiRoutes.Identity.Update)]
-        public async Task<IActionResult> Update([FromRoute] string userId, [FromBody] UpdateUserRequest request)
+        public async Task<IActionResult> Update([FromBody] UpdateUserRequest request)
         {
-            var ownUser = await _identityService.OwnUser(HttpContext.GetUserId(), userId);
-            if (!ownUser)
-            {
-                return BadRequest(StaticErrorMessages.PermissionDenied);
-            }
-
-            var existingUser = await _identityService.GetUserByIdAsync(userId);
-            if (existingUser == null)
-            {
-                return NotFound(StaticErrorMessages<User>.NotFound);
-            }
+            var existingUser = await _identityService.GetUserByIdAsync(HttpContext.GetUserId());
 
             existingUser.UserName = request.UserName;
             existingUser.Description = request.Description;
@@ -123,15 +131,15 @@ namespace HelloWorldAPI.Controllers.V1
         }
 
         [HttpPatch(ApiRoutes.Identity.UpdateLogin)]
-        public async Task<IActionResult> UpdateLogin([FromRoute] string userId, [FromBody] UpdateLoginRequest request)
+        public async Task<IActionResult> UpdateLogin([FromRoute] string id, [FromBody] UpdateLoginRequest request)
         {
-            var ownUser = await _identityService.OwnUser(HttpContext.GetUserId(), userId);
+            var ownUser = await _identityService.OwnUser(HttpContext.GetUserId(), id);
             if (!ownUser && !HttpContext.HasRole("UserAdmin"))
             {
                 return BadRequest(StaticErrorMessages.PermissionDenied);
             }
 
-            var result = await _identityService.UpdateLoginAsync(userId, request.Email, request.OldPassword, request.NewPassword);
+            var result = await _identityService.UpdateLoginAsync(id, request.Email, request.OldPassword, request.NewPassword);
             return result.Success ? Ok(new Response<string>(result.Data)) : BadRequest(result);
         }
     }

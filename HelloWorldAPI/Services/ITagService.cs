@@ -7,11 +7,11 @@ namespace HelloWorldAPI.Services
 {
     public interface ITagService
     {
-        Task<Result<Tag>> AddItemToTagAsync<T>(Tag tag, List<T> items, T item);
-        Task<Result<Tag>> RemoveItemFromTagAsync<T>(Tag tag, List<T> items, T item);
+        Task<Result<Tag>> AddItemToTagAsync<T>(Tag tag, List<T> items, T item) where T : ITagable;
+        Task<Result<Tag>> RemoveItemFromTagAsync<T>(Tag tag, List<T> items, T item) where T : ITagable;
 
         Task<Result<Tag>> CreateAsync(Tag tag);
-        Task<Result<List<string>>> CreateManyTagsForAsync<T>(T item, IEnumerable<string> tagNames);
+        Task<Result<List<string>>> CreateManyTagsForAsync<T>(T item, IEnumerable<string> tagNames) where T : ITagable;
 
         Task<Tag?> GetByNameAsync(string tagName);
         Task<List<Tag>> GetAllAsync(PaginationFilter pagination = null);
