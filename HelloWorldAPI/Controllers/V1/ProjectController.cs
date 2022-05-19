@@ -58,7 +58,7 @@ namespace HelloWorldAPI.Controllers.V1
             }
             if (project.CreatorId != HttpContext.GetUserId() && !HttpContext.HasRole("ContentAdmin"))
             {
-                return BadRequest(StaticErrorMessages.PermissionDenied);
+                return Unauthorized(StaticErrorMessages.PermissionDenied);
             }
 
             var result = await _projectService.DeleteAsync(project);
@@ -104,7 +104,7 @@ namespace HelloWorldAPI.Controllers.V1
             }
             if (project.CreatorId != HttpContext.GetUserId())
             {
-                return BadRequest(StaticErrorMessages.PermissionDenied);
+                return Unauthorized(StaticErrorMessages.PermissionDenied);
             }
 
             var result = await _projectService.UpdateAsync(project, request.MemberIds, request.Tags);

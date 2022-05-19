@@ -99,6 +99,30 @@ namespace HelloWorldAPI.Services
             {
                 queryable = queryable.Where(x => x.Creator.UserName == filter.CreatorName);
             }
+            if(!string.IsNullOrEmpty(filter.Content))
+            {
+                queryable = queryable.Where(x => x.Content.Contains(filter.Content));
+            }
+            if (filter.CreatedAt != null)
+            {
+                queryable = queryable.Where(x => x.CreatedAt == filter.CreatedAt);
+            }
+            if (filter.UpdatedAt != null)
+            {
+                queryable = queryable.Where(x => x.UpdatedAt == filter.UpdatedAt);
+            }
+            if(filter.PostId != Guid.Empty)
+            {
+                queryable = queryable.Where(x => x.PostId == filter.PostId);
+            }
+            if(!string.IsNullOrEmpty(filter.UserLikedName))
+            {
+                queryable = queryable.Where(x => x.UserLiked.Select(y => y.UserName).Contains(filter.UserLikedName));
+            }
+            if (!string.IsNullOrEmpty(filter.UserLikedId))
+            {
+                queryable = queryable.Where(x => x.UserLiked.Select(y => y.Id).Contains(filter.UserLikedId));
+            }
 
             return queryable;
         }

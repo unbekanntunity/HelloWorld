@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -44,6 +45,11 @@ namespace HelloWorld.IntegrationTests
                 });
 
             TestClient = appFactory.CreateClient();
+        }
+
+        protected void Logout()
+        {
+            TestClient.DefaultRequestHeaders.Authorization = null;
         }
 
         protected void AuthenticateWithToken(string JwtToken)
@@ -97,6 +103,38 @@ namespace HelloWorld.IntegrationTests
             var response = await TestClient.PostAsJsonAsync(ApiRoutes.Identity.Create, request);
             var read = await response.Content.ReadAsAsync<Response<UserResponse>>();
 
+            Logout();
+
+            return read.Data;
+        }
+
+        protected async Task<PostResponse> CreatePostAsync(CreatePostRequest request)
+        {
+            await AuthenticateAsync();
+
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Post.Create, request);
+
+            var e = await response.Content.ReadAsStringAsync();
+
+            var read = await response.Content.ReadAsAsync<Response<PostResponse>>();
+
+            Logout();
+
+            return read.Data;
+        }
+
+        protected async Task<DiscussionResponse> CreateDiscussionAsync(CreateDiscussionRequest request)
+        {
+            await AuthenticateAsync();
+
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Discussion.Create, request);
+
+            var e = await response.Content.ReadAsStringAsync();
+
+            var read = await response.Content.ReadAsAsync<Response<DiscussionResponse>>();
+
+            Logout();
+
             return read.Data;
         }
 
@@ -126,7 +164,7 @@ namespace HelloWorld.IntegrationTests
 
         private static bool IsJwtWithValidSecurityAlgorithm(SecurityToken validatedToken, out JwtSecurityToken token)
         {
-            if(validatedToken is JwtSecurityToken jwtSecurityToken &&
+            if (validatedToken is JwtSecurityToken jwtSecurityToken &&
                 jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
             {
                 token = (JwtSecurityToken)validatedToken;
@@ -136,5 +174,6 @@ namespace HelloWorld.IntegrationTests
             token = null;
             return false;
         }
-    }
+    } 
 }
+

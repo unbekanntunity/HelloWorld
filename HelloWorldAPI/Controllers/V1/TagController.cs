@@ -20,7 +20,7 @@ namespace HelloWorldAPI.Controllers.V1
         }
 
         [HttpGet(ApiRoutes.Tag.GetAll)]
-        public async Task<IActionResult> GetAll(PaginationFilter pagination)
+        public async Task<IActionResult> GetAll([FromQuery] PaginationFilter pagination)
         {
             var tags = await _tagService.GetAllAsync(pagination);
             var responses = tags.Select(x => x.ToResponse()).ToList();

@@ -113,7 +113,7 @@ namespace HelloWorldAPI.Services
             }
             if (!string.IsNullOrEmpty(filter.Title))
             {
-                queryable = queryable.Where(x => x.Title == filter.Title);
+                queryable = queryable.Where(x => x.Title.StartsWith(filter.Title));
             }
             if (filter.TagNames.Count != 0)
             {

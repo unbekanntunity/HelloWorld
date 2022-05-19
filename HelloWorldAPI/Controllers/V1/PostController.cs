@@ -58,9 +58,10 @@ namespace HelloWorldAPI.Controllers.V1
             {
                 return NotFound();
             }
+
             if (existingPost.CreatorId != HttpContext.GetUserId() && !HttpContext.HasRole("ContentAdmin"))
             {
-                return BadRequest(StaticErrorMessages.PermissionDenied);
+                return Unauthorized(StaticErrorMessages.PermissionDenied);
             }
 
             var result = await _postService.DeleteAsync(existingPost);
@@ -78,19 +79,19 @@ namespace HelloWorldAPI.Controllers.V1
             }
 
             var response = post.ToResponse();
-            return response != null ? Ok(new Response<PostResponse>(response)) : NotFound();
+            return Ok(new Response<PostResponse>(response));
         }
 
         [HttpGet(ApiRoutes.Post.GetAll)]
         public async Task<IActionResult> GetAll([FromQuery] GetAllPostsFilters filter, [FromQuery] PaginationFilter pagination)
         {
             var posts = await _postService.GetAllAsync(filter, pagination);
-            var responses = posts.Select(x => x.ToResponse()).ToList();
+            var responses = posts.Select(x => x.ToMinPostResponse()).ToList();
             if (pagination == null || pagination.PageNumber < 1 || pagination.PageSize < 1)
             {
-                return Ok(new PagedResponse<PostResponse>(responses));
+                return Ok(new PagedResponse<MinimalPostResponse>(responses));
             }
-            var paginationResponse = PaginationHelpers.CreatePaginatedResponse<PostResponse>(_uriService, pagination, responses);
+            var paginationResponse = PaginationHelpers.CreatePaginatedResponse(_uriService, pagination, responses);
             return Ok(paginationResponse);
         }
 
@@ -105,7 +106,7 @@ namespace HelloWorldAPI.Controllers.V1
 
             if (existingPost.CreatorId != HttpContext.GetUserId())
             {
-                return BadRequest(StaticErrorMessages.PermissionDenied);
+                return Unauthorized(StaticErrorMessages.PermissionDenied);
             }
 
             existingPost.Title = request.Title;

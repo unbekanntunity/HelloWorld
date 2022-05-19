@@ -11,7 +11,7 @@ namespace HelloWorldAPI.Services
         Task<AuthenticationResult> LoginAsync(string email, string password);
         Task<AuthenticationResult> RefreshTokenAsync(string token, string refreshToken);
 
-        Task<Result<User>> CreateUserAsync(User new_user, string[] roles, string newPassword);
+        Task<Result<User>> CreateUserAsync(User new_user, IEnumerable<string> roles, string newPassword);
         Task<Result> DeleteUserAsync(string userId);
         Task<User> GetUserByIdAsync(string userId);
         Task<string?> GetIdByUserNameAsync(string userName);

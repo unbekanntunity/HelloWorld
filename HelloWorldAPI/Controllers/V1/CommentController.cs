@@ -57,7 +57,7 @@ namespace HelloWorldAPI.Controllers.V1
 
             if (existingComment.CreatorId != HttpContext.GetUserId() || HttpContext.HasRole("ContentAdmin"))
             {
-                return BadRequest(StaticErrorMessages.PermissionDenied);
+                return Unauthorized(StaticErrorMessages.PermissionDenied);
             }
 
             var result = await _commentService.DeleteAsync(existingComment);
@@ -101,7 +101,7 @@ namespace HelloWorldAPI.Controllers.V1
             }
             if(existingComment.CreatorId != HttpContext.GetUserId())
             {
-                return BadRequest(StaticErrorMessages.PermissionDenied);
+                return Unauthorized(StaticErrorMessages.PermissionDenied);
             }
 
             var result = await _commentService.UpdateAsync(existingComment);

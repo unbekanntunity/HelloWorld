@@ -155,7 +155,7 @@ namespace HelloWorldAPI.Controllers.V1
 
             if(existingReply.CreatorId == HttpContext.GetUserId())
             {
-                return BadRequest(StaticErrorMessages.PermissionDenied);
+                return Unauthorized(StaticErrorMessages.PermissionDenied);
             }
 
             existingReply.Content = request.Content;

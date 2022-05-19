@@ -128,8 +128,8 @@ namespace HelloWorldAPI.Services
         }
 
         public async Task<Result<T>> UpdateTagsAsync<T>(T item, IEnumerable<string> newTags) where T : ITagable 
-        {
-            if (!newTags.Any() || !item.Tags.Select(x => x.Name).Except(newTags).Any())
+        {   
+            if (!newTags.Any() || (newTags.Except(item.Tags.Select(x => x.Name)).Count() == 0) && (item.Tags.Select(x => x.Name).Except(newTags).Count() == 0))
             {
                 return new Result<T>
                 {

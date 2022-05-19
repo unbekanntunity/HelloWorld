@@ -22,6 +22,12 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
+    var set1 = new List<string>() { };
+    var set2 = new List<string>() { "a" };
+
+    var except = set1.Except(set2);
+
+    Console.WriteLine("Done");
 }
 
 

@@ -106,7 +106,7 @@ namespace HelloWorldAPI.Services
             }
             if (!string.IsNullOrEmpty(filter.Title))
             {
-                queryable = queryable.Where(x => x.Title.Contains(filter.Title));
+                queryable = queryable.Where(x => x.Title.StartsWith(filter.Title));
             }
             if (!string.IsNullOrEmpty(filter.UserLikedId))
             {

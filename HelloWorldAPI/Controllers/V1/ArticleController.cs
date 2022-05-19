@@ -59,7 +59,7 @@ namespace HelloWorldAPI.Controllers.V1
 
             if (existingArticle.CreatorId != HttpContext.GetUserId() && !HttpContext.HasRole("ContentAdmin"))
             {
-                return BadRequest(StaticErrorMessages.PermissionDenied);
+                return Unauthorized(StaticErrorMessages.PermissionDenied);
             }
 
             var result = await _articleService.DeleteAsync(existingArticle);
@@ -100,7 +100,7 @@ namespace HelloWorldAPI.Controllers.V1
 
             if (existingArticle.CreatorId != HttpContext.GetUserId())
             {
-                return BadRequest(StaticErrorMessages.PermissionDenied);
+                return Unauthorized(StaticErrorMessages.PermissionDenied);
             }
 
             existingArticle.Content = request.Content;

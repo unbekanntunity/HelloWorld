@@ -82,7 +82,6 @@ namespace HelloWorldAPI
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
 
-
             app.MapRazorPages();
             app.Run();
         }

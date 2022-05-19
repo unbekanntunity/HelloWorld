@@ -136,7 +136,7 @@ namespace HelloWorldAPI.Controllers.V1
             var ownUser = await _identityService.OwnUser(HttpContext.GetUserId(), id);
             if (!ownUser && !HttpContext.HasRole("UserAdmin"))
             {
-                return BadRequest(StaticErrorMessages.PermissionDenied);
+                return Unauthorized(StaticErrorMessages.PermissionDenied);
             }
 
             var result = await _identityService.UpdateLoginAsync(id, request.Email, request.OldPassword, request.NewPassword);

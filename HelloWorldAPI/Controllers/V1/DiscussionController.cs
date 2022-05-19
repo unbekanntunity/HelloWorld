@@ -54,11 +54,11 @@ namespace HelloWorldAPI.Controllers.V1
         public async Task<IActionResult> GetAll([FromQuery] GetAllDiscussionsFilter filter, [FromQuery] PaginationFilter pagination)
         {
             var discussions = await _discussionService.GetAllAsync(filter, pagination);
-            var responses = discussions.Select(x => x.ToResponse()).ToList();
+            var responses = discussions.Select(x => x.ToPartialResponse()).ToList();
 
             if (pagination == null || pagination.PageNumber < 1 || pagination.PageSize < 1)
             {
-                return Ok(new PagedResponse<DiscussionResponse>(responses));
+                return Ok(new PagedResponse<PartialDiscussionResponse>(responses));
             }
 
             var paginationReponse = PaginationHelpers.CreatePaginatedResponse(_uriService, pagination, responses);
@@ -90,7 +90,7 @@ namespace HelloWorldAPI.Controllers.V1
 
             if (existingDiscussion.CreatorId != HttpContext.GetUserId() && !HttpContext.HasRole("ContentAdmin"))
             {
-                return BadRequest(StaticErrorMessages.PermissionDenied);
+                return Unauthorized(StaticErrorMessages.PermissionDenied);
             }
 
             var result = await _discussionService.UpdateAsync(existingDiscussion, request.Tags);
@@ -110,7 +110,7 @@ namespace HelloWorldAPI.Controllers.V1
 
             if (existingDiscussion.CreatorId != HttpContext.GetUserId() && !HttpContext.HasRole("ContentAdmin"))
             {
-                return BadRequest(StaticErrorMessages.PermissionDenied);
+                return Unauthorized(StaticErrorMessages.PermissionDenied);
             }
 
             var result = await _discussionService.DeleteAsync(id);

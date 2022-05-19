@@ -2,8 +2,11 @@
 using HelloWorldAPI.Contracts.V1;
 using HelloWorldAPI.Contracts.V1.Requests;
 using HelloWorldAPI.Contracts.V1.Responses;
+using HelloWorldAPI.Domain.Filters;
+using HelloWorldAPI.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -28,7 +31,6 @@ namespace HelloWorld.IntegrationTests
                 Description = "Test",
                 Email = "Valid@gmail.com",
                 Password = "Valid1234!",
-                RoleNames = Array.Empty<string>(),
                 UserName = "Valid"
             });
 
@@ -53,7 +55,7 @@ namespace HelloWorld.IntegrationTests
                 Description = description,
                 Email = email,
                 Password = "SomePass1234!",
-                RoleNames = Array.Empty<string>()
+                RoleNames = new List<string>()
             });
 
             //Assert
@@ -68,6 +70,10 @@ namespace HelloWorld.IntegrationTests
 
             var doubleCheck = await TestClient.GetAsync(ApiRoutes.Identity.Get.Replace("{id}", returnedUser.Data.Id));
             doubleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var doubleCheckUser = await doubleCheck.Content.ReadAsAsync<Response<UserResponse>>();
+            doubleCheckUser.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
+            doubleCheckUser.Data.CreatedAt.Day.Should().Be(DateTime.UtcNow.Day);
         }
 
         [Fact]
@@ -130,7 +136,7 @@ namespace HelloWorld.IntegrationTests
                 Description = description,
                 Email = email,
                 Password = "SomePass1234!",
-                RoleNames = Array.Empty<string>()
+                RoleNames = new List<string>()
             });
             await AuthenticateAsync();
 
@@ -160,7 +166,7 @@ namespace HelloWorld.IntegrationTests
         }
 
         [Fact]
-        public async Task GetAll_ReturnsonlySeededData_WhenFreshDatabase()
+        public async Task GetAll_ReturnsOnlySeededData_WhenFreshDatabase()
         {
             //Arrange
             await AuthenticateAsync();
@@ -170,11 +176,60 @@ namespace HelloWorld.IntegrationTests
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            (await response.Content.ReadAsAsync<Response<List<UserResponse>>>()).Data.Should().HaveCount(4);
+
+            var returnedUsers = await response.Content.ReadAsAsync<Response<List<UserResponse>>>();
+            returnedUsers.Data.Should().HaveCount(4);
         }
 
         [Fact]
-        public async Task GetAll_ReturnsUunauthorized_WhenNoAccount()
+        public async Task GetAll_ReturnsAdminAccount_WhenFreshDatabaseAndUserNameFilter()
+        {
+            //Arrange
+            var userName = "Admin";
+            await AuthenticateAsync();
+
+            var filter = new GetAllUserFilter
+            {
+                UserName = userName,
+            };
+
+            //Act
+            var response = await TestClient.GetAsync(ApiRoutes.Identity.GetAll + filter.ToQueryString());
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var returnedUsers = await response.Content.ReadAsAsync<PagedResponse<PartialUserResponse>>();
+            returnedUsers.Data.Should().HaveCount(1);
+
+            returnedUsers.Data.Select(x => x.UserName).First().Should().Contain(userName);
+        }
+
+        [Fact]
+        public async Task GetAll_ReturnsFive_WhenOneUserAdded()
+        {
+            //Arrange
+            await CreateUserAsync(new CreateUserRequest
+            {
+                Description = "Hello",
+                Email = "Helo@gmail.com",
+                Password = "Hello1234!",
+                RoleNames = new List<string>(),
+                UserName = "Hello"
+            });
+
+            await AuthenticateAsync();
+
+            //Act
+            var response = await TestClient.GetAsync(ApiRoutes.Identity.GetAll);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            (await response.Content.ReadAsAsync<Response<List<UserResponse>>>()).Data.Should().HaveCount(5);
+        }
+
+        [Fact]
+        public async Task GetAll_ReturnsUnauthorized_WhenNoAccount()
         {
             //Act
             var response = await TestClient.GetAsync(ApiRoutes.Identity.GetAll);

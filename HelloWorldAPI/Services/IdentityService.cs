@@ -260,7 +260,7 @@ namespace HelloWorldAPI.Services
             };
         }
 
-        public async Task<Result<User>> CreateUserAsync(User newUser, string[] roles, string newPassword)
+        public async Task<Result<User>> CreateUserAsync(User newUser, IEnumerable<string> roles, string newPassword)
         {
             newUser.CreatedAt = DateTime.UtcNow;
             newUser.UpdatedAt = DateTime.UtcNow;
@@ -402,6 +402,10 @@ namespace HelloWorldAPI.Services
 
         private static IQueryable<User> AddFiltersOnQuery(GetAllUserFilter filter, IQueryable<User> queryable)
         {
+            if(!string.IsNullOrEmpty(filter.UserName))
+            {
+                queryable = queryable.Where(x => x.UserName.StartsWith(filter.UserName));
+            }
             if (filter.CreatedAt != null)
             {
                 queryable = queryable.Where(x => x.CreatedAt == filter.CreatedAt);

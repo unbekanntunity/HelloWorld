@@ -46,6 +46,7 @@ namespace HelloWorldAPI.Extensions
                 StartMessage = discussion.StartMessage,
                 Tags = discussion.Tags.Select(x => x.ToResponse()).ToList(),
                 Title = discussion.Title,
+                UpdatedAt = discussion.UpdatedAt
             };
         }
 
@@ -59,6 +60,7 @@ namespace HelloWorldAPI.Extensions
                 Title = discussion.Title,
                 UpdatedAt = discussion.UpdatedAt,
                 Tags = discussion.Tags.Select(x => x.ToResponse()).ToList(),
+                StartMessage = discussion.StartMessage
             };
         }
 
@@ -69,12 +71,26 @@ namespace HelloWorldAPI.Extensions
                 Content = post.Content,
                 CreatedAt = post.CreatedAt,
                 CreatorId = post.CreatorId,
-                Comments = post.Comments.Count,
+                Comments = post.Comments.Select(x => x.ToResponse()).ToList(),
                 Id = post.Id,
                 Tags = post.Tags.Select(x => x.ToResponse()).ToList(),
                 Title = post.Title,
                 UpdatedAt = post.UpdatedAt,
                 UserLikedIds = post.UserLiked.Select(x => x.Id).ToList()
+            };
+        }
+
+        public static MinimalPostResponse ToMinPostResponse(this Post post)
+        {
+            return new MinimalPostResponse
+            {
+                Content = post.Content,
+                CreatedAt = post.CreatedAt,
+                CreatorId = post.CreatorId,
+                Id = post.Id,
+                Tags = post.Tags.Select(x => x.ToResponse()).ToList(),
+                Title = post.Title,
+                UpdatedAt = post.UpdatedAt,
             };
         }
 
@@ -171,7 +187,8 @@ namespace HelloWorldAPI.Extensions
                 Email = user.Email,
                 Id = user.Id,
                 Roles = await identityService.GetAllRolesOfUserAsync(user),
-                UserName = user.UserName
+                UserName = user.UserName,
+                Tags = user.Tags.Select(x => x.Name).ToList()
             };
         }
     }

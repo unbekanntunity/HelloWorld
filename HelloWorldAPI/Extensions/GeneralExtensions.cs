@@ -1,4 +1,6 @@
-﻿namespace HelloWorldAPI.Extensions
+﻿using System.Security.Claims;
+
+namespace HelloWorldAPI.Extensions
 {
     public static class GeneralExtensions
     {
@@ -19,7 +21,7 @@
                 return false;
             }
 
-            return httpContext.User.Claims.Where(x => x.Type == "role").Select(x => x.Value).Contains(roleName);
+            return httpContext.User.Claims.Where(x => x.Type == ClaimTypes.Role).Select(x => x.Value).Contains(roleName);
         }
     }
 }
