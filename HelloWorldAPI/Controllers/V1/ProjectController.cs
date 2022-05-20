@@ -7,10 +7,13 @@ using HelloWorldAPI.Domain.Filters;
 using HelloWorldAPI.Extensions;
 using HelloWorldAPI.Helpers;
 using HelloWorldAPI.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HelloWorldAPI.Controllers.V1
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ProjectController : Controller
     {
         private readonly IProjectService _projectService;
@@ -36,7 +39,7 @@ namespace HelloWorldAPI.Controllers.V1
                 Title = request.Title,
             };
 
-            var result = await _projectService.CreateAsync(project, request.Members, request.TagNames);
+            var result = await _projectService.CreateAsync(project, request.MembersIds, request.TagNames);
             if (!result.Success)
             {
                 return BadRequest(result.Errors);
@@ -45,7 +48,7 @@ namespace HelloWorldAPI.Controllers.V1
             var response = result.Data.ToResponse();
             var location = _uriService.GetUri(ApiRoutes.Project.Get, result.Data.Id.ToString());
 
-            return Created(location, response);
+            return Created(location, new Response<ProjectResponse>(response));
         }
 
         [HttpDelete(ApiRoutes.Project.Delete)]
@@ -107,6 +110,8 @@ namespace HelloWorldAPI.Controllers.V1
                 return Unauthorized(StaticErrorMessages.PermissionDenied);
             }
 
+            project.Title = request.Title;
+            project.Desciption = request.Desciption;
             var result = await _projectService.UpdateAsync(project, request.MemberIds, request.Tags);
             if (!result.Success)
             {

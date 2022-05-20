@@ -78,6 +78,11 @@ namespace HelloWorldAPI.Services
                 var user = new User { UserName = "NormalUser", Email = "User@gmail.com" };
                 await _userManager.CreateAsync(user, "User1234!");
             }
+            if (await _userManager.FindByNameAsync("NormalUser2") == null)
+            {
+                var user = new User { UserName = "NormalUser2", Email = "User2@gmail.com" };
+                await _userManager.CreateAsync(user, "User1234!");
+            }
         }
     }
 }

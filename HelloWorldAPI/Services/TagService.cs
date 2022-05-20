@@ -129,7 +129,7 @@ namespace HelloWorldAPI.Services
 
         public async Task<Result<T>> UpdateTagsAsync<T>(T item, IEnumerable<string> newTags) where T : ITagable 
         {   
-            if (!newTags.Any() || (newTags.Except(item.Tags.Select(x => x.Name)).Count() == 0) && (item.Tags.Select(x => x.Name).Except(newTags).Count() == 0))
+            if (!newTags.Any() || (!newTags.Except(item.Tags.Select(x => x.Name)).Any()) && (!item.Tags.Select(x => x.Name).Except(newTags).Any()))
             {
                 return new Result<T>
                 {
@@ -144,7 +144,7 @@ namespace HelloWorldAPI.Services
             {
                 return new Result<T>
                 {
-                    Errors = new string[] { $"{nameof(T)} is not a valid type." }
+                    Errors = new string[] { $"{typeof(T).Name} is not a valid type." }
                 };
             }
 

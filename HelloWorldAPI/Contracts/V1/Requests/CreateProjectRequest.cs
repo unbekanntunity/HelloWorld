@@ -6,6 +6,6 @@
         public string Desciption { get; set; }
         
         public List<string> TagNames { get; set; }
-        public List<string> Members { get; set; }
+        public List<string> MembersIds { get; set; }
     }
 }

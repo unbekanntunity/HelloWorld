@@ -34,7 +34,7 @@ namespace HelloWorld.IntegrationTests
         }
 
         [Fact]
-        public async Task Create_ReturnsCreatedDiscussion_WhenAccount()
+        public async Task Create_ReturnsCreatedDiscussion_WhenAccountAndNewTag()
         {
             //Arrange
             await AuthenticateAsync();
@@ -44,6 +44,87 @@ namespace HelloWorld.IntegrationTests
             var tagNames = new List<string>() { "Tags" };
             var title = "First Discussion";
 
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Discussion.Create, new CreateDiscussionRequest
+            {
+                StartMessage = startMsg,
+                TagNames = tagNames,
+                Title = title
+            });
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+
+            var returnedDiscussion = await response.Content.ReadAsAsync<Response<DiscussionResponse>>();
+            returnedDiscussion.Data.StartMessage.Should().Be(startMsg);
+            returnedDiscussion.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(tagNames);
+            returnedDiscussion.Data.Title.Should().Be(title);
+            returnedDiscussion.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
+            returnedDiscussion.Data.CreatedAt.Day.Should().Be(DateTime.UtcNow.Day);
+
+            var doubleCheck = await TestClient.GetAsync(ApiRoutes.Discussion.Get.Replace("{id}", returnedDiscussion.Data.Id.ToString()));
+            var doubleCheckDiscussion = await doubleCheck.Content.ReadAsAsync<Response<DiscussionResponse>>();
+            doubleCheckDiscussion.Data.StartMessage.Should().Be(startMsg);
+            doubleCheckDiscussion.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(tagNames);
+            doubleCheckDiscussion.Data.Title.Should().Be(title);
+            doubleCheckDiscussion.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
+            doubleCheckDiscussion.Data.CreatedAt.Day.Should().Be(DateTime.UtcNow.Day);
+        }
+
+        [Fact]
+        public async Task Create_ReturnsCreatedDiscussion_WhenAccountAndDuplicatedTag()
+        {
+            //Arrange
+            await AuthenticateAsync();
+
+            //Act
+            var startMsg = "Hello World";
+            var tagNames = new List<string>() { "Tags", "Tags" };
+            var title = "First Discussion";
+
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Discussion.Create, new CreateDiscussionRequest
+            {
+                StartMessage = startMsg,
+                TagNames = tagNames,
+                Title = title
+            });
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+
+            var returnedDiscussion = await response.Content.ReadAsAsync<Response<DiscussionResponse>>();
+            returnedDiscussion.Data.StartMessage.Should().Be(startMsg);
+            returnedDiscussion.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(tagNames.Distinct());
+            returnedDiscussion.Data.Title.Should().Be(title);
+            returnedDiscussion.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
+            returnedDiscussion.Data.CreatedAt.Day.Should().Be(DateTime.UtcNow.Day);
+
+            var doubleCheck = await TestClient.GetAsync(ApiRoutes.Discussion.Get.Replace("{id}", returnedDiscussion.Data.Id.ToString()));
+            var doubleCheckDiscussion = await doubleCheck.Content.ReadAsAsync<Response<DiscussionResponse>>();
+            doubleCheckDiscussion.Data.StartMessage.Should().Be(startMsg);
+            doubleCheckDiscussion.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(tagNames.Distinct());
+            doubleCheckDiscussion.Data.Title.Should().Be(title);
+            doubleCheckDiscussion.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
+            doubleCheckDiscussion.Data.CreatedAt.Day.Should().Be(DateTime.UtcNow.Day);
+        }
+
+        [Fact]
+        public async Task Create_ReturnsCreatedDiscussion_WhenAccountAndMixedTags()
+        {
+            //Arrange
+            var startMsg = "Hello World";
+            var tagNames = new List<string>() { "Tags", "New Tag" };
+            var title = "First Discussion";
+
+            await CreateDiscussionAsync(new CreateDiscussionRequest
+            {
+                StartMessage = startMsg,
+                TagNames = new List<string>() { "Tags" },
+                Title = title
+            });
+            
+            await AuthenticateAsync();
+
+            //Act
             var response = await TestClient.PostAsJsonAsync(ApiRoutes.Discussion.Create, new CreateDiscussionRequest
             {
                 StartMessage = startMsg,
@@ -99,14 +180,7 @@ namespace HelloWorld.IntegrationTests
                 Title = "Title"
             });
 
-            var token = await RegisterUserAsync(new UserRegistrationRequest
-            {
-                Email = "Test@gmail.com",
-                Password = "HelloWorld1234!",
-                UserName = "Test"
-            });
-
-            AuthenticateWithToken(token);
+            await AuthenticateAsSecondAsync();
 
             //Act
             var response = await TestClient.DeleteAsync(ApiRoutes.Discussion.Delete.Replace("{id}", createdDiscussion.Id.ToString()));
@@ -328,7 +402,7 @@ namespace HelloWorld.IntegrationTests
         [Fact]
         public async Task Update_ReturnsUnAuthorized_WhenNotOwnDiscussion()
         {
-            //Assert
+            //Arrane
             var createdDiscussion = await CreateDiscussionAsync(new CreateDiscussionRequest
             {
                 StartMessage = "StartMessage",
@@ -336,14 +410,7 @@ namespace HelloWorld.IntegrationTests
                 Title = "Title"
             });
 
-            var token = await RegisterUserAsync(new UserRegistrationRequest
-            {
-                Email = "Test@gmail.com",
-                Password = "HelloWorld1234!",
-                UserName = "Test"
-            });
-
-            AuthenticateWithToken(token);
+            await AuthenticateAsSecondAsync();
 
             //Act
             var response = await TestClient.PatchAsync(ApiRoutes.Discussion.Update.Replace("{id}", createdDiscussion.Id.ToString()),
@@ -357,26 +424,7 @@ namespace HelloWorld.IntegrationTests
         }
 
         [Fact]
-        public async Task Update_ReturnsNotFound_WhenDiscussionNotExists()
-        {
-            //Assert
-            await AuthenticateAsync();
-
-            //Act
-            var response = await TestClient.PatchAsync(ApiRoutes.Discussion.Update.Replace("{id}", Guid.NewGuid().ToString()),
-                JsonContent.Create(new UpdateDiscussionRequest
-                {
-                    Tags = new List<string>()
-                }));
-
-            var e = response.Content.ReadAsStringAsync();
-
-            //Assert
-            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-        }
-
-        [Fact]
-        public async Task Update_ReturnsUpdatedDiscussion_WhenOwnDiscussionAndExists()
+        public async Task Update_ReturnsUpdatedDiscussion_WhenAccountAndNewTags()
         {
             //Assert
             var newTags = new List<string>() { "Hello" };
@@ -407,5 +455,133 @@ namespace HelloWorld.IntegrationTests
             var doubleCheckDiscussion = await doubleCheck.Content.ReadAsAsync<Response<DiscussionResponse>>();
             doubleCheckDiscussion.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(newTags);
         }
+
+        [Fact]
+        public async Task Update_ReturnsUpdatedDiscussion_WhenAccountAndDuplicatedTag()
+        {
+            //Arrange
+            var tagNames = new List<string>() { "Hello", "Hello" };
+
+            var createdDiscussion = await CreateDiscussionAsync(new CreateDiscussionRequest
+            {
+                StartMessage = "StartMessage",
+                TagNames = new List<string>(),
+                Title = "Title"
+            });
+
+            await AuthenticateAsync();
+
+            //Act
+            var response = await TestClient.PatchAsync(ApiRoutes.Discussion.Update.Replace("{id}", createdDiscussion.Id.ToString()),
+               JsonContent.Create(new UpdateDiscussionRequest
+               {
+                   Tags = tagNames
+               }));
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var returnedDiscussion = await response.Content.ReadAsAsync<Response<DiscussionResponse>>();
+            returnedDiscussion.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(tagNames.Distinct());
+            returnedDiscussion.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
+
+            var doubleCheck = await TestClient.GetAsync(ApiRoutes.Discussion.Get.Replace("{id}", returnedDiscussion.Data.Id.ToString()));
+            var doubleCheckDiscussion = await doubleCheck.Content.ReadAsAsync<Response<DiscussionResponse>>();
+            doubleCheckDiscussion.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(tagNames.Distinct());
+            doubleCheckDiscussion.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
+        }
+
+        [Fact]
+        public async Task Update_ReturnsUpdatedDiscussion_WhenAccountAndMixedTag()
+        {
+            //Arrange
+            var tagNames = new List<string>() { "Hello", "Hello" };
+
+            await CreateDiscussionAsync(new CreateDiscussionRequest
+            {
+                StartMessage = "StartMessage",
+                TagNames = new List<string>() { "Hello" },
+                Title = "Title"
+            });
+
+            var createdDiscussion = await CreateDiscussionAsync(new CreateDiscussionRequest
+            {
+                StartMessage = "StartMessage",
+                TagNames = new List<string>(),
+                Title = "Title"
+            });
+
+            await AuthenticateAsync();
+
+            //Act
+            var response = await TestClient.PatchAsync(ApiRoutes.Discussion.Update.Replace("{id}", createdDiscussion.Id.ToString()),
+               JsonContent.Create(new UpdateDiscussionRequest
+               {
+                   Tags = tagNames
+               }));
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var returnedDiscussion = await response.Content.ReadAsAsync<Response<DiscussionResponse>>();
+            returnedDiscussion.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(tagNames.Distinct());
+            returnedDiscussion.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
+
+            var doubleCheck = await TestClient.GetAsync(ApiRoutes.Discussion.Get.Replace("{id}", returnedDiscussion.Data.Id.ToString()));
+            var doubleCheckDiscussion = await doubleCheck.Content.ReadAsAsync<Response<DiscussionResponse>>();
+            doubleCheckDiscussion.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(tagNames.Distinct());
+            doubleCheckDiscussion.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
+        }
+
+        [Fact]
+        public async Task Update_ReturnsNotFound_WhenDiscussionNotExists()
+        {
+            //Assert
+            await AuthenticateAsync();
+
+            //Act
+            var response = await TestClient.PatchAsync(ApiRoutes.Discussion.Update.Replace("{id}", Guid.Empty.ToString()),
+                JsonContent.Create(new UpdateDiscussionRequest
+                {
+                    Tags = new List<string>()
+                }));
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+
+        [Fact]
+        public async Task Update_ReturnsUpdatedDiscussion_WhenAdminAndDiscussionExists()
+        {
+            //Assert
+            var newTags = new List<string>() { "Hello" };
+
+            var createdDiscussion = await CreateDiscussionAsync(new CreateDiscussionRequest
+            {
+                StartMessage = "StartMessage",
+                TagNames = new List<string>(),
+                Title = "Title"
+            });
+
+            await AuthenticateAsAdminAsync();
+
+            //Act
+            var response = await TestClient.PatchAsync(ApiRoutes.Discussion.Update.Replace("{id}", createdDiscussion.Id.ToString()),
+                JsonContent.Create(new UpdateDiscussionRequest
+                {
+                    Tags = newTags
+                }));
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var returnedDiscussion = await response.Content.ReadAsAsync<Response<DiscussionResponse>>();
+            returnedDiscussion.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(newTags);
+
+            var doubleCheck = await TestClient.GetAsync(ApiRoutes.Discussion.Get.Replace("{id}", createdDiscussion.Id.ToString()));
+            var doubleCheckDiscussion = await doubleCheck.Content.ReadAsAsync<Response<DiscussionResponse>>();
+            doubleCheckDiscussion.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(newTags);
+        }
+
     }
 }

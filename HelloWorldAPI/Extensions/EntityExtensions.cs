@@ -121,7 +121,8 @@ namespace HelloWorldAPI.Extensions
                 MemberIds = project.Members.Select(x => x.Id).ToList(),
                 Tags = project.Tags.Select(x => x.ToResponse()).ToList(),
                 Title = project.Title,
-                UserLikedIds = project.UserLiked.Select(x => x.Id).ToList()
+                UserLikedIds = project.UserLiked.Select(x => x.Id).ToList(),
+                UpdatedAt = project.UpdatedAt
             };
         }
 

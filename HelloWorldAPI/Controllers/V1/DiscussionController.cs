@@ -17,15 +17,13 @@ namespace HelloWorldAPI.Controllers.V1
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class DiscussionController : Controller
     {
-        private readonly IIdentityService _identityService;
         private readonly IUriService _uriService;
         private readonly IDiscussionService _discussionService;
 
-        public DiscussionController(IDiscussionService discussionService, IUriService uriService, IIdentityService identityService)
+        public DiscussionController(IDiscussionService discussionService, IUriService uriService)
         {
             _discussionService = discussionService;
             _uriService = uriService;
-            _identityService = identityService;
         }
 
         [HttpPost(ApiRoutes.Discussion.Create)]
@@ -85,7 +83,7 @@ namespace HelloWorldAPI.Controllers.V1
 
             if (existingDiscussion == null)
             {
-                return BadRequest(StaticErrorMessages<Discussion>.NotFound);
+                return NotFound();
             }
 
             if (existingDiscussion.CreatorId != HttpContext.GetUserId() && !HttpContext.HasRole("ContentAdmin"))
@@ -105,7 +103,7 @@ namespace HelloWorldAPI.Controllers.V1
             var existingDiscussion = await _discussionService.GetByIdAsync(id);
             if (existingDiscussion == null)
             {
-                return NotFound(StaticErrorMessages<Discussion>.NotFound);
+                return NotFound();
             }
 
             if (existingDiscussion.CreatorId != HttpContext.GetUserId() && !HttpContext.HasRole("ContentAdmin"))

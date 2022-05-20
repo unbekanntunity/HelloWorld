@@ -123,6 +123,30 @@ namespace HelloWorld.IntegrationTests
         }
 
         [Fact]
+        public async Task DeleteOwn_ReturnsUnAuthorized_WhenNoAccount()
+        {
+            var createdUser = await CreateUserAsync(new CreateUserRequest
+            {
+                Description = "New",
+                Email = "New@gmail.com",
+                Password = "New1234!",
+                RoleNames = new List<string>(),
+                UserName = "New"
+            });
+
+            //Act
+            var response = await TestClient.DeleteAsync(ApiRoutes.Identity.DeleteOwn);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+
+            await AuthenticateAsync();
+
+            var doubleCheck = await TestClient.GetAsync(ApiRoutes.Identity.Get.Replace("{id}", createdUser.Id.ToString()));
+            doubleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [Fact]
         public async Task Get_ReturnsUser_WhenUserExists()
         {
             //Arrange
@@ -178,7 +202,7 @@ namespace HelloWorld.IntegrationTests
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var returnedUsers = await response.Content.ReadAsAsync<Response<List<UserResponse>>>();
-            returnedUsers.Data.Should().HaveCount(4);
+            returnedUsers.Data.Should().HaveCount(5);
         }
 
         [Fact]
@@ -206,7 +230,7 @@ namespace HelloWorld.IntegrationTests
         }
 
         [Fact]
-        public async Task GetAll_ReturnsFive_WhenOneUserAdded()
+        public async Task GetAll_ReturnsSixUsers_WhenOneUserAdded()
         {
             //Arrange
             await CreateUserAsync(new CreateUserRequest
@@ -225,11 +249,11 @@ namespace HelloWorld.IntegrationTests
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            (await response.Content.ReadAsAsync<Response<List<UserResponse>>>()).Data.Should().HaveCount(5);
+            (await response.Content.ReadAsAsync<Response<List<UserResponse>>>()).Data.Should().HaveCount(6);
         }
 
         [Fact]
-        public async Task GetAll_ReturnsUnauthorized_WhenNoAccount()
+        public async Task GetAll_ReturnsUnAuthorized_WhenNoAccount()
         {
             //Act
             var response = await TestClient.GetAsync(ApiRoutes.Identity.GetAll);
@@ -239,7 +263,7 @@ namespace HelloWorld.IntegrationTests
         }
 
         [Fact]
-        public async Task Update_ReturnUpdatedUser_WhenOwn()
+        public async Task Update_ReturnUpdatedUser_WhenAccount()
         {
             //Arrange
             var email = "Integration@gmail.com";
@@ -278,33 +302,6 @@ namespace HelloWorld.IntegrationTests
 
             var doubleCheckUser = await doubleCheck.Content.ReadAsAsync<Response<UserResponse>>();
             doubleCheckUser.Data.Description.Should().Be(newDescription);
-        }
-
-        [Fact]
-        public async Task Update_ReturnUnAuthorized_WhenNotOwn()
-        {
-            //Arrange
-            var email = "Integration@gmail.com";
-            var userName = Guid.NewGuid().ToString();
-            var newDescription = "Integration tests are tough";
-
-            await RegisterUserAsync(new UserRegistrationRequest
-            {
-                UserName = userName,
-                Email = email,
-                Password = "SomePass1234!",
-            });
-
-            //Act
-            var response = await TestClient.PatchAsync(ApiRoutes.Identity.Update, JsonContent.Create(new UpdateUserRequest
-            {
-                UserName = userName,
-                Description = newDescription,
-                TagNames = new List<string>()
-            }));
-
-            //Assert
-            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
         [Fact]

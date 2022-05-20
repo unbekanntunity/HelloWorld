@@ -4,7 +4,7 @@ namespace HelloWorldAPI.Contracts
 {
     public static class StaticErrorMessages<T>
     {
-        public static readonly string NotFound = $"{nameof(T)} not found.";
+        public static readonly string NotFound = $"{typeof(T).Name} not found.";
 
         public static readonly object NotFoundObj = new { erros = new string[] { NotFound } };
 

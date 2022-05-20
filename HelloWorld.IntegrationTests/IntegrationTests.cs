@@ -65,6 +65,13 @@ namespace HelloWorld.IntegrationTests
             return token;
         }
 
+        protected async Task<string> AuthenticateAsSecondAsync()
+        {
+            var token = await GetSecondJwtAsync();
+            TestClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            return token;
+        }
+
         protected async Task<string> AuthenticateAsAdminAsync()
         {
             var token = await GetAdminJwtAsync();
@@ -77,6 +84,18 @@ namespace HelloWorld.IntegrationTests
             var response = await TestClient.PostAsJsonAsync(ApiRoutes.Identity.Login, new UserLoginRequest
             {
                 Email = "User@gmail.com",
+                Password = "User1234!",
+            });
+
+            var registrationResponse = await response.Content.ReadAsAsync<AuthSuccessResponse>();
+            return registrationResponse.Token;
+        }
+
+        protected async Task<string> GetSecondJwtAsync()
+        {
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Identity.Login, new UserLoginRequest
+            {
+                Email = "User2@gmail.com",
                 Password = "User1234!",
             });
 
@@ -113,9 +132,6 @@ namespace HelloWorld.IntegrationTests
             await AuthenticateAsync();
 
             var response = await TestClient.PostAsJsonAsync(ApiRoutes.Post.Create, request);
-
-            var e = await response.Content.ReadAsStringAsync();
-
             var read = await response.Content.ReadAsAsync<Response<PostResponse>>();
 
             Logout();
@@ -128,10 +144,19 @@ namespace HelloWorld.IntegrationTests
             await AuthenticateAsync();
 
             var response = await TestClient.PostAsJsonAsync(ApiRoutes.Discussion.Create, request);
-
-            var e = await response.Content.ReadAsStringAsync();
-
             var read = await response.Content.ReadAsAsync<Response<DiscussionResponse>>();
+
+            Logout();
+
+            return read.Data;
+        }
+
+        protected async Task<ProjectResponse> CreateProjectAsnyc(CreateProjectRequest request)
+        {
+            await AuthenticateAsync();
+
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Project.Create, request);
+            var read = await response.Content.ReadAsAsync<Response<ProjectResponse>>();
 
             Logout();
 

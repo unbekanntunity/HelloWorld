@@ -24,7 +24,7 @@ namespace HelloWorldAPI.Services
         {
             discussion.CreatedAt = DateTime.UtcNow;
             discussion.UpdatedAt = DateTime.UtcNow;
-            var tagResult = await _tagService.CreateManyTagsForAsync(discussion, newTags);
+            var tagResult = await _tagService.CreateManyTagsForAsync(discussion, newTags.Distinct());
             if (tagResult.Success)
             {
                 return new Result<Discussion>
@@ -66,7 +66,7 @@ namespace HelloWorldAPI.Services
         {
             discussion.UpdatedAt = DateTime.UtcNow;
 
-            await _tagService.UpdateTagsAsync(discussion, newTags);
+            await _tagService.UpdateTagsAsync(discussion, newTags.Distinct());
 
             var result = await _nonQueryRepository.UpdateAsync(discussion);
             discussion.Tags.ForEach(x => x.Discussions.Clear());

@@ -28,7 +28,7 @@ namespace HelloWorldAPI.Services
             project.UpdatedAt = DateTime.UtcNow;
 
             var updatedMember = false;
-            foreach (var memberId in memberIds)
+            foreach (var memberId in memberIds.Distinct())
             {
                 var user = await _identityService.GetUserByIdAsync(memberId);
                 if (user != null)
@@ -37,7 +37,7 @@ namespace HelloWorldAPI.Services
                 }
             }
 
-            var tagResult = await _tagService.CreateManyTagsForAsync(project, tagNames);
+            var tagResult = await _tagService.CreateManyTagsForAsync(project, tagNames.Distinct());
             updatedMember = tagResult.Success ? tagResult.Success : updatedMember;
 
             if (updatedMember)
@@ -90,9 +90,11 @@ namespace HelloWorldAPI.Services
 
         public async Task<Result<Project>> UpdateAsync(Project project, IEnumerable<string> memberIds, IEnumerable<string> tagNames)
         {
+            memberIds = memberIds.Distinct();
+
             project.UpdatedAt = DateTime.UtcNow;
 
-            await _tagService.UpdateTagsAsync(project, tagNames);
+            await _tagService.UpdateTagsAsync(project, tagNames.Distinct());
 
             var users = await _identityService.GetUsersAsync();
             var usersToRemove = project.Members.Where(member => !memberIds.Contains(member.Id)).ToList();

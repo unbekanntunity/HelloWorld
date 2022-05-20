@@ -25,7 +25,7 @@ namespace HelloWorldAPI.Services
             post.CreatedAt = DateTime.UtcNow;
             post.UpdatedAt = DateTime.UtcNow;
 
-            var tagResult = await _tagService.CreateManyTagsForAsync(post, newTags);
+            var tagResult = await _tagService.CreateManyTagsForAsync(post, newTags.Distinct());
             if (tagResult.Success)
             {
                 return new Result<Post>
@@ -58,7 +58,7 @@ namespace HelloWorldAPI.Services
         {
             post.UpdatedAt = DateTime.UtcNow;
 
-            var tagResult = await _tagService.UpdateTagsAsync(post, newTags);
+            var tagResult = await _tagService.UpdateTagsAsync(post, newTags.Distinct());
             if(!tagResult.Success)
             {
                 return new Result<Post>
