@@ -1,20 +1,15 @@
 ﻿using FluentAssertions;
-using FluentValidation.Results;
 using HelloWorldAPI.Contracts.V1;
 using HelloWorldAPI.Contracts.V1.Requests;
 using HelloWorldAPI.Contracts.V1.Responses;
 using HelloWorldAPI.Domain.Filters;
 using HelloWorldAPI.Extensions;
-using Humanizer;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -70,6 +65,8 @@ namespace HelloWorld.IntegrationTests
             returnedProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
 
             var doubleCheck = await TestClient.GetAsync(ApiRoutes.Project.Get.Replace("{id}", returnedProject.Data.Id.ToString()));
+            doubleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
+
             var doubleCheckProject = await doubleCheck.Content.ReadAsAsync<Response<ProjectResponse>>();
             doubleCheckProject.Data.Title.Should().Be(title);
             doubleCheckProject.Data.Desciption.Should().Be(description);
@@ -108,6 +105,8 @@ namespace HelloWorld.IntegrationTests
             returnedProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
 
             var doubleCheck = await TestClient.GetAsync(ApiRoutes.Project.Get.Replace("{id}", returnedProject.Data.Id.ToString()));
+            doubleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
+
             var doubleCheckProject = await doubleCheck.Content.ReadAsAsync<Response<ProjectResponse>>();
             doubleCheckProject.Data.Title.Should().Be(title);
             doubleCheckProject.Data.Desciption.Should().Be(description);
@@ -155,6 +154,8 @@ namespace HelloWorld.IntegrationTests
             returnedProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
 
             var doubleCheck = await TestClient.GetAsync(ApiRoutes.Project.Get.Replace("{id}", returnedProject.Data.Id.ToString()));
+            doubleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
+
             var doubleCheckProject = await doubleCheck.Content.ReadAsAsync<Response<ProjectResponse>>();
             doubleCheckProject.Data.Title.Should().Be(title);
             doubleCheckProject.Data.Desciption.Should().Be(description);
@@ -281,10 +282,6 @@ namespace HelloWorld.IntegrationTests
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-
-            await AuthenticateAsync();
-            var doubleCheck = await TestClient.GetAsync(ApiRoutes.Project.Get.Replace("{id}", createdProject.Id.ToString()));
-            doubleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         [Fact]
@@ -371,7 +368,7 @@ namespace HelloWorld.IntegrationTests
                 TagNames = tagNames
             });
 
-            var createdProjectTwo = await CreateProjectAsnyc(new CreateProjectRequest
+            await CreateProjectAsnyc(new CreateProjectRequest
             {
                 Title = "HelloWorld2",
                 Desciption = "New project here",
@@ -543,6 +540,8 @@ namespace HelloWorld.IntegrationTests
             returnedProject.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(newTags);
 
             var doubleCheck = await TestClient.GetAsync(ApiRoutes.Project.Get.Replace("{id}", createdProject.Id.ToString()));
+            doubleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
+
             var doubleCheckProject = await doubleCheck.Content.ReadAsAsync<Response<ProjectResponse>>();
             doubleCheckProject.Data.Title.Should().Be(newTitle);
             doubleCheckProject.Data.Desciption.Should().Be(newDescription);
@@ -591,13 +590,15 @@ namespace HelloWorld.IntegrationTests
             returnedProject.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(newTags.Distinct());
 
             var doubleCheck = await TestClient.GetAsync(ApiRoutes.Project.Get.Replace("{id}", createdProject.Id.ToString()));
+            doubleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
+
             var doubleCheckProject = await doubleCheck.Content.ReadAsAsync<Response<ProjectResponse>>();
             doubleCheckProject.Data.Title.Should().Be(newTitle);
             doubleCheckProject.Data.Desciption.Should().Be(newDescription);
             doubleCheckProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
             doubleCheckProject.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(newTags.Distinct());
         }
- 
+
         [Fact]
         public async Task Update_ReturnsUpdatedProject_WhenOwnAndProjectExistsWithWithMixedTags()
         {
@@ -647,6 +648,8 @@ namespace HelloWorld.IntegrationTests
             returnedProject.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(newTags);
 
             var doubleCheck = await TestClient.GetAsync(ApiRoutes.Project.Get.Replace("{id}", createdProject.Id.ToString()));
+            doubleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
+
             var doubleCheckProject = await doubleCheck.Content.ReadAsAsync<Response<ProjectResponse>>();
             doubleCheckProject.Data.Title.Should().Be(newTitle);
             doubleCheckProject.Data.Desciption.Should().Be(newDescription);
@@ -667,7 +670,7 @@ namespace HelloWorld.IntegrationTests
             });
 
             //Act
-            var response = await TestClient.PatchAsync(ApiRoutes.Project.UpdateRating.Replace("{id}", createdProject.Id.ToString()), 
+            var response = await TestClient.PatchAsync(ApiRoutes.Project.UpdateRating.Replace("{id}", createdProject.Id.ToString()),
                 new StringContent(string.Empty));
 
             //Assert
@@ -716,9 +719,9 @@ namespace HelloWorld.IntegrationTests
         [Fact]
         public async Task UpdateRating_ReturnsUserRemoved_WhenAccountAndAlreadyLiked()
         {
+            //Arrange
             var token = await AuthenticateAsync();
 
-            //Arrange
             var createdProject = await CreateProjectAsnyc(new CreateProjectRequest
             {
                 Title = "HelloWorld",

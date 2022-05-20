@@ -62,6 +62,8 @@ namespace HelloWorld.IntegrationTests
             returnedDiscussion.Data.CreatedAt.Day.Should().Be(DateTime.UtcNow.Day);
 
             var doubleCheck = await TestClient.GetAsync(ApiRoutes.Discussion.Get.Replace("{id}", returnedDiscussion.Data.Id.ToString()));
+            doubleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
+
             var doubleCheckDiscussion = await doubleCheck.Content.ReadAsAsync<Response<DiscussionResponse>>();
             doubleCheckDiscussion.Data.StartMessage.Should().Be(startMsg);
             doubleCheckDiscussion.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(tagNames);
@@ -99,6 +101,8 @@ namespace HelloWorld.IntegrationTests
             returnedDiscussion.Data.CreatedAt.Day.Should().Be(DateTime.UtcNow.Day);
 
             var doubleCheck = await TestClient.GetAsync(ApiRoutes.Discussion.Get.Replace("{id}", returnedDiscussion.Data.Id.ToString()));
+            doubleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
+
             var doubleCheckDiscussion = await doubleCheck.Content.ReadAsAsync<Response<DiscussionResponse>>();
             doubleCheckDiscussion.Data.StartMessage.Should().Be(startMsg);
             doubleCheckDiscussion.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(tagNames.Distinct());
@@ -143,6 +147,8 @@ namespace HelloWorld.IntegrationTests
             returnedDiscussion.Data.CreatedAt.Day.Should().Be(DateTime.UtcNow.Day);
 
             var doubleCheck = await TestClient.GetAsync(ApiRoutes.Discussion.Get.Replace("{id}", returnedDiscussion.Data.Id.ToString()));
+            doubleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
+
             var doubleCheckDiscussion = await doubleCheck.Content.ReadAsAsync<Response<DiscussionResponse>>();
             doubleCheckDiscussion.Data.StartMessage.Should().Be(startMsg);
             doubleCheckDiscussion.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(tagNames);
@@ -349,7 +355,7 @@ namespace HelloWorld.IntegrationTests
                 TagNames = tagOne
             });
 
-            var createdDiscussionTwo = await CreateDiscussionAsync(new CreateDiscussionRequest
+            await CreateDiscussionAsync(new CreateDiscussionRequest
             {
                 Title = "New DiscussionTwo",
                 StartMessage = "New ContentTwo",
@@ -452,6 +458,8 @@ namespace HelloWorld.IntegrationTests
             returnedDiscussion.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(newTags);
 
             var doubleCheck = await TestClient.GetAsync(ApiRoutes.Discussion.Get.Replace("{id}", createdDiscussion.Id.ToString()));
+            doubleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
+
             var doubleCheckDiscussion = await doubleCheck.Content.ReadAsAsync<Response<DiscussionResponse>>();
             doubleCheckDiscussion.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(newTags);
         }
@@ -486,6 +494,8 @@ namespace HelloWorld.IntegrationTests
             returnedDiscussion.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
 
             var doubleCheck = await TestClient.GetAsync(ApiRoutes.Discussion.Get.Replace("{id}", returnedDiscussion.Data.Id.ToString()));
+            doubleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
+
             var doubleCheckDiscussion = await doubleCheck.Content.ReadAsAsync<Response<DiscussionResponse>>();
             doubleCheckDiscussion.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(tagNames.Distinct());
             doubleCheckDiscussion.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
@@ -528,6 +538,8 @@ namespace HelloWorld.IntegrationTests
             returnedDiscussion.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
 
             var doubleCheck = await TestClient.GetAsync(ApiRoutes.Discussion.Get.Replace("{id}", returnedDiscussion.Data.Id.ToString()));
+            doubleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
+
             var doubleCheckDiscussion = await doubleCheck.Content.ReadAsAsync<Response<DiscussionResponse>>();
             doubleCheckDiscussion.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(tagNames.Distinct());
             doubleCheckDiscussion.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
@@ -579,6 +591,8 @@ namespace HelloWorld.IntegrationTests
             returnedDiscussion.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(newTags);
 
             var doubleCheck = await TestClient.GetAsync(ApiRoutes.Discussion.Get.Replace("{id}", createdDiscussion.Id.ToString()));
+            doubleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
+
             var doubleCheckDiscussion = await doubleCheck.Content.ReadAsAsync<Response<DiscussionResponse>>();
             doubleCheckDiscussion.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(newTags);
         }

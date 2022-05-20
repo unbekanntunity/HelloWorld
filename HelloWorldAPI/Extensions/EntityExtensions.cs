@@ -16,6 +16,7 @@ namespace HelloWorldAPI.Extensions
                 DiscussionId = article.DiscussionId,
                 Id = article.Id,
                 UserLikedIds = article.UserLiked.Select(x => x.Id).ToList(),
+                UpdatedAt = article.UpdatedAt,
                 Replies = article.Replies.Select(x  => x.ToResponse()).ToList()
             };
         }

@@ -163,6 +163,18 @@ namespace HelloWorld.IntegrationTests
             return read.Data;
         }
 
+        protected async Task<ArticleResponse> CreateArticleAsync(Guid discussionId, CreateArticleRequest request)
+        {
+            await AuthenticateAsync();
+
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Article.Create.Replace("{discussionId}", discussionId.ToString()), request);
+            var read = await response.Content.ReadAsAsync<Response<ArticleResponse>>();
+
+            Logout();
+
+            return read.Data;
+        }
+
         protected async Task<string> RegisterUserAsync(UserRegistrationRequest request)
         {
             var response = await TestClient.PostAsJsonAsync(ApiRoutes.Identity.Register, request);

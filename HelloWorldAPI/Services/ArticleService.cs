@@ -20,21 +20,12 @@ namespace HelloWorldAPI.Services
             _nonQueryRepository = nonQueryRepository;
         }
 
-        public async Task<Result<Article>> CreateInDiscussionAsync(Guid discussionId, Article article)
+        public async Task<Result<Article>> CreateInDiscussionAsync(Discussion discussion, Article article)
         {
-            var discussion = await _discussionService.GetByIdAsync(discussionId);
-            if (discussion == null)
-            {
-                return new Result<Article>
-                {
-                    Errors = new string[] { StaticErrorMessages<Discussion>.NotFound }
-                };
-            }
-
-            article.DiscussionId = discussionId;
+            article.DiscussionId = discussion.Id;
             article.CreatedAt = DateTime.UtcNow;
             article.UpdatedAt = DateTime.UtcNow;
-            var result = await _nonQueryRepository.CreateAsync(article);
+            var result = await _nonQueryRepository.UpdateAsync(article);
 
             return new Result<Article>
             {

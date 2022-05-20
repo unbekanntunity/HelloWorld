@@ -21,12 +21,12 @@ namespace HelloWorld.IntegrationTests
         [Fact]
         public async Task Create_ReturnsUnAuthorized_WhenNoAccount()
         {
-            var response = await TestClient.PostAsync(ApiRoutes.Post.Create, JsonContent.Create(new CreatePostRequest
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Post.Create, new CreatePostRequest
             {
                 Title = "Test",
                 Content = "Test",
                 TagNames = new List<string>()
-            }));
+            });
 
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
@@ -42,12 +42,12 @@ namespace HelloWorld.IntegrationTests
             await AuthenticateAsync();
 
             //Act
-            var response = await TestClient.PostAsync(ApiRoutes.Post.Create, JsonContent.Create(new CreatePostRequest
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Post.Create, new CreatePostRequest
             {
                 Title = title,
                 Content = content,
                 TagNames = tagNames
-            }));
+            });
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -85,10 +85,11 @@ namespace HelloWorld.IntegrationTests
 
             //Act
             var response = await TestClient.DeleteAsync(ApiRoutes.Post.Delete.Replace("{id}", createdPost.Id.ToString()));
-            var doubleCheck = await TestClient.GetAsync(ApiRoutes.Post.Get.Replace("{id}", createdPost.Id.ToString()));
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+            var doubleCheck = await TestClient.GetAsync(ApiRoutes.Post.Get.Replace("{id}", createdPost.Id.ToString()));
             doubleCheck.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
@@ -107,10 +108,11 @@ namespace HelloWorld.IntegrationTests
 
             //Act
             var response = await TestClient.DeleteAsync(ApiRoutes.Post.Delete.Replace("{id}", createdPost.Id.ToString()));
-            var doubleCheck = await TestClient.GetAsync(ApiRoutes.Post.Get.Replace("{id}", createdPost.Id.ToString()));
-
+          
             //Assert
-            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent); 
+            
+            var doubleCheck = await TestClient.GetAsync(ApiRoutes.Post.Get.Replace("{id}", createdPost.Id.ToString()));
             doubleCheck.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
@@ -136,10 +138,11 @@ namespace HelloWorld.IntegrationTests
 
             //Act
             var response = await TestClient.DeleteAsync(ApiRoutes.Post.Delete.Replace("{id}", createdPost.Id.ToString()));
-            var doubleCheck = await TestClient.GetAsync(ApiRoutes.Post.Get.Replace("{id}", createdPost.Id.ToString()));
-
+        
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            
+            var doubleCheck = await TestClient.GetAsync(ApiRoutes.Post.Get.Replace("{id}", createdPost.Id.ToString()));
             doubleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
@@ -380,7 +383,7 @@ namespace HelloWorld.IntegrationTests
                 TagNames = new List<string>()
             });
 
-            var createdPostTwo = await CreatePostAsync(new CreatePostRequest
+            await CreatePostAsync(new CreatePostRequest
             {
                 Title = "New Post",
                 Content = "New Content",
@@ -406,6 +409,8 @@ namespace HelloWorld.IntegrationTests
 
             var doubleCheck = await TestClient.GetAsync(ApiRoutes.Post.Get.Replace("{id}", createdPost.Id.ToString()));
             var doubleCheckPost = await doubleCheck.Content.ReadAsAsync<Response<PostResponse>>();
+            doubleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
+
             doubleCheckPost.Data.Title.Should().Be(title);
             doubleCheckPost.Data.Content.Should().Be(newContent);
             doubleCheckPost.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(newTags);
@@ -466,6 +471,8 @@ namespace HelloWorld.IntegrationTests
             returnedPost.Data.UserLikedIds.Should().Contain(GetUserId(token));
 
             var doubleCheck = await TestClient.GetAsync(ApiRoutes.Post.Get.Replace("{id}", createdPost.Id.ToString()));
+            doubleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
+
             var doubleCheckPost = await doubleCheck.Content.ReadAsAsync<Response<PostResponse>>();
             doubleCheckPost.Data.UserLikedIds.Should().Contain(GetUserId(token));
         }
@@ -494,6 +501,8 @@ namespace HelloWorld.IntegrationTests
             returnedPost.Data.UserLikedIds.Should().NotContain(GetUserId(token));
 
             var doubleCheck = await TestClient.GetAsync(ApiRoutes.Post.Get.Replace("{id}", createdPost.Id.ToString()));
+            doubleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
+
             var doubleCheckPost = await doubleCheck.Content.ReadAsAsync<Response<PostResponse>>();
             doubleCheckPost.Data.UserLikedIds.Should().NotContain(GetUserId(token));
         }

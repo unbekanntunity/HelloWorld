@@ -85,10 +85,11 @@ namespace HelloWorld.IntegrationTests
 
             //Act
             var response = await TestClient.DeleteAsync(ApiRoutes.Identity.Delete.Replace("{id}", GetUserId(token)));
-            var doubleCheck = await TestClient.GetAsync(ApiRoutes.Identity.Get.Replace("{id}", GetUserId(token)));
-
+       
             //Assert
-            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);     
+            
+            var doubleCheck = await TestClient.GetAsync(ApiRoutes.Identity.Get.Replace("{id}", GetUserId(token)));
             doubleCheck.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
         
@@ -100,11 +101,9 @@ namespace HelloWorld.IntegrationTests
 
             //Act
             var response = await TestClient.DeleteAsync(ApiRoutes.Identity.Delete.Replace("{id}", GetUserId(token)));
-            var doubleCheck = await TestClient.GetAsync(ApiRoutes.Identity.Get.Replace("{id}", GetUserId(token)));
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-            doubleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         [Fact]
@@ -115,10 +114,11 @@ namespace HelloWorld.IntegrationTests
 
             //Act
             var response = await TestClient.DeleteAsync(ApiRoutes.Identity.DeleteOwn);
-            var doubleCheck = await TestClient.GetAsync(ApiRoutes.Identity.Get.Replace("{id}", GetUserId(token)));
 
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+            var doubleCheck = await TestClient.GetAsync(ApiRoutes.Identity.Get.Replace("{id}", GetUserId(token)));
             doubleCheck.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 

@@ -20,6 +20,9 @@ namespace HelloWorldAPI.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Discussion?> GetByIdAsync(Guid id) => await _dataContext.Discussions.Include(x => x.Tags).FirstOrDefaultAsync(x => x.Id == id);
+        public async Task<Discussion?> GetByIdAsync(Guid id) => await _dataContext.Discussions
+            .Include(x => x.Tags)
+            .Include(x => x.Articles)
+            .FirstOrDefaultAsync(x => x.Id == id);
     }
 }

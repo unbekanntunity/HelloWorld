@@ -17,27 +17,36 @@ namespace HelloWorldAPI.Controllers.V1
     public class ArticleController : Controller
     {
         private readonly IArticleService _articleService;
+        private readonly IDiscussionService _discussionService;
         private readonly IIdentityService _identityService;
         private readonly IUriService _uriService;
         private readonly IRateableService<Article> _rateableService;
 
-        public ArticleController(IArticleService articleService, IUriService uriService, IIdentityService identityService)
+        public ArticleController(IArticleService articleService, IUriService uriService, IIdentityService identityService, IDiscussionService discussionService, IRateableService<Article> rateableService)
         {
             _articleService = articleService;
             _uriService = uriService;
             _identityService = identityService;
+            _discussionService = discussionService;
+            _rateableService = rateableService;
         }
 
         [HttpPost(ApiRoutes.Article.Create)]
         public async Task<IActionResult> Create([FromRoute] Guid discussionId, [FromBody] CreateArticleRequest request)
         {
+            var discussion = await _discussionService.GetByIdAsync(discussionId);
+            if(discussion == null)
+            {
+                return NotFound(StaticErrorMessages<Discussion>.NotFound);
+            }
+
             var article = new Article
             {
                 CreatorId = HttpContext.GetUserId(),
                 Content = request.Content
             };
 
-            var result = await _articleService.CreateInDiscussionAsync(discussionId, article);
+            var result = await _articleService.CreateInDiscussionAsync(discussion, article);
             if (!result.Success)
             {
                 return BadRequest(result.Errors);
@@ -54,7 +63,7 @@ namespace HelloWorldAPI.Controllers.V1
             var existingArticle = await _articleService.GetByIdAsync(id);
             if (existingArticle == null)
             {
-                return BadRequest(StaticErrorMessages<Article>.NotFound);
+                return NotFound();
             }
 
             if (existingArticle.CreatorId != HttpContext.GetUserId() && !HttpContext.HasRole("ContentAdmin"))
@@ -70,8 +79,13 @@ namespace HelloWorldAPI.Controllers.V1
         public async Task<IActionResult> Get([FromRoute] Guid id)
         {
             var article = await _articleService.GetByIdAsync(id);
+            if(article == null)
+            {
+                return NotFound();
+            }
+
             var response = article.ToResponse();
-            return response != null ? Ok(new Response<ArticleResponse>(response)) : NotFound();
+            return Ok(new Response<ArticleResponse>(response));
         }
 
         [HttpGet(ApiRoutes.Article.GetAll)]
@@ -90,9 +104,9 @@ namespace HelloWorldAPI.Controllers.V1
         }
 
         [HttpPatch(ApiRoutes.Article.Update)]
-        public async Task<IActionResult> Update([FromRoute] Guid articleId, [FromBody] UpdateArticleRequest request)
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateArticleRequest request)
         {
-            var existingArticle = await _articleService.GetByIdAsync(articleId);
+            var existingArticle = await _articleService.GetByIdAsync(id);
             if (existingArticle == null)
             {
                 return NotFound();
@@ -118,13 +132,8 @@ namespace HelloWorldAPI.Controllers.V1
         public async Task<IActionResult> UpdateRating([FromRoute] Guid id)
         {
             var article = await _articleService.GetByIdAsync(id);
-            if (article == null)
-            {
-                return NotFound();
-            }
-
             var user = await _identityService.GetUserByIdAsync(HttpContext.GetUserId());
-            if (user == null)
+            if (article == null || user == null)
             {
                 return NotFound();
             }
