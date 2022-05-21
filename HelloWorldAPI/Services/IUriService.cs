@@ -4,8 +4,8 @@ namespace HelloWorldAPI.Services
 {
     public interface IUriService
     {
-        Uri GetUri(string rawRoute, string Id);
+        Uri GetUri(string rawRoute, string id);
 
-        Uri GetAllUri(PaginationFilter pagination = null);
+        Uri GetAllUri(string rawRoute, PaginationFilter pagination = null);
     }
 }

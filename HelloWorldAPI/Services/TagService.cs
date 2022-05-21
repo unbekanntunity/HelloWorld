@@ -4,7 +4,6 @@ using HelloWorldAPI.Domain.Database;
 using HelloWorldAPI.Domain.Database.Interfaces;
 using HelloWorldAPI.Domain.Filters;
 using HelloWorldAPI.Repositories;
-using System;
 
 namespace HelloWorldAPI.Services
 {
@@ -18,7 +17,6 @@ namespace HelloWorldAPI.Services
             _tagRepository = tagRepository;
             _nonQueryRepository = nonQueryRepository;
         }
-
 
         public async Task<Result<List<string>>> CreateManyTagsForAsync<T>(T item, IEnumerable<string> tagNames) where T : ITagable
         {
@@ -127,8 +125,8 @@ namespace HelloWorldAPI.Services
             };
         }
 
-        public async Task<Result<T>> UpdateTagsAsync<T>(T item, IEnumerable<string> newTags) where T : ITagable 
-        {   
+        public async Task<Result<T>> UpdateTagsAsync<T>(T item, IEnumerable<string> newTags) where T : ITagable
+        {
             if (!newTags.Any() || (!newTags.Except(item.Tags.Select(x => x.Name)).Any()) && (!item.Tags.Select(x => x.Name).Except(newTags).Any()))
             {
                 return new Result<T>
@@ -164,7 +162,7 @@ namespace HelloWorldAPI.Services
                 item.Tags.Remove(tagsToRemove[i]);
                 var itemsOfTag = (List<T>)property.GetValue(tagsToRemove[i]);
                 var tagResult = await RemoveItemFromTagAsync(tagsToRemove[i], itemsOfTag, item);
-                if(!tagResult.Success)
+                if (!tagResult.Success)
                 {
                     failedTags.Add($"Failed to remove: {tagsToRemove[i].Name}");
                     updated = false;

@@ -59,7 +59,7 @@ namespace HelloWorldAPI.Controllers.V1
                 return Ok(new PagedResponse<PartialDiscussionResponse>(responses));
             }
 
-            var paginationReponse = PaginationHelpers.CreatePaginatedResponse(_uriService, pagination, responses);
+            var paginationReponse = PaginationHelpers.CreatePaginatedResponse(_uriService, ApiRoutes.Discussion.GetAll, pagination, responses);
             return Ok(paginationReponse);
         }
 

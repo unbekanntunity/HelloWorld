@@ -7,35 +7,46 @@ using HelloWorldAPI.Domain.Filters;
 using HelloWorldAPI.Extensions;
 using HelloWorldAPI.Helpers;
 using HelloWorldAPI.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HelloWorldAPI.Controllers.V1
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class CommentController : Controller
     {
         private readonly ICommentService _commentService;
         private readonly IIdentityService _identityService;
+        private readonly IPostService _postService;
         private readonly IUriService _uriService;
         private readonly IRateableService<Comment> _rateableService;
 
-        public CommentController(ICommentService commentService, IUriService uriService, IIdentityService identityService, IRateableService<Comment> rateableService)
+        public CommentController(ICommentService commentService, IUriService uriService, IIdentityService identityService, IRateableService<Comment> rateableService, IPostService postService)
         {
             _commentService = commentService;
             _uriService = uriService;
             _identityService = identityService;
             _rateableService = rateableService;
+            _postService = postService;
         }
 
         [HttpPost(ApiRoutes.Comment.Create)]
         public async Task<IActionResult> Create([FromRoute] Guid postId, [FromBody] CreateCommentRequest request)
         {
+            var post = await _postService.GetByIdAsync(postId);
+            if(post == null)
+            {
+                return NotFound(StaticErrorMessages<Post>.NotFound);
+            }
+
             var comment = new Comment
             {
                 CreatorId = HttpContext.GetUserId(),
                 Content = request.Content
             };
 
-            var result = await _commentService.CreateInPostAsync(postId, comment);
+            var result = await _commentService.CreateInPostAsync(post, comment);
             if (!result.Success)
             {
                 return BadRequest(result);
@@ -55,7 +66,7 @@ namespace HelloWorldAPI.Controllers.V1
                 return NotFound();
             }
 
-            if (existingComment.CreatorId != HttpContext.GetUserId() || HttpContext.HasRole("ContentAdmin"))
+            if (existingComment.CreatorId != HttpContext.GetUserId() && !HttpContext.HasRole("ContentAdmin"))
             {
                 return Unauthorized(StaticErrorMessages.PermissionDenied);
             }
@@ -87,7 +98,7 @@ namespace HelloWorldAPI.Controllers.V1
                 return Ok(new PagedResponse<CommentResponse>(responses));
             }
 
-            var paginationResponse = PaginationHelpers.CreatePaginatedResponse(_uriService, pagination, responses);
+            var paginationResponse = PaginationHelpers.CreatePaginatedResponse(_uriService, ApiRoutes.Comment.GetAll, pagination, responses);
             return Ok(paginationResponse);
         }
 
@@ -104,6 +115,7 @@ namespace HelloWorldAPI.Controllers.V1
                 return Unauthorized(StaticErrorMessages.PermissionDenied);
             }
 
+            existingComment.Content = request.Content;
             var result = await _commentService.UpdateAsync(existingComment);
             if(!result.Success)
             {

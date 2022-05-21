@@ -187,6 +187,12 @@ namespace HelloWorld.IntegrationTests
 
             var doubleCheck = await TestClient.GetAsync(ApiRoutes.Article.Get.Replace("{id}", createdArticle.Id.ToString()));
             doubleCheck.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+            var trippleCheck = await TestClient.GetAsync(ApiRoutes.Discussion.Get.Replace("{id}", createdDiscussion.Id.ToString()));
+            trippleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var trippleCheckDisucssion = await trippleCheck.Content.ReadAsAsync<Response<DiscussionResponse>>();
+            trippleCheckDisucssion.Data.Articles.Select(x => x.Id).Should().NotContain(createdArticle.Id);
         }
 
         [Fact]
@@ -215,6 +221,12 @@ namespace HelloWorld.IntegrationTests
 
             var doubleCheck = await TestClient.GetAsync(ApiRoutes.Article.Get.Replace("{id}", createdArticle.Id.ToString()));
             doubleCheck.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+            var trippleCheck = await TestClient.GetAsync(ApiRoutes.Discussion.Get.Replace("{id}", createdDiscussion.Id.ToString()));
+            trippleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var trippleCheckDisucssion = await trippleCheck.Content.ReadAsAsync<Response<DiscussionResponse>>();
+            trippleCheckDisucssion.Data.Articles.Select(x => x.Id).Should().NotContain(createdArticle.Id);
         }
 
         [Fact]
@@ -281,12 +293,6 @@ namespace HelloWorld.IntegrationTests
 
             var returnedArticle = await response.Content.ReadAsAsync<Response<ArticleResponse>>();
             returnedArticle.Data.Content.Should().Be(content);
-
-            var discussionCheck = await TestClient.GetAsync(ApiRoutes.Discussion.Get.Replace("{id}", returnedArticle.Data.DiscussionId.ToString()));
-            discussionCheck.StatusCode.Should().Be(HttpStatusCode.OK);
-
-            var returnedDiscussion = await discussionCheck.Content.ReadAsAsync<Response<DiscussionResponse>>();
-            returnedDiscussion.Data.Articles.Select(x => x.Id).Should().Contain(createdArticle.Id);
         }
 
         [Fact]
@@ -356,6 +362,78 @@ namespace HelloWorld.IntegrationTests
             returnedArticles.Data.Should().HaveCount(1);
             returnedArticles.Data.First().Content.Should().Be(contentOne);
             returnedArticles.Data.First().CreatedAt.Day.Should().Be(DateTime.UtcNow.Day);
+        }
+
+        [Fact]
+        public async Task GetAll_ReturnsCorrectPagination_WhenEmptyData()
+        {
+            //Arrange
+            await AuthenticateAsync();
+
+            //Act
+            var response = await TestClient.GetAsync(ApiRoutes.Article.GetAll);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var returnedComments = await response.Content.ReadAsAsync<PagedResponse<ArticleResponse>>();
+            returnedComments.NextPage.Should().BeNull();
+            returnedComments.PreviousPage.Should().BeNull();
+            returnedComments.PageNumber.Should().Be(1);
+        }
+
+        [Fact]
+        public async Task GetAll_ReturnsCorrectPagination_WhenHaveData()
+        {
+            //Arrange
+            var content = "Hello";
+            var createdDiscussion = await CreateDiscussionAsync(new CreateDiscussionRequest
+            {
+                StartMessage = "Hello there",
+                Title = "My first discussion",
+                TagNames = new List<string>()
+            });
+
+            await CreateArticleAsync(createdDiscussion.Id, new CreateArticleRequest
+            {
+                Content = content
+            });
+
+            await CreateArticleAsync(createdDiscussion.Id, new CreateArticleRequest
+            {
+                Content = content
+            });
+
+            await CreateArticleAsync(createdDiscussion.Id, new CreateArticleRequest
+            {
+                Content = content
+            });
+
+            await CreateArticleAsync(createdDiscussion.Id, new CreateArticleRequest
+            {
+                Content = content
+            });
+
+            var pageNumber = 2;
+            var pageSize = 1;
+            var paginationFilter = new PaginationFilter
+            {
+                PageNumber = 2,
+                PageSize = 1
+            };
+
+            await AuthenticateAsync();
+
+            //Act
+            var response = await TestClient.GetAsync(ApiRoutes.Article.GetAll + paginationFilter.ToQueryString());
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var returnedComments = await response.Content.ReadAsAsync<PagedResponse<ArticleResponse>>();
+            returnedComments.NextPage.Should().Be(GetAllUriNext(ApiRoutes.Article.GetAll, pageNumber, pageSize));
+            returnedComments.PreviousPage.Should().Be(GetAllUriLast(ApiRoutes.Article.GetAll, pageNumber, pageSize));
+            returnedComments.PageNumber.Should().Be(pageNumber);
         }
 
         [Fact]

@@ -230,6 +230,33 @@ namespace HelloWorld.IntegrationTests
         }
 
         [Fact]
+        public async Task GetAll_ReturnsCorrectPagination_WhenHaveData()
+        {
+            //Arrange
+
+            var pageNumber = 2;
+            var pageSize = 1;
+            var paginationFilter = new PaginationFilter
+            {
+                PageNumber = 2,
+                PageSize = 1
+            };
+
+            await AuthenticateAsync();
+
+            //Act
+            var response = await TestClient.GetAsync(ApiRoutes.Identity.GetAll + paginationFilter.ToQueryString());
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var returnedComments = await response.Content.ReadAsAsync<PagedResponse<PartialUserResponse>>();
+            returnedComments.NextPage.Should().Be(GetAllUriNext(ApiRoutes.Identity.GetAll, pageNumber, pageSize));
+            returnedComments.PreviousPage.Should().Be(GetAllUriLast(ApiRoutes.Identity.GetAll, pageNumber, pageSize));
+            returnedComments.PageNumber.Should().Be(pageNumber);
+        }
+
+        [Fact]
         public async Task GetAll_ReturnsSixUsers_WhenOneUserAdded()
         {
             //Arrange

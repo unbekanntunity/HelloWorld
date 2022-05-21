@@ -27,9 +27,9 @@ namespace HelloWorldAPI.Controllers.V1
         }
 
         [HttpPost(ApiRoutes.Reply.CreateOnArticle)]
-        public async Task<IActionResult> CreateOnArticle([FromRoute] Guid id, [FromBody] CreateReplyRequest request)
+        public async Task<IActionResult> CreateOnArticle([FromRoute] Guid articleId, [FromBody] CreateReplyRequest request)
         {
-            var article = await _articleService.GetByIdAsync(id);
+            var article = await _articleService.GetByIdAsync(articleId);
             if (article == null)
             {
                 return NotFound();
@@ -53,9 +53,9 @@ namespace HelloWorldAPI.Controllers.V1
         }
 
         [HttpPost(ApiRoutes.Reply.CreateOnComment)]
-        public async Task<IActionResult> CreateOnComment([FromRoute] Guid id, [FromBody] CreateReplyRequest request)
+        public async Task<IActionResult> CreateOnComment([FromRoute] Guid commentId, [FromBody] CreateReplyRequest request)
         {
-            var comment = await _commentService.GetByIdAsync(id);
+            var comment = await _commentService.GetByIdAsync(commentId);
             if (comment == null)
             {
                 return NotFound();
@@ -79,9 +79,9 @@ namespace HelloWorldAPI.Controllers.V1
         }
 
         [HttpPost(ApiRoutes.Reply.CreateOnReply)]
-        public async Task<IActionResult> CreateOnReply([FromRoute] Guid id, [FromBody] CreateReplyRequest request)
+        public async Task<IActionResult> CreateOnReply([FromRoute] Guid replyId, [FromBody] CreateReplyRequest request)
         {
-            var repliedOn = await _replyService.GetByIdAsync(id);
+            var repliedOn = await _replyService.GetByIdAsync(replyId);
             if (repliedOn == null)
             {
                 return NotFound();
@@ -140,7 +140,7 @@ namespace HelloWorldAPI.Controllers.V1
                 return Ok(new PagedResponse<ReplyResponse>(responses));
             }
 
-            var paginationResponse = PaginationHelpers.CreatePaginatedResponse(_uriService, pagination, responses);
+            var paginationResponse = PaginationHelpers.CreatePaginatedResponse(_uriService, ApiRoutes.Reply.GetAll, pagination, responses);
             return Ok(paginationResponse);
         }
 

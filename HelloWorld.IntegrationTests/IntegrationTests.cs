@@ -3,14 +3,13 @@ using HelloWorldAPI.Contracts.V1;
 using HelloWorldAPI.Contracts.V1.Requests;
 using HelloWorldAPI.Contracts.V1.Responses;
 using HelloWorldAPI.Data;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -18,7 +17,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace HelloWorld.IntegrationTests
@@ -175,6 +173,41 @@ namespace HelloWorld.IntegrationTests
             return read.Data;
         }
 
+        protected async Task<CommentResponse> CreateCommentAsync(Guid postId, CreateCommentRequest request)
+        {
+            await AuthenticateAsync();
+
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Comment.Create.Replace("{postId}", postId.ToString()), request);
+            var read = await response.Content.ReadAsAsync<Response<CommentResponse>>();
+
+            Logout();
+
+            return read.Data;
+        }
+
+        protected string GetAllUriNext(string rawRoute, int pageNumber, int pageSize)
+        {
+            pageNumber++;
+            var uri = new Uri(TestClient.BaseAddress.ToString() + rawRoute).ToString();
+
+            var modifiedUri = QueryHelpers.AddQueryString(uri, "pageNumber", pageNumber.ToString());
+            modifiedUri = QueryHelpers.AddQueryString(modifiedUri, "pageSize", pageSize.ToString());
+
+            return new Uri(modifiedUri).ToString();
+        }
+
+        protected string GetAllUriLast(string rawRoute, int pageNumber, int pageSize)
+        {
+            pageNumber--;
+
+            var uri = new Uri(TestClient.BaseAddress.ToString() + rawRoute).ToString();
+
+            var modifiedUri = QueryHelpers.AddQueryString(uri, "pageNumber", pageNumber.ToString());
+            modifiedUri = QueryHelpers.AddQueryString(modifiedUri, "pageSize", pageSize.ToString());
+
+            return new Uri(modifiedUri).ToString();
+        }
+
         protected async Task<string> RegisterUserAsync(UserRegistrationRequest request)
         {
             var response = await TestClient.PostAsJsonAsync(ApiRoutes.Identity.Register, request);
@@ -211,6 +244,6 @@ namespace HelloWorld.IntegrationTests
             token = null;
             return false;
         }
-    } 
+    }
 }
 

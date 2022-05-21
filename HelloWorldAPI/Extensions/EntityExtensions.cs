@@ -147,9 +147,11 @@ namespace HelloWorldAPI.Extensions
             {
                 Content = reply.Content,
                 CreatorId = reply.CreatorId,
+                CreatedAt = reply.CreatedAt,
                 Id = reply.Id,
                 RepliedOnId = reply.RepliedOnCommentId ?? reply.RepliedOnArticleId ?? reply.RepliedOnReplyId,
-                Replies = reply.Replies?.Select(x => x.ToResponse()).ToList() ?? new List<ReplyResponse>()
+                Replies = reply.Replies?.Select(x => x.ToResponse()).ToList() ?? new List<ReplyResponse>(),
+                UpdatedAt = reply.UpdatedAt
             };
         }
 

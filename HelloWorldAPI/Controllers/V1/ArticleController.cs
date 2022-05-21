@@ -99,7 +99,7 @@ namespace HelloWorldAPI.Controllers.V1
                 return Ok(new PagedResponse<ArticleResponse>(responses));
             }
 
-            var paginationResponse = PaginationHelpers.CreatePaginatedResponse(_uriService, pagination, responses);
+            var paginationResponse = PaginationHelpers.CreatePaginatedResponse(_uriService, ApiRoutes.Article.GetAll, pagination, responses);
             return Ok(paginationResponse);
         }
 

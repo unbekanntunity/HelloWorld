@@ -352,7 +352,7 @@ namespace HelloWorld.IntegrationTests
         }
 
         [Fact]
-        public async Task GetAll_ReturnsProjctOne_WhenApplyFilter()
+        public async Task GetAll_ReturnsProjectOne_WhenApplyFilter()
         {
             //Arrange
             var title = "HelloWorld";
@@ -395,6 +395,89 @@ namespace HelloWorld.IntegrationTests
             returnedProjects.Data.First().Title.Should().Be(title);
             returnedProjects.Data.First().Description.Should().Be(description);
             tagNames.Should().BeSubsetOf(returnedProjects.Data.First().Tags.Select(x => x.Name));
+        }
+        [Fact]
+        public async Task GetAll_ReturnsCorrectPagination_WhenEmptyData()
+        {
+            //Arrange
+            await AuthenticateAsync();
+
+            //Act
+            var response = await TestClient.GetAsync(ApiRoutes.Project.GetAll);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var returnedComments = await response.Content.ReadAsAsync<PagedResponse<PartialProjectResponse>>();
+            returnedComments.NextPage.Should().BeNull();
+            returnedComments.PreviousPage.Should().BeNull();
+            returnedComments.PageNumber.Should().Be(1);
+        }
+
+        [Fact]
+        public async Task GetAll_ReturnsCorrectPagination_WhenHaveData()
+        {
+            //Arrange
+            await CreateProjectAsnyc(new CreateProjectRequest
+            {
+                Title = "HelloWorld2",
+                Desciption = "New project here",
+                MembersIds = new List<string>(),
+                TagNames = new List<string>()
+            });
+
+            await CreateProjectAsnyc(new CreateProjectRequest
+            {
+                Title = "HelloWorld2",
+                Desciption = "New project here",
+                MembersIds = new List<string>(),
+                TagNames = new List<string>()
+            });
+
+            await CreateProjectAsnyc(new CreateProjectRequest
+            {
+                Title = "HelloWorld2",
+                Desciption = "New project here",
+                MembersIds = new List<string>(),
+                TagNames = new List<string>()
+            });
+
+            await CreateProjectAsnyc(new CreateProjectRequest
+            {
+                Title = "HelloWorld2",
+                Desciption = "New project here",
+                MembersIds = new List<string>(),
+                TagNames = new List<string>()
+            });
+
+            await CreateProjectAsnyc(new CreateProjectRequest
+            {
+                Title = "HelloWorld2",
+                Desciption = "New project here",
+                MembersIds = new List<string>(),
+                TagNames = new List<string>()
+            });
+
+            var pageNumber = 2;
+            var pageSize = 1;
+            var paginationFilter = new PaginationFilter
+            {
+                PageNumber = 2,
+                PageSize = 1
+            };
+
+            await AuthenticateAsync();
+
+            //Act
+            var response = await TestClient.GetAsync(ApiRoutes.Project.GetAll + paginationFilter.ToQueryString());
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var returnedComments = await response.Content.ReadAsAsync<PagedResponse<PartialProjectResponse>>();
+            returnedComments.NextPage.Should().Be(GetAllUriNext(ApiRoutes.Project.GetAll, pageNumber, pageSize));
+            returnedComments.PreviousPage.Should().Be(GetAllUriLast(ApiRoutes.Project.GetAll, pageNumber, pageSize));
+            returnedComments.PageNumber.Should().Be(pageNumber);
         }
 
         [Fact]

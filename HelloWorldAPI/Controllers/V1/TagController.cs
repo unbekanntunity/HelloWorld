@@ -30,7 +30,7 @@ namespace HelloWorldAPI.Controllers.V1
                 return Ok(new PagedResponse<TagResponse>(responses));
             }
 
-            var paginationResponse = PaginationHelpers.CreatePaginatedResponse(_uriService, pagination, responses);
+            var paginationResponse = PaginationHelpers.CreatePaginatedResponse(_uriService, ApiRoutes.Tag.GetAll, pagination, responses);
             return Ok(paginationResponse);
         }
     }

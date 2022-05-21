@@ -10,13 +10,11 @@ namespace HelloWorldAPI.Services
     public class ArticleService : IArticleService
     {
         private readonly IArticleRepository _articleRepository;
-        private readonly IDiscussionService _discussionService;
         private readonly INonQueryRepository<Article> _nonQueryRepository;
 
-        public ArticleService(IArticleRepository articleRepository, IDiscussionService discussionService, INonQueryRepository<Article> nonQueryRepository)
+        public ArticleService(IArticleRepository articleRepository, INonQueryRepository<Article> nonQueryRepository)
         {
             _articleRepository = articleRepository;
-            _discussionService = discussionService;
             _nonQueryRepository = nonQueryRepository;
         }
 

@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using FluentValidation.Results;
 using HelloWorldAPI.Contracts.V1;
 using HelloWorldAPI.Contracts.V1.Requests;
 using HelloWorldAPI.Contracts.V1.Responses;
@@ -108,10 +107,10 @@ namespace HelloWorld.IntegrationTests
 
             //Act
             var response = await TestClient.DeleteAsync(ApiRoutes.Post.Delete.Replace("{id}", createdPost.Id.ToString()));
-          
+
             //Assert
-            response.StatusCode.Should().Be(HttpStatusCode.NoContent); 
-            
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
             var doubleCheck = await TestClient.GetAsync(ApiRoutes.Post.Get.Replace("{id}", createdPost.Id.ToString()));
             doubleCheck.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
@@ -138,10 +137,10 @@ namespace HelloWorld.IntegrationTests
 
             //Act
             var response = await TestClient.DeleteAsync(ApiRoutes.Post.Delete.Replace("{id}", createdPost.Id.ToString()));
-        
+
             //Assert
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-            
+
             var doubleCheck = await TestClient.GetAsync(ApiRoutes.Post.Get.Replace("{id}", createdPost.Id.ToString()));
             doubleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
         }
@@ -247,7 +246,6 @@ namespace HelloWorld.IntegrationTests
             returnedPosts.Data.Should().BeEmpty();
         }
 
-
         [Fact]
         public async Task GetAll_ReturnsPostOne_WhenApplyFilter()
         {
@@ -289,6 +287,85 @@ namespace HelloWorld.IntegrationTests
             returnedPosts.Data.First().Title.Should().Be(titleOne);
             returnedPosts.Data.First().Content.Should().Be(contentOne);
             tagOne.Should().BeSubsetOf(returnedPosts.Data.First().Tags.Select(x => x.Name));
+        }
+
+        [Fact]
+        public async Task GetAll_ReturnsCorrectPagination_WhenEmptyData()
+        {
+            //Arrange
+            await AuthenticateAsync();
+
+            //Act
+            var response = await TestClient.GetAsync(ApiRoutes.Post.GetAll);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var returnedComments = await response.Content.ReadAsAsync<PagedResponse<PostResponse>>();
+            returnedComments.NextPage.Should().BeNull();
+            returnedComments.PreviousPage.Should().BeNull();
+            returnedComments.PageNumber.Should().Be(1);
+        }
+
+        [Fact]
+        public async Task GetAll_ReturnsCorrectPagination_WhenHaveData()
+        {
+            //Arrange
+            await CreatePostAsync(new CreatePostRequest
+            {
+                Title = "New Post",
+                Content = "New Content",
+                TagNames = new List<string>()
+            });
+
+            await CreatePostAsync(new CreatePostRequest
+            {
+                Title = "New Post",
+                Content = "New Content",
+                TagNames = new List<string>()
+            });
+
+            await CreatePostAsync(new CreatePostRequest
+            {
+                Title = "New Post",
+                Content = "New Content",
+                TagNames = new List<string>()
+            });
+
+            await CreatePostAsync(new CreatePostRequest
+            {
+                Title = "New Post",
+                Content = "New Content",
+                TagNames = new List<string>()
+            });
+
+            await CreatePostAsync(new CreatePostRequest
+            {
+                Title = "New Post",
+                Content = "New Content",
+                TagNames = new List<string>()
+            });
+
+            var pageNumber = 2;
+            var pageSize = 1;
+            var paginationFilter = new PaginationFilter
+            {
+                PageNumber = 2,
+                PageSize = 1
+            };
+
+            await AuthenticateAsync();
+
+            //Act
+            var response = await TestClient.GetAsync(ApiRoutes.Post.GetAll + paginationFilter.ToQueryString());
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var returnedComments = await response.Content.ReadAsAsync<PagedResponse<PostResponse>>();
+            returnedComments.NextPage.Should().Be(GetAllUriNext(ApiRoutes.Post.GetAll, pageNumber, pageSize));
+            returnedComments.PreviousPage.Should().Be(GetAllUriLast(ApiRoutes.Post.GetAll, pageNumber, pageSize));
+            returnedComments.PageNumber.Should().Be(pageNumber);
         }
 
         [Fact]

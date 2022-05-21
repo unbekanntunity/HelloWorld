@@ -20,9 +20,11 @@ namespace HelloWorldAPI.Services
             _postService = postService;
         }
 
-        public async Task<Result<Comment>> CreateInPostAsync(Guid postId, Comment comment)
+        public async Task<Result<Comment>> CreateInPostAsync(Post post, Comment comment)
         {
-            var post = await _postService.GetByIdAsync(postId);
+            comment.CreatedAt = DateTime.UtcNow;
+            comment.UpdatedAt = DateTime.UtcNow;
+
             if (post == null)
             {
                 return new Result<Comment>
@@ -31,13 +33,8 @@ namespace HelloWorldAPI.Services
                 };
             }
 
-            comment.PostId = postId;
+            comment.PostId = post.Id;
             var result = await _nonQueryRepository.CreateAsync(comment);
-            if (result)
-            {
-                comment.CreatedAt = DateTime.UtcNow;
-                comment.UpdatedAt = DateTime.UtcNow;
-            }
 
             return new Result<Comment>
             {
@@ -57,6 +54,18 @@ namespace HelloWorldAPI.Services
                     : new string[] { StaticErrorMessages<Comment>.DeleteOperationFailed }
             };
         }
+        public async Task<Result<Comment>> UpdateAsync(Comment comment)
+        {
+            comment.UpdatedAt = DateTime.UtcNow;
+            var updated = await _nonQueryRepository.UpdateAsync(comment);
+            return new Result<Comment>
+            {
+                Success = updated,
+                Data = updated ? comment : null,
+                Errors = updated ? Array.Empty<string>() :
+                   new string[] { StaticErrorMessages<Comment>.UpdateOperationFailed }
+            };
+        }
 
         public async Task<List<Comment>> GetAllAsync(GetAllCommentsFilter filter = null, PaginationFilter pagination = null)
         {
@@ -72,19 +81,6 @@ namespace HelloWorldAPI.Services
 
             var skip = (pagination.PageNumber - 1) * pagination.PageSize;
             return await queryable.Skip(skip).Take(pagination.PageSize).ToListAsyncSafe();
-        }
-
-        public async Task<Result<Comment>> UpdateAsync(Comment comment)
-        {
-            comment.UpdatedAt = DateTime.UtcNow;
-            var updated = await _nonQueryRepository.UpdateAsync(comment);
-            return new Result<Comment>
-            {
-                Success = updated,
-                Data = updated ? comment : null,
-                Errors = updated ? Array.Empty<string>() :
-                   new string[] { StaticErrorMessages<Comment>.UpdateOperationFailed }
-            };
         }
 
         public async Task<Comment?> GetByIdAsync(Guid id) => await _commentRepository.GetByIdAsync(id);

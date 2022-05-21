@@ -12,21 +12,21 @@ namespace HelloWorldAPI.Services
             _baseUri = baseUri;
         }
 
-        public Uri GetAllUri(PaginationFilter pagination = null)
+        public Uri GetAllUri(string rawRoute, PaginationFilter pagination = null)
         {
-            var uri = new Uri(_baseUri);
+            var uri = new Uri(_baseUri + rawRoute);
 
             if (pagination == null)
             {
                 return uri;
             }
 
-            var modifiedUri = QueryHelpers.AddQueryString(_baseUri, "pageNumber", pagination.PageNumber.ToString());
+            var modifiedUri = QueryHelpers.AddQueryString(uri.ToString(), "pageNumber", pagination.PageNumber.ToString());
             modifiedUri = QueryHelpers.AddQueryString(modifiedUri, "pageSize", pagination.PageSize.ToString());
 
             return new Uri(modifiedUri);
         }
 
-        public Uri GetUri(string rawRoute, string Id) => new(_baseUri + rawRoute.Replace("{id}", Id));
+        public Uri GetUri(string rawRoute, string id) => new(_baseUri + rawRoute.Replace("{id}", id));
     }
 }

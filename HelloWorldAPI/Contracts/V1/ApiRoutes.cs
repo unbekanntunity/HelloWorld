@@ -116,11 +116,11 @@ namespace HelloWorldAPI.Contracts.V1
 
         public static class Reply
         {
-            public const string CreateOnArticle = Base + "reply/create/article/{id}";
+            public const string CreateOnArticle = Base + "reply/create/article/{articleId}";
 
-            public const string CreateOnComment = Base + "reply/create/comment/{id}";
+            public const string CreateOnComment = Base + "reply/create/comment/{commentId}";
 
-            public const string CreateOnReply = Base + "reply/create/reply/{id}";
+            public const string CreateOnReply = Base + "reply/create/reply/{replyId}";
 
             public const string Delete = Base + "reply/delete/{id}";
 

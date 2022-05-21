@@ -384,6 +384,85 @@ namespace HelloWorld.IntegrationTests
         }
 
         [Fact]
+        public async Task GetAll_ReturnsCorrectPagination_WhenEmptyData()
+        {
+            //Arrange
+            await AuthenticateAsync();
+
+            //Act
+            var response = await TestClient.GetAsync(ApiRoutes.Discussion.GetAll);
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var returnedComments = await response.Content.ReadAsAsync<PagedResponse<PartialDiscussionResponse>>();
+            returnedComments.NextPage.Should().BeNull();
+            returnedComments.PreviousPage.Should().BeNull();
+            returnedComments.PageNumber.Should().Be(1);
+        }
+
+        [Fact]
+        public async Task GetAll_ReturnsCorrectPagination_WhenHaveData()
+        {
+            //Arrange
+            await CreateDiscussionAsync(new CreateDiscussionRequest
+            {
+                StartMessage = "Hello there",
+                Title = "My first discussion",
+                TagNames = new List<string>()
+            });
+
+            await CreateDiscussionAsync(new CreateDiscussionRequest
+            {
+                StartMessage = "Hello there",
+                Title = "My first discussion",
+                TagNames = new List<string>()
+            });
+
+            await CreateDiscussionAsync(new CreateDiscussionRequest
+            {
+                StartMessage = "Hello there",
+                Title = "My first discussion",
+                TagNames = new List<string>()
+            });
+
+            await CreateDiscussionAsync(new CreateDiscussionRequest
+            {
+                StartMessage = "Hello there",
+                Title = "My first discussion",
+                TagNames = new List<string>()
+            });
+
+            await CreateDiscussionAsync(new CreateDiscussionRequest
+            {
+                StartMessage = "Hello there",
+                Title = "My first discussion",
+                TagNames = new List<string>()
+            });
+
+            var pageNumber = 2;
+            var pageSize = 1;
+            var paginationFilter = new PaginationFilter
+            {
+                PageNumber = 2,
+                PageSize = 1
+            };
+
+            await AuthenticateAsync();
+
+            //Act
+            var response = await TestClient.GetAsync(ApiRoutes.Discussion.GetAll + paginationFilter.ToQueryString());
+
+            //Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var returnedComments = await response.Content.ReadAsAsync<PagedResponse<PartialDiscussionResponse>>();
+            returnedComments.NextPage.Should().Be(GetAllUriNext(ApiRoutes.Discussion.GetAll, pageNumber, pageSize));
+            returnedComments.PreviousPage.Should().Be(GetAllUriLast(ApiRoutes.Discussion.GetAll, pageNumber, pageSize));
+            returnedComments.PageNumber.Should().Be(pageNumber);
+        }
+
+        [Fact]
         public async Task Update_ReturnsUnAuthorized_WhenNoAccount()
         {
             //Assert

@@ -107,7 +107,7 @@ namespace HelloWorldAPI.Controllers.V1
                 return Ok(new PagedResponse<PartialUserResponse>(responses));
             }
 
-            var paginationReponse = PaginationHelpers.CreatePaginatedResponse(_uriService, pagination, responses);
+            var paginationReponse = PaginationHelpers.CreatePaginatedResponse(_uriService, ApiRoutes.Identity.GetAll, pagination, responses);
             return Ok(paginationReponse);
         }
 
