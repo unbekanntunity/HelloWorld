@@ -396,6 +396,7 @@ namespace HelloWorld.IntegrationTests
             returnedProjects.Data.First().Description.Should().Be(description);
             tagNames.Should().BeSubsetOf(returnedProjects.Data.First().Tags.Select(x => x.Name));
         }
+
         [Fact]
         public async Task GetAll_ReturnsCorrectPagination_WhenEmptyData()
         {
@@ -418,45 +419,17 @@ namespace HelloWorld.IntegrationTests
         public async Task GetAll_ReturnsCorrectPagination_WhenHaveData()
         {
             //Arrange
-            await CreateProjectAsnyc(new CreateProjectRequest
-            {
-                Title = "HelloWorld2",
-                Desciption = "New project here",
-                MembersIds = new List<string>(),
-                TagNames = new List<string>()
-            });
 
-            await CreateProjectAsnyc(new CreateProjectRequest
+            for (int i = 0; i < 5; i++)
             {
-                Title = "HelloWorld2",
-                Desciption = "New project here",
-                MembersIds = new List<string>(),
-                TagNames = new List<string>()
-            });
-
-            await CreateProjectAsnyc(new CreateProjectRequest
-            {
-                Title = "HelloWorld2",
-                Desciption = "New project here",
-                MembersIds = new List<string>(),
-                TagNames = new List<string>()
-            });
-
-            await CreateProjectAsnyc(new CreateProjectRequest
-            {
-                Title = "HelloWorld2",
-                Desciption = "New project here",
-                MembersIds = new List<string>(),
-                TagNames = new List<string>()
-            });
-
-            await CreateProjectAsnyc(new CreateProjectRequest
-            {
-                Title = "HelloWorld2",
-                Desciption = "New project here",
-                MembersIds = new List<string>(),
-                TagNames = new List<string>()
-            });
+                await CreateProjectAsnyc(new CreateProjectRequest
+                {
+                    Title = "HelloWorld2",
+                    Desciption = "New project here",
+                    MembersIds = new List<string>(),
+                    TagNames = new List<string>()
+                });
+            }
 
             var pageNumber = 2;
             var pageSize = 1;

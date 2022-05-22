@@ -151,7 +151,23 @@ namespace HelloWorldAPI.Extensions
                 Id = reply.Id,
                 RepliedOnId = reply.RepliedOnCommentId ?? reply.RepliedOnArticleId ?? reply.RepliedOnReplyId,
                 Replies = reply.Replies?.Select(x => x.ToResponse()).ToList() ?? new List<ReplyResponse>(),
-                UpdatedAt = reply.UpdatedAt
+                UpdatedAt = reply.UpdatedAt,
+                UserLikedIds = reply.UserLiked.Select(x => x.Id).ToList()
+            };
+        }
+
+        public static PartialReplyResponse ToPartialResponse(this Reply reply)
+        {
+            return new PartialReplyResponse
+            {
+                Content = reply.Content,
+                CreatorId = reply.CreatorId,
+                CreatedAt = reply.CreatedAt,
+                Id = reply.Id,
+                RepliedOnId = reply.RepliedOnCommentId ?? reply.RepliedOnArticleId ?? reply.RepliedOnReplyId,
+                Replies = reply.Replies.Count,
+                UpdatedAt = reply.UpdatedAt,
+                UserLiked = reply.Replies.Count
             };
         }
 

@@ -9,15 +9,13 @@ namespace HelloWorldAPI.Services
 {
     public class CommentService : ICommentService
     {
-        private readonly IPostService _postService;
         private readonly ICommentRepository _commentRepository;
         private readonly INonQueryRepository<Comment> _nonQueryRepository;
 
-        public CommentService(ICommentRepository commentRepository, INonQueryRepository<Comment> nonQueryRepository, IPostService postService)
+        public CommentService(ICommentRepository commentRepository, INonQueryRepository<Comment> nonQueryRepository)
         {
             _commentRepository = commentRepository;
             _nonQueryRepository = nonQueryRepository;
-            _postService = postService;
         }
 
         public async Task<Result<Comment>> CreateInPostAsync(Post post, Comment comment)

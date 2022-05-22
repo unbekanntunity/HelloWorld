@@ -26,6 +26,7 @@ namespace HelloWorldAPI.Repositories
             .Include(x => x.RepliedOnComment)
             .Include(x => x.RepliedOnReply)
             .Include(x => x.Replies)
+            .Include(x => x.UserLiked)
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 }

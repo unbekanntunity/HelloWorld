@@ -405,41 +405,16 @@ namespace HelloWorld.IntegrationTests
         public async Task GetAll_ReturnsCorrectPagination_WhenHaveData()
         {
             //Arrange
-            await CreateDiscussionAsync(new CreateDiscussionRequest
+            for (int i = 0; i < 5; i++)
             {
-                StartMessage = "Hello there",
-                Title = "My first discussion",
-                TagNames = new List<string>()
-            });
-
-            await CreateDiscussionAsync(new CreateDiscussionRequest
-            {
-                StartMessage = "Hello there",
-                Title = "My first discussion",
-                TagNames = new List<string>()
-            });
-
-            await CreateDiscussionAsync(new CreateDiscussionRequest
-            {
-                StartMessage = "Hello there",
-                Title = "My first discussion",
-                TagNames = new List<string>()
-            });
-
-            await CreateDiscussionAsync(new CreateDiscussionRequest
-            {
-                StartMessage = "Hello there",
-                Title = "My first discussion",
-                TagNames = new List<string>()
-            });
-
-            await CreateDiscussionAsync(new CreateDiscussionRequest
-            {
-                StartMessage = "Hello there",
-                Title = "My first discussion",
-                TagNames = new List<string>()
-            });
-
+                await CreateDiscussionAsync(new CreateDiscussionRequest
+                {
+                    StartMessage = "Hello there",
+                    Title = "My first discussion",
+                    TagNames = new List<string>()
+                });
+            }
+       
             var pageNumber = 2;
             var pageSize = 1;
             var paginationFilter = new PaginationFilter

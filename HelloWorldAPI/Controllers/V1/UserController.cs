@@ -51,17 +51,20 @@ namespace HelloWorldAPI.Controllers.V1
             return Created(locationUri, new Response<UserResponse>(userResponse));
         }
 
-        [HttpDelete(ApiRoutes.Identity.DeleteOwn)]
-        public async Task<IActionResult> DeleteOwn()
-        {
-            var result = await _identityService.DeleteUserAsync(HttpContext.GetUserId());
-            return result.Success ? NoContent() : BadRequest(result);
-        }
-
-        [Authorize(Roles = "UserAdmin")]
         [HttpDelete(ApiRoutes.Identity.Delete)]
         public async Task<IActionResult> Delete([FromRoute] string id)
         {
+            var existingUser = await _identityService.GetUserByIdAsync(id);
+            if (existingUser == null)
+            {
+                return NotFound();
+            }
+
+            if (existingUser.Id != HttpContext.GetUserId() && !HttpContext.HasRole("UserAdmin"))
+            {
+                return Unauthorized(StaticErrorMessages.PermissionDenied);
+            }
+
             var result = await _identityService.DeleteUserAsync(id);
             return result.Success ? NoContent() : BadRequest(result);
         }

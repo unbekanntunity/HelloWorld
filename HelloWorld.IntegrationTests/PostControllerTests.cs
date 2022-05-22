@@ -311,40 +311,15 @@ namespace HelloWorld.IntegrationTests
         public async Task GetAll_ReturnsCorrectPagination_WhenHaveData()
         {
             //Arrange
-            await CreatePostAsync(new CreatePostRequest
+            for (int i = 0; i < 5; i++)
             {
-                Title = "New Post",
-                Content = "New Content",
-                TagNames = new List<string>()
-            });
-
-            await CreatePostAsync(new CreatePostRequest
-            {
-                Title = "New Post",
-                Content = "New Content",
-                TagNames = new List<string>()
-            });
-
-            await CreatePostAsync(new CreatePostRequest
-            {
-                Title = "New Post",
-                Content = "New Content",
-                TagNames = new List<string>()
-            });
-
-            await CreatePostAsync(new CreatePostRequest
-            {
-                Title = "New Post",
-                Content = "New Content",
-                TagNames = new List<string>()
-            });
-
-            await CreatePostAsync(new CreatePostRequest
-            {
-                Title = "New Post",
-                Content = "New Content",
-                TagNames = new List<string>()
-            });
+                await CreatePostAsync(new CreatePostRequest
+                {
+                    Title = "New Post",
+                    Content = "New Content",
+                    TagNames = new List<string>()
+                });
+            }
 
             var pageNumber = 2;
             var pageSize = 1;

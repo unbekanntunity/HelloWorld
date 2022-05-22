@@ -7,29 +7,37 @@ using HelloWorldAPI.Domain.Filters;
 using HelloWorldAPI.Extensions;
 using HelloWorldAPI.Helpers;
 using HelloWorldAPI.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Validations.Rules;
 
 namespace HelloWorldAPI.Controllers.V1
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ReplyController : Controller
     {
         private readonly IArticleService _articleService;
         private readonly ICommentService _commentService;
+        private readonly IIdentityService _identityService;
         private readonly IReplyService _replyService;
+        private readonly IRateableService<Reply> _rateableService;
         private readonly IUriService _uriService;
 
-        public ReplyController(IReplyService replyService, IUriService uriService, ICommentService commentService, IArticleService articleService)
+        public ReplyController(IReplyService replyService, IUriService uriService, ICommentService commentService, IArticleService articleService, IRateableService<Reply> rateableService, IIdentityService identityService)
         {
             _replyService = replyService;
             _uriService = uriService;
             _commentService = commentService;
             _articleService = articleService;
+            _rateableService = rateableService;
+            _identityService = identityService;
         }
 
         [HttpPost(ApiRoutes.Reply.CreateOnArticle)]
-        public async Task<IActionResult> CreateOnArticle([FromRoute] Guid articleId, [FromBody] CreateReplyRequest request)
+        public async Task<IActionResult> CreateOnArticle([FromRoute] Guid id, [FromBody] CreateReplyRequest request)
         {
-            var article = await _articleService.GetByIdAsync(articleId);
+            var article = await _articleService.GetByIdAsync(id);
             if (article == null)
             {
                 return NotFound();
@@ -53,9 +61,9 @@ namespace HelloWorldAPI.Controllers.V1
         }
 
         [HttpPost(ApiRoutes.Reply.CreateOnComment)]
-        public async Task<IActionResult> CreateOnComment([FromRoute] Guid commentId, [FromBody] CreateReplyRequest request)
+        public async Task<IActionResult> CreateOnComment([FromRoute] Guid id, [FromBody] CreateReplyRequest request)
         {
-            var comment = await _commentService.GetByIdAsync(commentId);
+            var comment = await _commentService.GetByIdAsync(id);
             if (comment == null)
             {
                 return NotFound();
@@ -79,9 +87,9 @@ namespace HelloWorldAPI.Controllers.V1
         }
 
         [HttpPost(ApiRoutes.Reply.CreateOnReply)]
-        public async Task<IActionResult> CreateOnReply([FromRoute] Guid replyId, [FromBody] CreateReplyRequest request)
+        public async Task<IActionResult> CreateOnReply([FromRoute] Guid id, [FromBody] CreateReplyRequest request)
         {
-            var repliedOn = await _replyService.GetByIdAsync(replyId);
+            var repliedOn = await _replyService.GetByIdAsync(id);
             if (repliedOn == null)
             {
                 return NotFound();
@@ -113,6 +121,11 @@ namespace HelloWorldAPI.Controllers.V1
                 return NotFound();
             }
 
+            if(existingReply.CreatorId != HttpContext.GetUserId() && !HttpContext.HasRole("ContentAdmin"))
+            {
+                return Unauthorized();
+            }
+
             var result = await _replyService.DeleteAsync(existingReply);
             return result.Success ? NoContent() : BadRequest(result);
         }
@@ -133,11 +146,11 @@ namespace HelloWorldAPI.Controllers.V1
         public async Task<IActionResult> GetAll([FromQuery] GetAllRepliesFilter filter, [FromQuery] PaginationFilter pagination)
         {
             var replies = await _replyService.GetAllAsync(filter, pagination);
-            var responses = replies.Select(x => x.ToResponse()).ToList();
+            var responses = replies.Select(x => x.ToPartialResponse()).ToList();
 
             if (pagination == null || pagination.PageSize < 1 || pagination.PageNumber < 1)
             {
-                return Ok(new PagedResponse<ReplyResponse>(responses));
+                return Ok(new PagedResponse<PartialReplyResponse>(responses));
             }
 
             var paginationResponse = PaginationHelpers.CreatePaginatedResponse(_uriService, ApiRoutes.Reply.GetAll, pagination, responses);
@@ -153,7 +166,7 @@ namespace HelloWorldAPI.Controllers.V1
                 return NotFound();
             }
 
-            if(existingReply.CreatorId == HttpContext.GetUserId())
+            if(existingReply.CreatorId != HttpContext.GetUserId())
             {
                 return Unauthorized(StaticErrorMessages.PermissionDenied);
             }
@@ -166,7 +179,27 @@ namespace HelloWorldAPI.Controllers.V1
             }
 
             var response = result.Data.ToResponse();
-            return Ok(response);
+            return Ok(new Response<ReplyResponse>(response));
+        }
+
+        [HttpPatch(ApiRoutes.Reply.UpdateRating)]
+        public async Task<IActionResult> UpdateRating([FromRoute] Guid id)
+        {
+            var existingReply = await _replyService.GetByIdAsync(id);
+            var user = await _identityService.GetUserByIdAsync(HttpContext.GetUserId());
+            if (existingReply == null || user == null)
+            {
+                return NotFound();
+            }
+
+            var result = await _rateableService.UpdateRatingAsync(existingReply, user);
+            if(!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            var response = result.Data.ToResponse();
+            return Ok(new Response<ReplyResponse>(response));
         }
     }
 }

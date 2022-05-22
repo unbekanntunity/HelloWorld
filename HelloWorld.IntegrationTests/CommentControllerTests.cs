@@ -6,12 +6,10 @@ using HelloWorldAPI.Domain.Filters;
 using HelloWorldAPI.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using Xunit;
 

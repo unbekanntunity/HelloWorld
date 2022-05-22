@@ -28,8 +28,6 @@ namespace HelloWorldAPI.Contracts.V1
 
             public const string Delete = Base + "/users/delete/{id}";
 
-            public const string DeleteOwn = Base + "/users/delete_own";
-
             public const string Update = Base + "/users/update/";
 
             public const string UpdateLogin = Base + "/users/update_login/{id}";
@@ -116,11 +114,11 @@ namespace HelloWorldAPI.Contracts.V1
 
         public static class Reply
         {
-            public const string CreateOnArticle = Base + "reply/create/article/{articleId}";
+            public const string CreateOnArticle = Base + "reply/create/article/{id}";
 
-            public const string CreateOnComment = Base + "reply/create/comment/{commentId}";
+            public const string CreateOnComment = Base + "reply/create/comment/{id}";
 
-            public const string CreateOnReply = Base + "reply/create/reply/{replyId}";
+            public const string CreateOnReply = Base + "reply/create/reply/{id}";
 
             public const string Delete = Base + "reply/delete/{id}";
 

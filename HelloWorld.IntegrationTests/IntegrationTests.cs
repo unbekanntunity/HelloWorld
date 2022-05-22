@@ -185,6 +185,18 @@ namespace HelloWorld.IntegrationTests
             return read.Data;
         }
 
+        protected async Task<ReplyResponse> CreateReplyAsync(string rawRoute, Guid id, CreateReplyRequest request)
+        {
+            await AuthenticateAsync();
+
+            var response = await TestClient.PostAsJsonAsync(rawRoute.Replace("{id}", id.ToString()), request);
+            var read = await response.Content.ReadAsAsync<Response<ReplyResponse>>();
+
+            Logout();
+
+            return read.Data;
+        }
+
         protected string GetAllUriNext(string rawRoute, int pageNumber, int pageSize)
         {
             pageNumber++;
@@ -211,8 +223,6 @@ namespace HelloWorld.IntegrationTests
         protected async Task<string> RegisterUserAsync(UserRegistrationRequest request)
         {
             var response = await TestClient.PostAsJsonAsync(ApiRoutes.Identity.Register, request);
-            var e = await response.Content.ReadAsStringAsync();
-
             var read = await response.Content.ReadAsAsync<AuthSuccessResponse>();
             return read.Token;
         }

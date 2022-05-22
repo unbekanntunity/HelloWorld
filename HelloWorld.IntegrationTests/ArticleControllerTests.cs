@@ -394,25 +394,13 @@ namespace HelloWorld.IntegrationTests
                 TagNames = new List<string>()
             });
 
-            await CreateArticleAsync(createdDiscussion.Id, new CreateArticleRequest
+            for (int i = 0; i < 5; i++)
             {
-                Content = content
-            });
-
-            await CreateArticleAsync(createdDiscussion.Id, new CreateArticleRequest
-            {
-                Content = content
-            });
-
-            await CreateArticleAsync(createdDiscussion.Id, new CreateArticleRequest
-            {
-                Content = content
-            });
-
-            await CreateArticleAsync(createdDiscussion.Id, new CreateArticleRequest
-            {
-                Content = content
-            });
+                await CreateArticleAsync(createdDiscussion.Id, new CreateArticleRequest
+                {
+                    Content = content
+                });
+            }
 
             var pageNumber = 2;
             var pageSize = 1;
