@@ -65,7 +65,7 @@ namespace HelloWorldAPI.Extensions
             };
         }
 
-        public static PostResponse ToResponse(this Post post)
+        public static PostResponse ToResponse(this Post post, IUriService uriService)
         {
             return new PostResponse
             {
@@ -74,6 +74,7 @@ namespace HelloWorldAPI.Extensions
                 CreatorId = post.CreatorId,
                 Comments = post.Comments.Select(x => x.ToResponse()).ToList(),
                 Id = post.Id,
+                ImageUrls = uriService.ConvertPathsToUrls(post.ImagePaths.Select(x => x.Url)),
                 Tags = post.Tags.Select(x => x.ToResponse()).ToList(),
                 Title = post.Title,
                 UpdatedAt = post.UpdatedAt,
@@ -95,7 +96,7 @@ namespace HelloWorldAPI.Extensions
             };
         }
 
-        public static PartialPostResponse ToPartialResponse(this Post post)
+        public static PartialPostResponse ToPartialResponse(this Post post, IUriService uriService)
         {
             return new PartialPostResponse
             {
@@ -104,6 +105,7 @@ namespace HelloWorldAPI.Extensions
                 Comments = post.Comments.Count,
                 Content = post.Content,
                 Id = post.Id,
+                ImageUrls = uriService.ConvertPathsToUrls(post.ImagePaths.Select(x => x.Url)),
                 Title = post.Title,
                 Tags = post.Tags.Select(x => x.ToResponse()).ToList(),
                 UpdatedAt = post.UpdatedAt,
@@ -179,7 +181,7 @@ namespace HelloWorldAPI.Extensions
             };
         }
 
-        public static async Task<UserResponse> ToResponseAsync(this User user, IIdentityService identityService)
+        public static async Task<UserResponse> ToResponseAsync(this User user, IIdentityService identityService, IUriService uriService)
         {
             return new UserResponse
             {
@@ -189,7 +191,7 @@ namespace HelloWorldAPI.Extensions
                 Discussions = user.Discussions.Select(x => x.ToPartialResponse()).ToList(),
                 Email = user.Email,
                 Id = user.Id,
-                Posts = user.Posts.Select(x => x.ToPartialResponse()).ToList(),
+                Posts = user.Posts.Select(x => x.ToPartialResponse(uriService)).ToList(),
                 Projects = user.Projects.Select(x => x.ToPartialResponse()).ToList(),
                 Roles = await identityService.GetAllRolesOfUserAsync(user),
                 Tags = user.Tags.Select(x => x.ToResponse()).ToList(),

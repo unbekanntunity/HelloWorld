@@ -1,0 +1,52 @@
+.tagSection-tags {
+    display: flex;
+}
+
+.imageSection-deleteAll{
+    display: flex;
+    justify-content: end;
+    width: 100%;
+}
+
+.imageSection-toggle {
+    margin-left: 5px;
+}
+
+.imageSection-input {
+    display: none;
+}
+
+.imageSection-images {
+    display: flex;
+    align-items: center;
+    overflow: auto;
+    overflow-y: hidden;
+}
+
+.imageSection-image {
+    border: 1px solid black;
+    margin-right: 10px;
+    height: 40px;
+}
+
+.imageSection-deleteOn {
+    padding: 5px;
+    border-radius: 100%;
+    background-color: rgba(0, 0, 0, .2);
+}
+
+.imageSection-deleteOff {
+    padding: 5px;
+    border: none;
+    background-color: white;
+}
+
+.imageSection-image-delete {
+    position: relative;
+    top: -38px;
+    right: -2px;
+    width: 10px;
+    height: 10px;
+    z-index: 2;
+    border: 1px solid black;
+}

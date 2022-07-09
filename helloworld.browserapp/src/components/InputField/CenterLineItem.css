@@ -1,0 +1,22 @@
+.centerLineItem-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.centerLineItem-container:hover {
+    cursor: pointer;
+}
+
+.centerLineItem-container:active {
+    background-color: rgba(0, 0, 0, .1);
+}
+
+.centerLineItem-texts {
+    margin-left: 10px;
+    width: 100%;
+}
+
+.centerLineItem-header {
+    font-size: 15px;
+}

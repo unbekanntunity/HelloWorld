@@ -36,6 +36,15 @@ namespace HelloWorldAPI.Installers
             services.AddScoped<ICommentService, CommentService>();
             services.AddScoped<IReplyService, ReplyService>();
             services.AddScoped(typeof(IRateableService<>), typeof(RateableService<>));
+
+            services.AddSingleton<IFileManager>(provider =>
+            {
+                var accessor = provider.GetRequiredService<IHttpContextAccessor>();
+                var request = accessor.HttpContext.Request;
+                var absoluteUri = string.Concat(request.Scheme, "://", request.Host.ToUriComponent(), "/");
+                return new FileManager(Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..\\..\\..\\", "\\Data\\Images")) 
+                    ,absoluteUri);
+            });
         }
     }
 }

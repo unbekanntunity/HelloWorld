@@ -39,13 +39,13 @@ namespace HelloWorldAPI.Controllers.V1
                 Title = request.Title,
             };
 
-            var result = await _postService.CreateAsync(post, request.TagNames);
+            var result = await _postService.CreateAsync(post, request.TagNames, request.RawImages);
             if (!result.Success)
             {
                 return BadRequest(result.Data);
             }
 
-            var response = result.Data.ToResponse();
+            var response = result.Data.ToResponse(_uriService);
             var loaction = _uriService.GetUri(ApiRoutes.Post.Get, result.Data.Id.ToString());
             return Created(loaction, new Response<PostResponse>(response));
         }
@@ -78,7 +78,7 @@ namespace HelloWorldAPI.Controllers.V1
                 return NotFound();
             }
 
-            var response = post.ToResponse();
+            var response = post.ToResponse(_uriService);
             return Ok(new Response<PostResponse>(response));
         }
 
@@ -118,7 +118,7 @@ namespace HelloWorldAPI.Controllers.V1
                 return BadRequest(result);
             }
 
-            var response = result.Data.ToResponse();
+            var response = result.Data.ToResponse(_uriService);
             return Ok(new Response<PostResponse>(response));
         }
 
@@ -133,7 +133,7 @@ namespace HelloWorldAPI.Controllers.V1
             }
 
             var result = await _rateableService.UpdateRatingAsync(post, user);
-            var response = result.Data.ToResponse();
+            var response = result.Data.ToResponse(_uriService);
             return Ok(new Response<PostResponse>(response));
         }
     }

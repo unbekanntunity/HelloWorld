@@ -1,14 +1,16 @@
 ﻿using HelloWorldAPI.Domain.Database;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Principal;
 
 namespace HelloWorldAPI.Data
 {
     public class DataContext : IdentityDbContext
     {
         public DbSet<Article> Articles { get; set; }
-        public DbSet<Discussion> Discussions { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<Discussion> Discussions { get; set; }
+        public DbSet<ImagePath> ImageUrls { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<Message> Messages { get; set; }
@@ -72,6 +74,10 @@ namespace HelloWorldAPI.Data
                 .HasMany(x => x.Comments)
                 .WithOne(x => x.Post)
                 .HasForeignKey(x => x.PostId);
+
+            modelBuilder.Entity<Post>()
+                .HasMany(x => x.ImagePaths)
+                .WithOne();
 
             modelBuilder.Entity<Project>()
                 .HasMany(x => x.Tags)

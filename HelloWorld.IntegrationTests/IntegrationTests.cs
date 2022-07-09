@@ -1,8 +1,8 @@
-﻿using HelloWorldAPI;
-using HelloWorldAPI.Contracts.V1;
-using HelloWorldAPI.Contracts.V1.Requests;
-using HelloWorldAPI.Contracts.V1.Responses;
-using HelloWorldAPI.Data;
+﻿using API;
+using API.Contracts.V1;
+using API.Contracts.V1.Requests;
+using API.Contracts.V1.Responses;
+using API.Data;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;

@@ -12,15 +12,17 @@ namespace HelloWorldAPI.Services
         private readonly IPostRepository _postRepository;
         private readonly ITagService _tagService;
         private readonly INonQueryRepository<Post> _nonQueryRepository;
+        private readonly IFileManager _fileManager;
 
-        public PostService(IPostRepository postRepository, INonQueryRepository<Post> nonQueryRepository, ITagService tagService)
+        public PostService(IPostRepository postRepository, INonQueryRepository<Post> nonQueryRepository, ITagService tagService, IFileManager fileManager)
         {
             _postRepository = postRepository;
             _nonQueryRepository = nonQueryRepository;
             _tagService = tagService;
+            _fileManager = fileManager;
         }
 
-        public async Task<Result<Post>> CreateAsync(Post post, IEnumerable<string> newTags)
+        public async Task<Result<Post>> CreateAsync(Post post, IEnumerable<string> newTags, IEnumerable<IFormFile> images)
         {
             post.CreatedAt = DateTime.UtcNow;
             post.UpdatedAt = DateTime.UtcNow;
@@ -33,6 +35,14 @@ namespace HelloWorldAPI.Services
                     Success = true,
                     Data = post
                 };
+            }
+
+            foreach (var image in images)
+            {
+                post.ImagePaths.Add(new ImagePath
+                {
+                    Url = await _fileManager.SaveImageAsync(post.CreatorId, image)
+                });
             }
 
             var result = await _nonQueryRepository.CreateAsync(post);

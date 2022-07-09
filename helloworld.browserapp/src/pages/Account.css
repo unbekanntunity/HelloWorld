@@ -1,0 +1,35 @@
+.account-profile-section {
+    display: flex;
+    background-color: #D4D7D9;
+    padding: 20px 0px;
+    justify-content: space-evenly;
+    border-bottom: 3px solid #FF9900;
+}
+
+.account-pic-name{
+    text-align: center;
+}
+
+.account-name {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.account-description {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.account-description-container{
+    max-width: 500px;
+}
+
+.account-items{
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+}
+
+.account-item{
+    margin-bottom: 15px;
+}

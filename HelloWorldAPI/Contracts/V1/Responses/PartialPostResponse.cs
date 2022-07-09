@@ -7,10 +7,12 @@
         public string Title { get; set; }
         public string Content { get; set; }
 
-        public string CreatorId { get; set; }
+        public List<string> ImageUrls { get; set; }
 
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+
+        public string CreatorId { get; set; }
 
         public int UserLiked { get; set; }
         public int Comments { get; set; }

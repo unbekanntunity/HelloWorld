@@ -1,0 +1,104 @@
+.dialog-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0px;
+    height: 100%;
+    width: 100%;
+
+    z-index: 1;
+}
+
+.background {
+    height: 100%;
+    width: 100%;
+    background-color: #3A3A3A;
+    opacity: 0.3;
+}
+
+.dialog {
+    position: absolute;
+    background-color: white;
+    opacity: 1;
+    border-radius: 20px;
+}
+
+.dialog-header {
+    display: inline-flex;
+    width: 100%;
+    min-height: 42px;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 10px;
+    border-bottom: 2px solid #FF7A00;
+}
+
+.dialog-text {
+    margin: 0;
+}
+
+.title-container{
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    z-index: 0;
+}
+
+
+.report-dialog-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0px;
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+}
+
+.report-item {
+    padding: 5px 20px;
+    border-bottom: 1px solid black;
+}
+
+.report-item-text {
+    margin: 0px;
+}
+
+.clickable:active {
+    background-color: rgba(0, 0, 0, .1);
+}
+
+.reportDialog-creatorImage-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.report-otheractions-container{
+    display: flex;
+    flex-direction: column;
+    margin: 10px 0px 20px 0px;
+    height: 50px;
+    justify-content: space-between;
+}
+
+.report-otheractions-text{
+    color: red;
+    font-size: 13px;
+}
+
+.report-otheractions-text:hover{
+    cursor: pointer;
+}
+
+.report-close-container {
+    display: flex;
+    justify-content: center;
+}
+
+.report-confirmation{
+    margin-top: 20px;
+}

@@ -284,7 +284,19 @@ namespace HelloWorldAPI.Services
         { 
             var user = await _userManager.FindByNameAsync(userName);
             return user?.Id;
-        }   
+        }
+
+        public async Task<User> GetUserByTokenAsync(string token)
+        {
+            var principal = GetPrincipal(token);
+            if(principal == null)
+            {
+                return null;
+            }
+
+            var userId = principal.Claims.FirstOrDefault(x => x.Type == "id").Value;
+            return await _userManager.FindByIdAsync(userId);
+        }
 
         public async Task<List<User>> GetUsersAsync(GetAllUserFilter filter = null, PaginationFilter pagination = null)
         {

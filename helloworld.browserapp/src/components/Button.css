@@ -1,0 +1,25 @@
+.button {
+    border: none;
+    background-color: #FFB30B;
+    color: white;
+    border-radius: 20px;
+    padding: 5px 20px;
+    font-weight: bold;
+    box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.4);
+}
+
+.button:active {
+    background-color: #E8A002;
+}
+
+.round-button {
+    border: none;
+    color: white;
+    background-color: #FFB30B;
+    border-radius: 100%;
+    box-shadow: -0px 2px 2px 1px rgba(0, 0, 0, 0.2);
+}
+
+.round-icon {
+    filter: invert(100%);
+}

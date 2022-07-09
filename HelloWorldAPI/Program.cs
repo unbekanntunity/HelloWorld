@@ -11,9 +11,9 @@ namespace HelloWorldAPI
     {
         public static async Task Main(string[] args)
         {
-
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.InstallServicesInAssembly(builder.Configuration);
+
 
             var app = builder.Build();
 
@@ -36,6 +36,8 @@ namespace HelloWorldAPI
 
             var swaggerOptions = new SwaggerOptions();
             app.Configuration.GetSection(nameof(SwaggerOptions)).Bind(swaggerOptions);
+
+            app.UseCors("allowedOrigins");
 
             var redisOptions = new RedisCacheSettings();
             app.Configuration.GetSection(nameof(RedisCacheSettings)).Bind(redisOptions);

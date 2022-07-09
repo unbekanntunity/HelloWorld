@@ -1,0 +1,12 @@
+
+.top-banner-container {
+    display: flex;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+}
+
+.top-banner-item {
+    margin: 5px 10px;
+    cursor: pointer;
+}

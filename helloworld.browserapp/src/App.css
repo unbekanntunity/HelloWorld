@@ -1,4 +1,81 @@
 html, body, #root, #root > div {
-    height: 100%;
+    height: min-content;
+    min-height: 100vh;
     margin: 0;
+}
+
+.toastContainer{
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+    z-index: 10;
+}
+
+.actionMenu {
+    position: fixed;
+    right: 70px;
+    bottom: 60px;
+    display: flex;
+    width: 100%;
+    align-items: flex-end;
+    justify-content: flex-end;
+}
+
+.dialog-container {
+    position: fixed;
+    top: 0px;
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+}
+
+.page-body {
+    height: 100%;
+    width: 100%;
+    min-height: 90vh;
+}
+
+.bold-gray-date {
+    color: #646C65;
+    font-weight: bold;
+    font-size: 10px;
+}
+
+.description-container {
+    margin: 20px 0px 20px 40px;
+    line-height: 20px;
+    font-size: 14px;
+}
+
+.create-multi-container {
+    margin-top: 15px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: revert;
+    margin-bottom: revert;
+}
+
+.section-header-text {
+    font-size: 12px;
+    font-weight: bold;
+    margin-top: revert;
+    margin-bottom: revert;
+}
+
+
+.section-header{
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    margin-top: 10px;
+    height: 34px;
+}
+
+.center{
+    display: flex;
+    justify-content: center;
+}
+
+.flex{
+    display: flex;
 }

@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HelloWorldAPI.Controllers.V1
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ArticleController : Controller
     {
         private readonly IArticleService _articleService;

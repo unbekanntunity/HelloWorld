@@ -17,7 +17,7 @@ namespace HelloWorldAPI.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.4")
+                .HasAnnotation("ProductVersion", "6.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -34,7 +34,7 @@ namespace HelloWorldAPI.Data.Migrations
 
                     b.HasIndex("UserLikedId");
 
-                    b.ToTable("ArticleUser");
+                    b.ToTable("ArticleUser", (string)null);
                 });
 
             modelBuilder.Entity("CommentUser", b =>
@@ -49,7 +49,7 @@ namespace HelloWorldAPI.Data.Migrations
 
                     b.HasIndex("UserLikedId");
 
-                    b.ToTable("CommentUser");
+                    b.ToTable("CommentUser", (string)null);
                 });
 
             modelBuilder.Entity("DiscussionTag", b =>
@@ -64,7 +64,7 @@ namespace HelloWorldAPI.Data.Migrations
 
                     b.HasIndex("TagsName");
 
-                    b.ToTable("DiscussionTag");
+                    b.ToTable("DiscussionTag", (string)null);
                 });
 
             modelBuilder.Entity("HelloWorldAPI.Domain.Database.Article", b =>
@@ -96,7 +96,7 @@ namespace HelloWorldAPI.Data.Migrations
 
                     b.HasIndex("DiscussionId");
 
-                    b.ToTable("Articles");
+                    b.ToTable("Articles", (string)null);
                 });
 
             modelBuilder.Entity("HelloWorldAPI.Domain.Database.Comment", b =>
@@ -128,7 +128,7 @@ namespace HelloWorldAPI.Data.Migrations
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("Comments");
+                    b.ToTable("Comments", (string)null);
                 });
 
             modelBuilder.Entity("HelloWorldAPI.Domain.Database.Discussion", b =>
@@ -159,7 +159,27 @@ namespace HelloWorldAPI.Data.Migrations
 
                     b.HasIndex("CreatorId");
 
-                    b.ToTable("Discussions");
+                    b.ToTable("Discussions", (string)null);
+                });
+
+            modelBuilder.Entity("HelloWorldAPI.Domain.Database.ImagePath", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("PostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("ImageUrls", (string)null);
                 });
 
             modelBuilder.Entity("HelloWorldAPI.Domain.Database.Message", b =>
@@ -186,7 +206,7 @@ namespace HelloWorldAPI.Data.Migrations
 
                     b.HasIndex("CreatorId");
 
-                    b.ToTable("Messages");
+                    b.ToTable("Messages", (string)null);
                 });
 
             modelBuilder.Entity("HelloWorldAPI.Domain.Database.Post", b =>
@@ -217,7 +237,7 @@ namespace HelloWorldAPI.Data.Migrations
 
                     b.HasIndex("CreatorId");
 
-                    b.ToTable("Posts");
+                    b.ToTable("Posts", (string)null);
                 });
 
             modelBuilder.Entity("HelloWorldAPI.Domain.Database.Project", b =>
@@ -248,7 +268,7 @@ namespace HelloWorldAPI.Data.Migrations
 
                     b.HasIndex("CreatorId");
 
-                    b.ToTable("Projects");
+                    b.ToTable("Projects", (string)null);
                 });
 
             modelBuilder.Entity("HelloWorldAPI.Domain.Database.RefreshToken", b =>
@@ -281,7 +301,7 @@ namespace HelloWorldAPI.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshTokens");
+                    b.ToTable("RefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("HelloWorldAPI.Domain.Database.Reply", b =>
@@ -323,7 +343,7 @@ namespace HelloWorldAPI.Data.Migrations
 
                     b.HasIndex("RepliedOnReplyId");
 
-                    b.ToTable("Replies");
+                    b.ToTable("Replies", (string)null);
                 });
 
             modelBuilder.Entity("HelloWorldAPI.Domain.Database.Tag", b =>
@@ -333,7 +353,7 @@ namespace HelloWorldAPI.Data.Migrations
 
                     b.HasKey("Name");
 
-                    b.ToTable("Tags");
+                    b.ToTable("Tags", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -556,7 +576,7 @@ namespace HelloWorldAPI.Data.Migrations
 
                     b.HasIndex("TagsName");
 
-                    b.ToTable("PostTag");
+                    b.ToTable("PostTag", (string)null);
                 });
 
             modelBuilder.Entity("PostUser", b =>
@@ -571,7 +591,7 @@ namespace HelloWorldAPI.Data.Migrations
 
                     b.HasIndex("UserLikedId");
 
-                    b.ToTable("PostUser");
+                    b.ToTable("PostUser", (string)null);
                 });
 
             modelBuilder.Entity("ProjectTag", b =>
@@ -586,7 +606,7 @@ namespace HelloWorldAPI.Data.Migrations
 
                     b.HasIndex("TagsName");
 
-                    b.ToTable("ProjectTag");
+                    b.ToTable("ProjectTag", (string)null);
                 });
 
             modelBuilder.Entity("ProjectUser", b =>
@@ -601,7 +621,7 @@ namespace HelloWorldAPI.Data.Migrations
 
                     b.HasIndex("UserLikedId");
 
-                    b.ToTable("ProjectUser");
+                    b.ToTable("ProjectUser", (string)null);
                 });
 
             modelBuilder.Entity("ProjectUser1", b =>
@@ -616,7 +636,7 @@ namespace HelloWorldAPI.Data.Migrations
 
                     b.HasIndex("ProjectsJoinedId");
 
-                    b.ToTable("ProjectUser1");
+                    b.ToTable("ProjectUser1", (string)null);
                 });
 
             modelBuilder.Entity("ReplyUser", b =>
@@ -631,7 +651,7 @@ namespace HelloWorldAPI.Data.Migrations
 
                     b.HasIndex("UserLikedId");
 
-                    b.ToTable("ReplyUser");
+                    b.ToTable("ReplyUser", (string)null);
                 });
 
             modelBuilder.Entity("TagUser", b =>
@@ -646,7 +666,7 @@ namespace HelloWorldAPI.Data.Migrations
 
                     b.HasIndex("UsersId");
 
-                    b.ToTable("TagUser");
+                    b.ToTable("TagUser", (string)null);
                 });
 
             modelBuilder.Entity("HelloWorldAPI.Domain.Database.User", b =>
@@ -762,6 +782,13 @@ namespace HelloWorldAPI.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Creator");
+                });
+
+            modelBuilder.Entity("HelloWorldAPI.Domain.Database.ImagePath", b =>
+                {
+                    b.HasOne("HelloWorldAPI.Domain.Database.Post", null)
+                        .WithMany("ImagePaths")
+                        .HasForeignKey("PostId");
                 });
 
             modelBuilder.Entity("HelloWorldAPI.Domain.Database.Message", b =>
@@ -1023,6 +1050,8 @@ namespace HelloWorldAPI.Data.Migrations
             modelBuilder.Entity("HelloWorldAPI.Domain.Database.Post", b =>
                 {
                     b.Navigation("Comments");
+
+                    b.Navigation("ImagePaths");
                 });
 
             modelBuilder.Entity("HelloWorldAPI.Domain.Database.Reply", b =>

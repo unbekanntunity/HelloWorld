@@ -1,0 +1,32 @@
+.twoLineItem-container {
+    display: flex;
+
+}
+
+.twoLineItem-container:hover {
+    cursor: pointer;
+}
+
+.twoLineItem-container:active {
+    background-color: rgba(0, 0, 0, .1);
+}
+
+.twoLineItem-texts {
+    margin-left: 10px;
+    width: 100%;
+}
+
+.twoLineItem-header {
+    font-weight: bold;
+    font-size: 15px;
+    margin-bottom: 0px;
+}
+
+.twoLineItem-text {
+    font-size: 13px;
+}
+
+.twoLineItem-sideNote {
+    align-self: center;
+    font-size: 10px;
+}

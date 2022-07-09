@@ -1,9 +1,9 @@
-﻿using FluentAssertions;
-using HelloWorldAPI.Contracts.V1;
-using HelloWorldAPI.Contracts.V1.Requests;
-using HelloWorldAPI.Contracts.V1.Responses;
-using HelloWorldAPI.Domain.Filters;
-using HelloWorldAPI.Extensions;
+﻿using API.Contracts.V1;
+using API.Contracts.V1.Requests;
+using API.Contracts.V1.Responses;
+using API.Domain.Filters;
+using API.Extensions;
+using FluentAssertions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +24,7 @@ namespace HelloWorld.IntegrationTests
             var response = await TestClient.PostAsJsonAsync(ApiRoutes.Project.Create, new CreateProjectRequest
             {
                 Title = "HelloWorld",
-                Desciption = "New Project here",
+                Description = "New Project here",
                 MembersIds = new List<string>(),
                 TagNames = new List<string>()
             });
@@ -47,7 +47,7 @@ namespace HelloWorld.IntegrationTests
             var response = await TestClient.PostAsJsonAsync(ApiRoutes.Project.Create, new CreateProjectRequest
             {
                 Title = title,
-                Desciption = description,
+                Description = description,
                 MembersIds = new List<string>(),
                 TagNames = tagNames,
             });
@@ -59,7 +59,7 @@ namespace HelloWorld.IntegrationTests
 
             var returnedProject = await response.Content.ReadAsAsync<Response<ProjectResponse>>();
             returnedProject.Data.Title.Should().Be(title);
-            returnedProject.Data.Desciption.Should().Be(description);
+            returnedProject.Data.Description.Should().Be(description);
             returnedProject.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(tagNames);
             returnedProject.Data.CreatedAt.Day.Should().Be(DateTime.UtcNow.Day);
             returnedProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
@@ -69,7 +69,7 @@ namespace HelloWorld.IntegrationTests
 
             var doubleCheckProject = await doubleCheck.Content.ReadAsAsync<Response<ProjectResponse>>();
             doubleCheckProject.Data.Title.Should().Be(title);
-            doubleCheckProject.Data.Desciption.Should().Be(description);
+            doubleCheckProject.Data.Description.Should().Be(description);
             doubleCheckProject.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(tagNames);
             doubleCheckProject.Data.CreatedAt.Day.Should().Be(DateTime.UtcNow.Day);
             doubleCheckProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
@@ -89,7 +89,7 @@ namespace HelloWorld.IntegrationTests
             var response = await TestClient.PostAsJsonAsync(ApiRoutes.Project.Create, new CreateProjectRequest
             {
                 Title = title,
-                Desciption = description,
+                Description = description,
                 MembersIds = new List<string>(),
                 TagNames = tagNames,
             });
@@ -99,7 +99,7 @@ namespace HelloWorld.IntegrationTests
 
             var returnedProject = await response.Content.ReadAsAsync<Response<ProjectResponse>>();
             returnedProject.Data.Title.Should().Be(title);
-            returnedProject.Data.Desciption.Should().Be(description);
+            returnedProject.Data.Description.Should().Be(description);
             returnedProject.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(tagNames.Distinct());
             returnedProject.Data.CreatedAt.Day.Should().Be(DateTime.UtcNow.Day);
             returnedProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
@@ -109,7 +109,7 @@ namespace HelloWorld.IntegrationTests
 
             var doubleCheckProject = await doubleCheck.Content.ReadAsAsync<Response<ProjectResponse>>();
             doubleCheckProject.Data.Title.Should().Be(title);
-            doubleCheckProject.Data.Desciption.Should().Be(description);
+            doubleCheckProject.Data.Description.Should().Be(description);
             doubleCheckProject.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(tagNames.Distinct());
             doubleCheckProject.Data.CreatedAt.Day.Should().Be(DateTime.UtcNow.Day);
             doubleCheckProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
@@ -127,7 +127,7 @@ namespace HelloWorld.IntegrationTests
             var createedDiscussion = await CreateProjectAsnyc(new CreateProjectRequest
             {
                 Title = "HelloWorld2",
-                Desciption = "Another new project",
+                Description = "Another new project",
                 MembersIds = new List<string>(),
                 TagNames = new List<string>() { "Tags" }
             });
@@ -138,7 +138,7 @@ namespace HelloWorld.IntegrationTests
             var response = await TestClient.PostAsJsonAsync(ApiRoutes.Project.Create, new CreateProjectRequest
             {
                 Title = title,
-                Desciption = description,
+                Description = description,
                 MembersIds = new List<string>(),
                 TagNames = tagNames,
             });
@@ -148,7 +148,7 @@ namespace HelloWorld.IntegrationTests
 
             var returnedProject = await response.Content.ReadAsAsync<Response<ProjectResponse>>();
             returnedProject.Data.Title.Should().Be(title);
-            returnedProject.Data.Desciption.Should().Be(description);
+            returnedProject.Data.Description.Should().Be(description);
             returnedProject.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(tagNames.Distinct());
             returnedProject.Data.CreatedAt.Day.Should().Be(DateTime.UtcNow.Day);
             returnedProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
@@ -158,7 +158,7 @@ namespace HelloWorld.IntegrationTests
 
             var doubleCheckProject = await doubleCheck.Content.ReadAsAsync<Response<ProjectResponse>>();
             doubleCheckProject.Data.Title.Should().Be(title);
-            doubleCheckProject.Data.Desciption.Should().Be(description);
+            doubleCheckProject.Data.Description.Should().Be(description);
             doubleCheckProject.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(tagNames.Distinct());
             doubleCheckProject.Data.CreatedAt.Day.Should().Be(DateTime.UtcNow.Day);
             doubleCheckProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
@@ -171,7 +171,7 @@ namespace HelloWorld.IntegrationTests
             var createdProject = await CreateProjectAsnyc(new CreateProjectRequest
             {
                 Title = "HelloWorld",
-                Desciption = "New project here",
+                Description = "New project here",
                 MembersIds = new List<string>(),
                 TagNames = new List<string>()
             });
@@ -190,7 +190,7 @@ namespace HelloWorld.IntegrationTests
             var createdProject = await CreateProjectAsnyc(new CreateProjectRequest
             {
                 Title = "HelloWorld",
-                Desciption = "New project here",
+                Description = "New project here",
                 MembersIds = new List<string>(),
                 TagNames = new List<string>()
             });
@@ -211,7 +211,7 @@ namespace HelloWorld.IntegrationTests
             var createdProject = await CreateProjectAsnyc(new CreateProjectRequest
             {
                 Title = "HelloWorld",
-                Desciption = "New project here",
+                Description = "New project here",
                 MembersIds = new List<string>(),
                 TagNames = new List<string>()
             });
@@ -235,7 +235,7 @@ namespace HelloWorld.IntegrationTests
             var createdProject = await CreateProjectAsnyc(new CreateProjectRequest
             {
                 Title = "HelloWorld",
-                Desciption = "New project here",
+                Description = "New project here",
                 MembersIds = new List<string>(),
                 TagNames = new List<string>()
             });
@@ -272,7 +272,7 @@ namespace HelloWorld.IntegrationTests
             var createdProject = await CreateProjectAsnyc(new CreateProjectRequest
             {
                 Title = "HelloWorld",
-                Desciption = "New Project here",
+                Description = "New Project here",
                 MembersIds = new List<string>(),
                 TagNames = new List<string>()
             });
@@ -307,7 +307,7 @@ namespace HelloWorld.IntegrationTests
             var createdProject = await CreateProjectAsnyc(new CreateProjectRequest
             {
                 Title = title,
-                Desciption = description,
+                Description = description,
                 MembersIds = new List<string>(),
                 TagNames = new List<string>()
             });
@@ -322,7 +322,7 @@ namespace HelloWorld.IntegrationTests
 
             var returnedProject = await response.Content.ReadAsAsync<Response<ProjectResponse>>();
             returnedProject.Data.Title.Should().Be(title);
-            returnedProject.Data.Desciption.Should().Be(description);
+            returnedProject.Data.Description.Should().Be(description);
         }
 
         [Fact]
@@ -363,7 +363,7 @@ namespace HelloWorld.IntegrationTests
             var createdProjectOne = await CreateProjectAsnyc(new CreateProjectRequest
             {
                 Title = title,
-                Desciption = description,
+                Description = description,
                 MembersIds = new List<string>(),
                 TagNames = tagNames
             });
@@ -371,7 +371,7 @@ namespace HelloWorld.IntegrationTests
             await CreateProjectAsnyc(new CreateProjectRequest
             {
                 Title = "HelloWorld2",
-                Desciption = "New project here",
+                Description = "New project here",
                 MembersIds = new List<string>(),
                 TagNames = new List<string>()
             });
@@ -425,7 +425,7 @@ namespace HelloWorld.IntegrationTests
                 await CreateProjectAsnyc(new CreateProjectRequest
                 {
                     Title = "HelloWorld2",
-                    Desciption = "New project here",
+                    Description = "New project here",
                     MembersIds = new List<string>(),
                     TagNames = new List<string>()
                 });
@@ -460,7 +460,7 @@ namespace HelloWorld.IntegrationTests
             var createdProject = await CreateProjectAsnyc(new CreateProjectRequest
             {
                 Title = "HelloWorld",
-                Desciption = "New Project here",
+                Description = "New Project here",
                 MembersIds = new List<string>(),
                 TagNames = new List<string>()
             });
@@ -469,7 +469,7 @@ namespace HelloWorld.IntegrationTests
             var response = await TestClient.PatchAsync(ApiRoutes.Project.Update.Replace("{id}", createdProject.Id.ToString()),
                 JsonContent.Create(new UpdateProjectRequest
                 {
-                    Desciption = "Test",
+                    Description = "Test",
                     MemberIds = new List<string>(),
                     Tags = new List<string>(),
                     Title = "Test"
@@ -486,7 +486,7 @@ namespace HelloWorld.IntegrationTests
             var createdProject = await CreateProjectAsnyc(new CreateProjectRequest
             {
                 Title = "HelloWorld",
-                Desciption = "New Project here",
+                Description = "New Project here",
                 MembersIds = new List<string>(),
                 TagNames = new List<string>()
             });
@@ -497,7 +497,7 @@ namespace HelloWorld.IntegrationTests
             var response = await TestClient.PatchAsync(ApiRoutes.Project.Update.Replace("{id}", createdProject.Id.ToString()),
                 JsonContent.Create(new UpdateProjectRequest
                 {
-                    Desciption = "Test",
+                    Description = "Test",
                     MemberIds = new List<string>(),
                     Tags = new List<string>(),
                     Title = "Test"
@@ -514,7 +514,7 @@ namespace HelloWorld.IntegrationTests
             var createdProject = await CreateProjectAsnyc(new CreateProjectRequest
             {
                 Title = "HelloWorld",
-                Desciption = "New project here",
+                Description = "New project here",
                 MembersIds = new List<string>(),
                 TagNames = new List<string>()
             });
@@ -525,7 +525,7 @@ namespace HelloWorld.IntegrationTests
             var response = await TestClient.PatchAsync(ApiRoutes.Project.Update.Replace("{id}", createdProject.Id.ToString()),
                 JsonContent.Create(new UpdateProjectRequest
                 {
-                    Desciption = "Test",
+                    Description = "Test",
                     MemberIds = new List<string>(),
                     Tags = new List<string>(),
                     Title = "Test"
@@ -545,7 +545,7 @@ namespace HelloWorld.IntegrationTests
             var response = await TestClient.PatchAsync(ApiRoutes.Project.Update.Replace("{id}", Guid.Empty.ToString()),
                 JsonContent.Create(new UpdateProjectRequest
                 {
-                    Desciption = "Test",
+                    Description = "Test",
                     MemberIds = new List<string>(),
                     Tags = new List<string>(),
                     Title = "Test"
@@ -569,7 +569,7 @@ namespace HelloWorld.IntegrationTests
             var createdProject = await CreateProjectAsnyc(new CreateProjectRequest
             {
                 Title = "HelloWorld",
-                Desciption = "New Project here",
+                Description = "New Project here",
                 MembersIds = new List<string>(),
                 TagNames = new List<string>()
             });
@@ -581,7 +581,7 @@ namespace HelloWorld.IntegrationTests
                 JsonContent.Create(new UpdateProjectRequest
                 {
                     MemberIds = newMembers,
-                    Desciption = newDescription,
+                    Description = newDescription,
                     Tags = newTags,
                     Title = newTitle
                 }));
@@ -591,7 +591,7 @@ namespace HelloWorld.IntegrationTests
 
             var returnedProject = await response.Content.ReadAsAsync<Response<ProjectResponse>>();
             returnedProject.Data.Title.Should().Be(newTitle);
-            returnedProject.Data.Desciption.Should().Be(newDescription);
+            returnedProject.Data.Description.Should().Be(newDescription);
             returnedProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
             returnedProject.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(newTags);
 
@@ -600,7 +600,7 @@ namespace HelloWorld.IntegrationTests
 
             var doubleCheckProject = await doubleCheck.Content.ReadAsAsync<Response<ProjectResponse>>();
             doubleCheckProject.Data.Title.Should().Be(newTitle);
-            doubleCheckProject.Data.Desciption.Should().Be(newDescription);
+            doubleCheckProject.Data.Description.Should().Be(newDescription);
             doubleCheckProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
             doubleCheckProject.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(newTags);
         }
@@ -619,7 +619,7 @@ namespace HelloWorld.IntegrationTests
             var createdProject = await CreateProjectAsnyc(new CreateProjectRequest
             {
                 Title = "HelloWorld",
-                Desciption = "New Project here",
+                Description = "New Project here",
                 MembersIds = new List<string>(),
                 TagNames = new List<string>()
             });
@@ -631,7 +631,7 @@ namespace HelloWorld.IntegrationTests
                 JsonContent.Create(new UpdateProjectRequest
                 {
                     MemberIds = newMembers,
-                    Desciption = newDescription,
+                    Description = newDescription,
                     Tags = newTags,
                     Title = newTitle
                 }));
@@ -641,7 +641,7 @@ namespace HelloWorld.IntegrationTests
 
             var returnedProject = await response.Content.ReadAsAsync<Response<ProjectResponse>>();
             returnedProject.Data.Title.Should().Be(newTitle);
-            returnedProject.Data.Desciption.Should().Be(newDescription);
+            returnedProject.Data.Description.Should().Be(newDescription);
             returnedProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
             returnedProject.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(newTags.Distinct());
 
@@ -650,7 +650,7 @@ namespace HelloWorld.IntegrationTests
 
             var doubleCheckProject = await doubleCheck.Content.ReadAsAsync<Response<ProjectResponse>>();
             doubleCheckProject.Data.Title.Should().Be(newTitle);
-            doubleCheckProject.Data.Desciption.Should().Be(newDescription);
+            doubleCheckProject.Data.Description.Should().Be(newDescription);
             doubleCheckProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
             doubleCheckProject.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(newTags.Distinct());
         }
@@ -669,7 +669,7 @@ namespace HelloWorld.IntegrationTests
             var createdProject = await CreateProjectAsnyc(new CreateProjectRequest
             {
                 Title = "HelloWorld",
-                Desciption = "New Project here",
+                Description = "New Project here",
                 MembersIds = new List<string>(),
                 TagNames = new List<string>()
             });
@@ -677,7 +677,7 @@ namespace HelloWorld.IntegrationTests
             await CreateProjectAsnyc(new CreateProjectRequest
             {
                 Title = "HelloWorld",
-                Desciption = "New Project here",
+                Description = "New Project here",
                 MembersIds = new List<string>(),
                 TagNames = new List<string>() { "Tag" }
             });
@@ -689,7 +689,7 @@ namespace HelloWorld.IntegrationTests
                 JsonContent.Create(new UpdateProjectRequest
                 {
                     MemberIds = newMembers,
-                    Desciption = newDescription,
+                    Description = newDescription,
                     Tags = newTags,
                     Title = newTitle
                 }));
@@ -699,7 +699,7 @@ namespace HelloWorld.IntegrationTests
 
             var returnedProject = await response.Content.ReadAsAsync<Response<ProjectResponse>>();
             returnedProject.Data.Title.Should().Be(newTitle);
-            returnedProject.Data.Desciption.Should().Be(newDescription);
+            returnedProject.Data.Description.Should().Be(newDescription);
             returnedProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
             returnedProject.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(newTags);
 
@@ -708,7 +708,7 @@ namespace HelloWorld.IntegrationTests
 
             var doubleCheckProject = await doubleCheck.Content.ReadAsAsync<Response<ProjectResponse>>();
             doubleCheckProject.Data.Title.Should().Be(newTitle);
-            doubleCheckProject.Data.Desciption.Should().Be(newDescription);
+            doubleCheckProject.Data.Description.Should().Be(newDescription);
             doubleCheckProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
             doubleCheckProject.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(newTags);
         }
@@ -720,7 +720,7 @@ namespace HelloWorld.IntegrationTests
             var createdProject = await CreateProjectAsnyc(new CreateProjectRequest
             {
                 Title = "HelloWorld",
-                Desciption = "New Project here",
+                Description = "New Project here",
                 MembersIds = new List<string>(),
                 TagNames = new List<string>() { "Tag" }
             });
@@ -754,7 +754,7 @@ namespace HelloWorld.IntegrationTests
             var createdProject = await CreateProjectAsnyc(new CreateProjectRequest
             {
                 Title = "HelloWorld",
-                Desciption = "New Project here",
+                Description = "New Project here",
                 MembersIds = new List<string>(),
                 TagNames = new List<string>() { "Tag" }
             });
@@ -781,7 +781,7 @@ namespace HelloWorld.IntegrationTests
             var createdProject = await CreateProjectAsnyc(new CreateProjectRequest
             {
                 Title = "HelloWorld",
-                Desciption = "New Project here",
+                Description = "New Project here",
                 MembersIds = new List<string>() { GetUserId(token) },
                 TagNames = new List<string>() { "Tag" }
             });

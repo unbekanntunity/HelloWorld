@@ -28,5 +28,9 @@ namespace HelloWorldAPI.Services
         }
 
         public Uri GetUri(string rawRoute, string id) => new(_baseUri + rawRoute.Replace("{id}", id));
+
+        public string ConvertPathToUrl(string relativePath) => new Uri(_baseUri + relativePath).ToString();
+
+        public List<string> ConvertPathsToUrls(IEnumerable<string> relativePath) => relativePath.Select(x => new Uri(_baseUri + x).ToString()).ToList();
     }
 }

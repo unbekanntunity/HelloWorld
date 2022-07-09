@@ -1,0 +1,36 @@
+.discussion-container {
+    background-color: white;
+    padding: 20px;
+}
+
+.discussion-description-date {
+    color: #646C65;
+    font-weight: bold;
+    font-size: 10px;
+    margin-top: -5px;
+}
+
+.discussion-lastMessage-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.discussion-lastMessage {
+    display: flex;
+    align-items: baseline;
+    margin-left: 40px;
+    font-size: 12px;
+}
+
+.discussion-lastMessage-date {
+    color: #646C65;
+    font-weight: bold;
+    font-size: 10px;
+    margin-right: 20px;
+}
+
+.discussions-discussions{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}

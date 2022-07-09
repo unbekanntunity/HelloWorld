@@ -44,7 +44,7 @@ namespace HelloWorldAPI.Controllers.V1
                 return BadRequest(result.Errors);
             }
 
-            var userResponse = await result.Data.ToResponseAsync(_identityService);
+            var userResponse = await result.Data.ToResponseAsync(_identityService, _uriService);
             userResponse.Roles = await _identityService.GetAllRolesOfUserAsync(result.Data);
 
             var locationUri = _uriService.GetUri(ApiRoutes.Identity.Get, result.Data.Id.ToString());
@@ -78,21 +78,20 @@ namespace HelloWorldAPI.Controllers.V1
                 return NotFound();
             }
 
-            var userResponse = await user.ToResponseAsync(_identityService);
-            userResponse.Roles = await _identityService.GetAllRolesOfUserAsync(user);
+            var userResponse = await user.ToResponseAsync(_identityService, _uriService);
             return Ok(new Response<UserResponse>(userResponse));
         }
 
-        [HttpGet(ApiRoutes.Identity.GetIdByName)]
-        public async Task<IActionResult> GetIdByName([FromRoute] string userName)
+        [HttpGet(ApiRoutes.Identity.GetOwn)]
+        public async Task<IActionResult> GetOwn()
         {
-            var userId = await _identityService.GetIdByUserNameAsync(userName);
-            if (string.IsNullOrEmpty(userId))
+            var user = await _identityService.GetUserByIdAsync(HttpContext.GetUserId());
+            if(user == null)
             {
                 return NotFound();
             }
 
-            return Ok(new Response<string>(userId));
+            return Ok(new Response<UserResponse>(await user.ToResponseAsync(_identityService, _uriService)));
         }
 
         [HttpGet(ApiRoutes.Identity.GetAll)]
@@ -128,7 +127,7 @@ namespace HelloWorldAPI.Controllers.V1
                 return BadRequest(result);
             }
 
-            var userResponse = await existingUser.ToResponseAsync(_identityService);
+            var userResponse = await existingUser.ToResponseAsync(_identityService, _uriService);
             userResponse.Roles = await _identityService.GetAllRolesOfUserAsync(existingUser);
             return Ok(new Response<UserResponse>(userResponse));
         }

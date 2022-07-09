@@ -1,9 +1,9 @@
-﻿using FluentAssertions;
-using HelloWorldAPI.Contracts.V1;
-using HelloWorldAPI.Contracts.V1.Requests;
-using HelloWorldAPI.Contracts.V1.Responses;
-using HelloWorldAPI.Domain.Filters;
-using HelloWorldAPI.Extensions;
+﻿using API.Contracts.V1;
+using API.Contracts.V1.Requests;
+using API.Contracts.V1.Responses;
+using API.Domain.Filters;
+using API.Extensions;
+using FluentAssertions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +20,7 @@ namespace HelloWorld.IntegrationTests
         [Fact]
         public async Task Create_ReturnsUnAuthorized_WhenNoAccount()
         {
-            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Post.Create, new CreatePostRequest
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Post.Create, new API.Contracts.V1.Requests.CreatePostRequest
             {
                 Title = "Test",
                 Content = "Test",

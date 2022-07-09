@@ -1,0 +1,45 @@
+.posts-multi-label {
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: revert;
+    margin-top: revert;
+    margin-bottom: revert;
+}
+
+.posts-multi-container {
+    margin-top: 20px
+}
+
+.posts-button-container {
+    display: flex;
+    margin-top: 20px;
+    justify-content: center;
+}
+
+.posts-imageSection{
+    margin-top: 10px;
+}
+
+.posts-list{
+    margin: 20px 0px;
+    height: fit-content;
+}
+
+.posts-post-container{
+    margin: 20px 0px;
+    width: 400px;
+}
+
+.posts-grid {
+    display: grid;
+    grid-template-columns: minmax(0, auto) minmax(0, auto);
+    margin: 20px 0px;
+    height: fit-content;
+    gap: 50px;
+}
+
+.center-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}

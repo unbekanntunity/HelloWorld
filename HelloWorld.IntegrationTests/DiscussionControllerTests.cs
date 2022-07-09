@@ -1,12 +1,11 @@
-﻿using FluentAssertions;
-using HelloWorldAPI.Contracts.V1;
-using HelloWorldAPI.Contracts.V1.Requests;
-using HelloWorldAPI.Contracts.V1.Responses;
-using HelloWorldAPI.Domain.Filters;
-using HelloWorldAPI.Extensions;
+﻿using API.Contracts.V1;
+using API.Contracts.V1.Requests;
+using API.Contracts.V1.Responses;
+using API.Domain.Filters;
+using API.Extensions;
+using FluentAssertions;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -125,7 +124,7 @@ namespace HelloWorld.IntegrationTests
                 TagNames = new List<string>() { "Tags" },
                 Title = title
             });
-            
+
             await AuthenticateAsync();
 
             //Act
@@ -414,7 +413,7 @@ namespace HelloWorld.IntegrationTests
                     TagNames = new List<string>()
                 });
             }
-       
+
             var pageNumber = 2;
             var pageSize = 1;
             var paginationFilter = new PaginationFilter
@@ -449,7 +448,7 @@ namespace HelloWorld.IntegrationTests
             });
 
             //Act
-            var response = await TestClient.PatchAsync(ApiRoutes.Discussion.Update.Replace("{id}", createdDiscussion.Id.ToString()), 
+            var response = await TestClient.PatchAsync(ApiRoutes.Discussion.Update.Replace("{id}", createdDiscussion.Id.ToString()),
                 JsonContent.Create(new UpdateDiscussionRequest
                 {
                     Tags = new List<string>()

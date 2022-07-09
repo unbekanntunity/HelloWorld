@@ -1,0 +1,27 @@
+.navbar {
+    background-color: white;
+}
+
+.navbar-brand{
+    margin-left: 60px;
+}
+
+.account-icon{
+    border: 1px solid black;
+    border-radius: 100%;
+}
+
+.buttons{
+    display: flex;
+    align-items: center;
+}
+
+.account-icon{
+    border: 1px solid black;
+    padding: 5px;
+    margin: 0px 90px 0px 30px;
+}
+
+.nav-link{
+    padding: 0rem 1rem;
+}

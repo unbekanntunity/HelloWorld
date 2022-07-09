@@ -1,0 +1,24 @@
+.iconTwoLineItem-container {
+    display: flex;
+}
+
+.iconTwoLineItem-texts {
+    margin-left: 10px;
+    width: 100%;
+}
+
+.iconTwoLineItem-header {
+    font-weight: bold;
+    font-size: 15px;
+}
+
+
+.iconTwoLineItem-text {
+    font-size: 13px;
+}
+
+.iconTwoLineItem-sideNote {
+    align-self: center;
+    font-size: 10px;
+}
+   

@@ -6,7 +6,7 @@ namespace HelloWorldAPI.Services
 {
     public interface IPostService
     {
-        Task<Result<Post>> CreateAsync(Post post, IEnumerable<string> newTags);
+        Task<Result<Post>> CreateAsync(Post post, IEnumerable<string> newTags, IEnumerable<IFormFile> images);
         Task<Result<Post>> DeleteAsync(Post post);
         Task<Result<Post>> UpdateAsync(Post post, IEnumerable<string> newTags);
         Task<Post?> GetByIdAsync(Guid id);

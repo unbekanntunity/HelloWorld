@@ -1,0 +1,43 @@
+.img-slider-container {
+    display: flex;
+    margin: 30px 5px 10px 5px;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.img-slider-pic-dots {
+    display: inline-block;
+}
+
+.circle {
+    height: 10px;
+    width: 10px;
+    border-radius: 100%;
+    background-color: #B5ACAC;
+}
+
+.img-slider-slider {
+    text-align: center;
+    overflow: hidden;
+}
+
+.img-slider-slider > a {
+    display: inline-flex;
+    width: 1.5rem;
+    height: 1.5rem;
+    background: white;
+    text-decoration: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin-top: 10px;
+    position: relative;
+}
+
+.img-slider-slider > a:focus {
+    background: #eee;
+}
+
+.active, .circle:hover {
+    background-color: #FFB30B;
+}

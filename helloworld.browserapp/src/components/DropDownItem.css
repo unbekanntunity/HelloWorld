@@ -1,0 +1,24 @@
+.drop-icon{
+    margin-left: 8px;
+    float: left;
+}
+
+.drop-container {
+    padding: 15px 10px;  
+    display: flex;
+    align-items: center;
+}
+
+.drop-text{
+    margin-left: 8px;
+    margin-bottom: 0.25rem;
+}
+
+.drop-container:hover{
+    cursor: pointer;
+}
+
+.drop-container:active{
+    background-color: rgba(0, 0, 0, .1);
+}
+

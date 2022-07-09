@@ -1,0 +1,21 @@
+.link-section-input{
+    display: flex;
+    align-items: center;
+}
+
+.link-section-not-last {
+    margin-bottom: 15px;
+}
+
+.link-section-remove{
+    margin: 10px;
+}
+
+.link-section-remove-container{
+    margin-left: 5px;
+}
+
+.link-section-remove-container:active {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 100%;
+}

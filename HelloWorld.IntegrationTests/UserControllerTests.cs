@@ -1,9 +1,9 @@
-﻿using FluentAssertions;
-using HelloWorldAPI.Contracts.V1;
-using HelloWorldAPI.Contracts.V1.Requests;
-using HelloWorldAPI.Contracts.V1.Responses;
-using HelloWorldAPI.Domain.Filters;
-using HelloWorldAPI.Extensions;
+﻿using API.Contracts.V1;
+using API.Contracts.V1.Requests;
+using API.Contracts.V1.Responses;
+using API.Domain.Filters;
+using API.Extensions;
+using FluentAssertions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -145,10 +145,10 @@ namespace HelloWorld.IntegrationTests
 
             //Act
             var response = await TestClient.DeleteAsync(ApiRoutes.Identity.Delete.Replace("{id}", GetUserId(token)));
-       
+
             //Assert
-            response.StatusCode.Should().Be(HttpStatusCode.NoContent);     
-            
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
             var doubleCheck = await TestClient.GetAsync(ApiRoutes.Identity.Get.Replace("{id}", GetUserId(token)));
             doubleCheck.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
@@ -425,7 +425,7 @@ namespace HelloWorld.IntegrationTests
             }));
 
             //Assert
-            response.StatusCode.Should().Be(HttpStatusCode.OK); 
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
             var returnedPassword = await response.Content.ReadAsAsync<Response<string>>();
             returnedPassword.Data.Should().Be(newPassword);
 

@@ -2,6 +2,8 @@
 using HelloWorldAPI.Domain.Database;
 using HelloWorldAPI.Extensions;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using System.Net.Http.Headers;
 
 namespace HelloWorldAPI.Services
 {
@@ -11,7 +13,7 @@ namespace HelloWorldAPI.Services
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<User> _userManager;
 
-        private readonly bool reset = false;
+        private readonly bool reset = true;
 
         public SeedService(RoleManager<IdentityRole> roleManager, UserManager<User> userManager, DataContext dataContext)
         {
@@ -24,7 +26,8 @@ namespace HelloWorldAPI.Services
         {
             if(reset)
             {
-                await _dataContext.Database.EnsureDeletedAsync();
+                var result = await _dataContext.Database.EnsureDeletedAsync();
+                Console.WriteLine(result);
                 return;
             }
 
@@ -82,6 +85,24 @@ namespace HelloWorldAPI.Services
             {
                 var user = new User { UserName = "NormalUser2", Email = "User2@gmail.com" };
                 await _userManager.CreateAsync(user, "User1234!");
+            }
+
+            var tags = await _dataContext.Tags.ToListAsync();
+            if (!tags.Select(x => x.Name).Contains("Support"))
+            {
+                await _dataContext.Tags.AddAsync(new Tag
+                {
+                    Name = "Support"
+                });
+                await _dataContext.SaveChangesAsync();
+            }
+            if (!tags.Select(x => x.Name).Contains("C#"))
+            {
+                await _dataContext.Tags.AddAsync(new Tag
+                {
+                    Name = "C#"
+                });
+                await _dataContext.SaveChangesAsync();
             }
         }
     }

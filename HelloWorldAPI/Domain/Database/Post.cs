@@ -10,6 +10,8 @@ namespace HelloWorldAPI.Domain.Database
         public string Title { get; set; }
         public string Content { get; set; }
 
+        public List<ImagePath> ImagePaths { get; set; } = new();
+
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 

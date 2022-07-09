@@ -1,0 +1,26 @@
+.project-container {
+    background-color: white;
+    padding: 20px;
+    height: min-content;
+}
+
+.project-header {
+    display: flex;
+}
+
+.project-header-text {
+    font-weight: bold;
+    font-size: 15px;
+    margin-left: 5px;
+}
+
+.project-header-date{
+    margin-left: 10px;
+}
+
+.project-header-middle{
+    display:flex;
+    align-items: baseline;
+    margin-bottom: -10px;
+}
+

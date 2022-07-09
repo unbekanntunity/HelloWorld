@@ -1,0 +1,21 @@
+.discussions-tags {
+    margin: 10px 0px;
+}
+
+.discussions-multi-container {
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: revert;
+    margin-top: revert;
+    margin-bottom: revert;
+}
+
+.discussions-button-container {
+    display: flex;
+    margin-top: 20px;
+    justify-content: center;
+}
+
+.discussions-body-main {
+    width: 100%;
+}

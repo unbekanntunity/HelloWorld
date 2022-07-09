@@ -1,0 +1,17 @@
+.dr-dialog-container{
+    display: flex;
+}
+
+.dr-dialog-content {
+    display: none;
+}
+
+.dr-dialog-content-show {
+    display: block;
+    margin-left: 10px;
+    border: 1px solid black;
+    border-radius: 20px;
+    left:60px;
+    position: absolute;
+    background-color: white;
+}

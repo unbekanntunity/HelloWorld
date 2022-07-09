@@ -1,0 +1,28 @@
+.multi-container{
+    position: relative;
+    font-size: 12px;
+    border: none;
+}
+
+.textbox {
+    border: none;
+    border-radius: 5px;
+    background-color: #EAE6E6;
+    resize: none;
+    padding: 10px;
+}
+
+.textbox:hover {
+    background-color: #F2ECEC;
+    outline: none
+}
+.letters{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin: 10px;
+}
+
+.red{
+    color: red;
+}

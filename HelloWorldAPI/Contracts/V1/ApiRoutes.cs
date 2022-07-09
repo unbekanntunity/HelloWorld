@@ -22,9 +22,9 @@ namespace HelloWorldAPI.Contracts.V1
 
             public const string Get = Base + "/users/get/{id}";
 
-            public const string GetAll = Base + "/users/get_all";
+            public const string GetOwn = Base + "/users/get";
 
-            public const string GetIdByName = Base + "/users/get_id/{userName}";
+            public const string GetAll = Base + "/users/get_all";
 
             public const string Delete = Base + "/users/delete/{id}";
 
