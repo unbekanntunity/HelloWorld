@@ -5,8 +5,6 @@ import menuClosed from '../images/dots-vertical.png';
 import listView from '../images/list.png';
 import gridView from '../images/grid.png';
 import add from '../images/plus.png';
-import addCircle from '../images/add-circle.png';
-import close from '../images/close-circle.jpg';
 import startPreview from '../images/eye-open.png';
 import stopPreview from '../images/eye-close.png';
 
@@ -14,8 +12,8 @@ import SpeedDial from '../components/SpeedDial';
 import TagSection from '../components/TagSection';
 import ImageSection from '../components/ImageSection';
 import MultiInputField from '../components/MultiInputField';
-import Post from '../components/Post';
 import LeftBanner from '../components/LeftBanner';
+import { Post } from '../components/Post';
 import { Dialog, ReportDialog } from '../components/Dialog';
 
 import { Button, RoundButton } from '../components/Button';

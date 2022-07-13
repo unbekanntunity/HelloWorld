@@ -12,6 +12,6 @@
 
         public List<MinimalTagResponse> Tags { get; set; }
 
-        public MinimalArticleResponse LastArticle { get; set; }
+        public MinimalArticleResponse LastArticle { get; set; };
     }
 }

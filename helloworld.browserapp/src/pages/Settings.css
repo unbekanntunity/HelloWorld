@@ -1,0 +1,46 @@
+.settings-box{
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 20px;
+
+    width: min-content;
+    height: 75vh;
+    padding: 20px 5px;
+}
+
+.settings-category{
+    padding: 20px 20px;
+    width: 60%;
+    margin-left: 50px;
+}
+
+.settings-categories-text {
+    width: max-content;
+}
+
+.settings-categories-item {
+    padding: 0px 20px;
+    cursor: pointer;
+}
+
+.settings-categories-selected {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-right: 4px solid #FF9900;
+}
+
+.settings-categories-item:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.settings-section{
+    display: flex;
+}
+
+.settings-section-title {
+    font-weight: bold;
+    width: 30%;
+}
+
+.settings-section-image-edit {
+    margin-left: 10px;
+}

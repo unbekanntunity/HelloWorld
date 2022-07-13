@@ -19,11 +19,12 @@ import Ex1 from '../images/Progress1.png';
 import Ex2 from '../images/Progress2.png';
 import Ex3 from '../images/Progress3.png';
 
-import './Projects.css'
 import ImageSection from '../components/ImageSection';
 import LinkSection from '../components/LinkSection';
 import { sendFORMRequest } from '../requestFuncs';
 import TagSection from '../components/TagSection';
+
+import './Projects.css'
 
 class Projects extends Component {
     state = {

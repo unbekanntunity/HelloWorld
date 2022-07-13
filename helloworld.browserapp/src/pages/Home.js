@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
-import Post from '../components/Post';
 import { Link, useNavigate } from 'react-router-dom';
+
+import InputField from '../components/InputField/InputField';
+import RankingBox from '../components/RankingBox';
+import { Post } from '../components/Post';
+import { Dialog, ReportDialog } from '../components/Dialog';
+
 import profile from '../images/profile.png';
 
-import './Home.css';
-
-import { Dialog, ReportDialog } from '../components/Dialog';
-import InputField from '../components/InputField/InputField';
-
-import RankingBox from '../components/RankingBox';
-
 import { sendJSONRequest } from '../requestFuncs';
+
+import './Home.css';
 
 class Home extends Component {
     state = {

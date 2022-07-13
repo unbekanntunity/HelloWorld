@@ -29,8 +29,7 @@ export async function sendJSONRequest(method, url, body = undefined, token = und
         request.headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const response = await fetch(domainName + urlWithQuery, request);
-    return response.json();
+    return await sendRequest(urlWithQuery, request);
 }
 
 export async function sendFORMRequest(method, url, body = undefined, token = undefined, query = undefined) {
@@ -57,12 +56,21 @@ export async function sendFORMRequest(method, url, body = undefined, token = und
         request.headers['Authorization'] = `Bearer ${token}`;
     }
 
-    try {
-        const response = await fetch(domainName + urlWithQuery, request);
-        return response.json();
+    return await sendRequest(urlWithQuery, request);
+}
 
+async function sendRequest(urlWithQuery, request) {
+    const response = await fetch(domainName + urlWithQuery, request);
+
+    //console.log(response);
+
+    if (response.status === 204)
+        return;
+
+    try {
+        return response.json();
     } catch (e) {
-        console.log(e);
+       console.log(response);
     }
 }
 

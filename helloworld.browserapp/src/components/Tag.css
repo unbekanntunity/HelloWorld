@@ -5,11 +5,8 @@
 
     color: white;
     font-weight: bold;
-    padding: 5px 20px;
     border-radius: 20px;
     width: fit-content;
-    height: 25px;
-    margin: 5px;
 }
 
 .tag-text{

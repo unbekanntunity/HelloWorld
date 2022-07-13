@@ -26,8 +26,6 @@ class ImageSlider extends Component {
         let dots = Array.from(dot.parentElement.parentElement.childNodes).filter(x => x.className !=="img-slider-image");
         dots.forEach(a => a.lastChild.className = "circle");
 
-        console.log(dots)
-
         dot.className = "circle active";
         this.setState({ currentDot: parseInt(dot.parentElement.id) });
     }
@@ -53,8 +51,6 @@ class ImageSlider extends Component {
     }
 
     render() {
-        console.log(this.props.images);
-
         return (
             <div className="img-slider-container">
                 {

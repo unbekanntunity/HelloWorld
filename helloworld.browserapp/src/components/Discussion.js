@@ -9,12 +9,12 @@ import save from '../images/bookmark.png';
 import rightArrow from '../images/right-arrow2.png';
 import share from '../images/share.png';
 
+import { formatDate } from '../util';
 import VisibilitySensor from 'react-visibility-sensor';
 
 import Tag from './Tag';
 
 import './Discussion.css';
-import Header from './Header';
 
 class Discussion extends Component {
     state = {
@@ -29,13 +29,48 @@ class Discussion extends Component {
                 transition: 'opacity 500ms linear',
                 width: this.props.width
                 }}>
-                <Header creatorImage={this.props.creatorImage} title={this.props.title} tags={this.props.tags}
-                    onReportClick={this.props.onReportClick} onRightArrowClick={this.props.onRightArrowClick} saveClick={this.props.saveClick}
-                    onShareClick={this.props.onShareClick} />
-               
+
+                <div className="header-container">
+                    <img src={this.props.creatorImage} alt="" height={30} width={30} />
+                    <div className="header-middle">
+                        <div className="header-text-container">
+                            <p className="header-text">{this.props.title}</p>
+                        </div>
+                        <div className="header-tags">
+                            {
+                                this.props.tags &&
+                                this.props.tags.map((item, index) =>
+                                    <Tag key={index} name={item.name} />
+                                )
+                            }
+                        </div>
+                    </div>
+                    <span className="header-actions">
+                        <div className="header-action">
+                            <img src={this.props.creatorImage} width={30} height={30} alt="" />
+                            <p className="header-likes">4</p>
+                        </div>
+                        <div className="header-action" style={{ marginRight: '0px' }}>
+                            <img src={heart} width={30} height={30} alt="" />
+                            <p className="header-likes">100</p>
+                        </div>
+                        <DropDown toggleButton={{
+                            icon: undefined,
+                            arrowIconOpen: menuOpened,
+                            arrowIconClose: menuClosed
+                        }}
+                            arrowIconSize={30} onHeaderClick={this.handleMenu}>
+                            <DropDown.Item icon={report} textColor="red" text="Report" iconSize={30} onClick={this.props.onReportClick} />
+                            <DropDown.Item icon={rightArrow} text="Jump" iconSize={30} onClick={this.props.onRightArrowClick} />
+                            <DropDown.Item icon={save} text="Save" iconSize={30} onClick={this.props.saveClick} />
+                            <DropDown.Item icon={share} text="Share" iconSize={30} onClick={this.props.onShareClick} />
+                        </DropDown>
+                    </span>
+                </div>
+              
                 <div className="description-container">
                     <p>{this.props.startMessage}</p>
-                    <p className="discussion-description-date">{this.props.createdAt}</p>
+                    <p className="discussion-description-date">{formatDate(this.props.createdAt)}</p>
                 </div>
                 {
                     this.props.lastMessage &&
@@ -43,8 +78,8 @@ class Discussion extends Component {
                         <div className="discussion-lastMessage">
                             <b>{this.props.lastMessageAuthor}</b>
                             <p>: {this.props.lastMessage}</p>
-                        </div>
-                        <p className="discussion-lastMessage-date">{this.props.lastMessageCreated}</p>
+                                </div>
+                        <p className="discussion-lastMessage-date">{formatDate(this.props.lastMessageCreated)}</p>
                     </div>
                 }
                 </div>

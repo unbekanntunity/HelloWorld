@@ -127,6 +127,8 @@ namespace API.Contracts.V1
 
             public const string Delete = Base + "/reply/delete/{id}";
 
+            public const string DeleteAll = Base + "/reply/delete_all";
+
             public const string Update = Base + "/reply/update/{id}";
 
             public const string UpdateRating = Base + "/reply/update_rating/{id}";

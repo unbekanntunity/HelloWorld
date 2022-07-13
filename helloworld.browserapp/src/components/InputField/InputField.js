@@ -24,7 +24,9 @@ class InputField extends Component {
 
     render() {
         return (
-            <div className="inputfield-container">
+            <div className="inputfield-container" style={{
+                width: this.props.fill ? "100%" : "initial"
+            } }>
                 <div className={'inputbar-container-' + (this.props.design ?? 'm1')} style={{
                     width: this.props.width ?? '100%',
                     height: this.props.height ?? "100%"
@@ -33,7 +35,11 @@ class InputField extends Component {
                         {this.props.icon !== undefined &&
                             <img src={this.props.icon} width={this.props.iconSize} height={this.props.iconSize} alt="" />
                         }
-                        <input className={'inputbox-' + (this.props.design ?? 'm1')} name={this.props.propName} onChange={this.props.onChange}
+                        <input className={'inputbox-' + (this.props.design ?? 'm1')} name={this.props.propName} onChange={this.props.onChange} value={this.props.value}
+                            style={{
+                                borderBottom: this.props.showUnderline ? "initial" : "none"
+                            }}
+
                             type={this.props.type}
                             placeholder={this.props.placeholder}>
                         </input>

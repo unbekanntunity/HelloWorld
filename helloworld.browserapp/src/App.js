@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
+
 import Login from './pages/Login';
 import Registration from './pages/Registration';
 import Home from './pages/Home';
 import Discussions from './pages/Discussions';
 import Posts from './pages/Posts';
+import Projects from './pages/Projects';
+import Account from './pages/Account';
 
 import { Route, Routes, Navigate } from 'react-router-dom';
 
@@ -28,8 +31,7 @@ import exit from './images/exit.png';
 import { sendJSONRequest } from './requestFuncs';
 
 import './App.css';
-import Projects from './pages/Projects';
-import Account from './pages/Account';
+import Settings from './pages/Settings';
 
 class App extends Component {
     state = {
@@ -37,6 +39,7 @@ class App extends Component {
             id: "f3680a0b-00cf-488f-a64a-2376143a07bb",
             userName: "Admin",
             email: "Admin@gmail.com",
+            imageUrl: "https://localhost:7113/Images/Public/default-profile.png",
             description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna libe",
             createdAt: "0001-01-01T00:00:00",
             updatedAt: "0001-01-01T00:00:00",
@@ -54,7 +57,7 @@ class App extends Component {
         errorMessage: "",
         notificationMesasge: "",
         navPages: [
-            "/home", "/discussions", "/posts", "/projects", "/account"
+            "/home", "/discussions", "/posts", "/projects", "/account", "/settings"
         ]
     };
 
@@ -116,23 +119,30 @@ class App extends Component {
         }
     }
 
-    isListedUrl = () => {
+    isListedUrl = (url) => {
         const index = this.state.navPages.findIndex(element => {
-            return element.toLowerCase() === window.location.pathname;
+            return element.toLowerCase() === url;
         });
 
         return index !== -1;
     }
 
-    redirectToPage = () => {
-        return this.state.user ? <Navigate to="/home" /> : <Navigate to="/login" />
+    redirectToPage = (url) => {
+        window.location.pathname = url;
+    }
+
+    getStartPage = () => {
+        console.log(this.state.user === undefined);
+        return this.state.user === undefined ? <Navigate to="/login" /> : <Navigate to="/home" /> 
+
+        this.render();
     }
 
     render() {
         return (
             <div id="app-container" style={{ backgroundColor: this.getBackgroundColor() }}>
                 {
-                    this.isListedUrl() &&
+                    this.isListedUrl(window.location.pathname) &&
                     <NavBar navbar={this.state.navbar}
                         logoLink="/home" logoIcon={logo} searchIcon={search}
                         notificationIcon={bell} exploreIcon={binoculars}
@@ -150,7 +160,7 @@ class App extends Component {
                     />
                 }
                 <Routes>
-                    <Route path="/" element={this.redirectToPage()} />
+                    <Route path="/" element={this.getStartPage()} />
                     <Route path="/login" element={<Login onLoginSuccess={this.handleSuccessAuthentication} onError={this.handleError} />} />
                     <Route path="/registration" element={<Registration onRegistrationSuccess={this.handleSuccessAuthentication} onError={this.handleError} />} />
                     <Route path="/home" element={<Home onLogOutClick={this.handleLogout}
@@ -160,7 +170,10 @@ class App extends Component {
                     <Route path="/projects" element={<Projects tokens={this.state.tokens} user={this.state.user}
                         onError={this.handleError} onNotification={this.handleNotification} />} />
                     <Route path="/account" element={<Account tokens={this.state.tokens} user={this.state.user}
-                        onError={this.handleError} onNotification={this.handleNotification} />} />
+                        onError={this.handleError} onNotification={this.handleNotification} onSettings={() => this.redirectToPage("/settings")} />} />
+                    <Route path="/settings" element={<Settings tokens={this.state.tokens} user={this.state.user}
+                        onError={this.handleError} onNotification={this.handleNotification} onSettings={() => this.redirectToPage("/settings")} />} />
+
                     <Route path="*" element={<h1>404 Error: page does not exist!</h1>}  />
                 </Routes>
                 <div className="toastContainer">

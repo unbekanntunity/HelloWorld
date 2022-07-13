@@ -20,7 +20,9 @@ class Tag extends Component {
         return (
             <div className="tag-container" style={{
                 backgroundColor: this.getColor(),
-                fontSize: this.props.fontSize ?? '10px'
+                fontSize: this.props.fontSize ?? '10px',
+                padding: `${this.props.paddingY ?? "5px"} ${this.props.paddingX ?? "20px"}`,
+                margin: this.props.margin
             }}>
                 <p className="tag-text">{this.props.name}</p>
                 {

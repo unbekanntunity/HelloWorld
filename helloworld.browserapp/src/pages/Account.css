@@ -27,9 +27,18 @@
 .account-items{
     display: flex;
     flex-flow: column;
-    justify-content: center;
+    align-items: center;
 }
 
 .account-item{
     margin-bottom: 15px;
+}
+
+.account-edit-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: absolute;
+    right: 30px;
+    height: 70px;
 }

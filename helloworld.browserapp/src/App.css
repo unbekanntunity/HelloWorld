@@ -71,11 +71,67 @@ html, body, #root, #root > div {
     height: 34px;
 }
 
-.center{
+.center-horizontal{
     display: flex;
     justify-content: center;
 }
 
-.flex{
+.center-vertical {
     display: flex;
+    align-items: center;
+}
+
+.flex {
+    display: flex;
+}
+
+
+.header-container {
+    display: flex;
+}
+
+.header-middle {
+    margin-left: 10px;
+    width: 100%;
+}
+
+.header-tags {
+    display: flex;
+    margin-left: -5px;
+}
+
+.header-actions {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    justify-content: right;
+    align-items: center;
+}
+
+.header-text-container {
+    display: flex;
+}
+
+.header-text {
+    font-size: 15px;
+    font-weight: bold;
+    margin: 0px 10px 4px 0px;
+}
+
+.header-date {
+    margin: 5px 0px 4px 0px;
+    width: 100%;
+}
+
+.header-likes {
+    display: flex;
+    margin-left: 5px;
+    margin-top: 0px;    
+    margin-bottom: 0px;
+}
+
+.header-action {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
 }

@@ -3,12 +3,12 @@
     background-color: #F2ECEC;
     overflow: hidden;
     justify-content: space-around;
+    width: 100%;
 }
 
 .inputbar {
     display: flex;
     align-items: center;
-    margin-left: 20px;
 }
 
 .inputbox-m1 {
@@ -18,7 +18,7 @@
     background-color: #F2ECEC;
     border: none;
     padding: 10px;
-    width: 90%;
+    width: 100%;
 }
 
 .inputbox-m1:focus {
@@ -29,7 +29,7 @@
 .inputbox-m2 {
     border: none;
     border-bottom: 1px solid black;
-    width: 90%;
+    width: 100%;
 }
 
 .inputbox-m2:focus {

@@ -6,6 +6,7 @@ using API.Domain.Database;
 using API.Domain.Filters;
 using API.Extensions;
 using API.Helpers;
+using API.Repositories;
 using API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -22,8 +23,9 @@ namespace API.Controllers.V1
         private readonly IReplyService _replyService;
         private readonly IRateableService<Reply> _rateableService;
         private readonly IUriService _uriService;
+        private readonly INonQueryRepository<Reply> _nonQueryRepository;
 
-        public ReplyController(IReplyService replyService, IUriService uriService, ICommentService commentService, IArticleService articleService, IRateableService<Reply> rateableService, IIdentityService identityService)
+        public ReplyController(IReplyService replyService, IUriService uriService, ICommentService commentService, IArticleService articleService, IRateableService<Reply> rateableService, IIdentityService identityService, INonQueryRepository<Reply> nonQueryRepository)
         {
             _replyService = replyService;
             _uriService = uriService;
@@ -31,6 +33,7 @@ namespace API.Controllers.V1
             _articleService = articleService;
             _rateableService = rateableService;
             _identityService = identityService;
+            _nonQueryRepository = nonQueryRepository;
         }
 
         [HttpPost(ApiRoutes.Reply.CreateOnArticle)]
@@ -127,6 +130,20 @@ namespace API.Controllers.V1
 
             var result = await _replyService.DeleteAsync(existingReply);
             return result.Success ? NoContent() : BadRequest(result);
+        }
+
+        [HttpDelete(ApiRoutes.Reply.DeleteAll)]
+        public async Task<IActionResult> DeleteAll()
+        {
+            if (!HttpContext.HasRole("ContentAdmin"))
+            {
+                return Unauthorized();
+            }
+
+            var replies = await _replyService.GetAllAsync();
+            await _nonQueryRepository.DeleteRangeAsync(replies);
+
+            return NoContent();
         }
 
         [HttpGet(ApiRoutes.Reply.Get)]
