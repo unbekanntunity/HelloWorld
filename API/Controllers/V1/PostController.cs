@@ -43,7 +43,6 @@ namespace API.Controllers.V1
                 {
                     CreatorId = id,
                     Content = request.Content,
-                    Title = request.Title,
                 };
 
                 var result = await _postService.CreateAsync(post, request.TagNames, request.RawImages);
@@ -112,6 +111,19 @@ namespace API.Controllers.V1
         public async Task<IActionResult> GetAll([FromQuery] GetAllPostsFilters filter, [FromQuery] PaginationFilter pagination)
         {
             var posts = await _postService.GetAllAsync(filter, pagination);
+            var responses = posts.Select(x => x.ToPartialResponse(_fileManager)).ToList();
+            if (pagination == null || pagination.PageNumber < 1 || pagination.PageSize < 1)
+            {
+                return Ok(new PagedResponse<PartialPostResponse>(responses));
+            }
+            var paginationResponse = PaginationHelpers.CreatePaginatedResponse(_uriService, ApiRoutes.Post.GetAll, pagination, responses);
+            return Ok(paginationResponse);
+        }
+
+        [HttpGet(ApiRoutes.Post.GetAllMinimal)]
+        public async Task<IActionResult> GetAllMinimal([FromQuery] GetAllPostsFilters filter, [FromQuery] PaginationFilter pagination)
+        {
+            var posts = await _postService.GetAllAsync(filter, pagination);
             var responses = posts.Select(x => x.ToMinPostResponse(_fileManager)).ToList();
             if (pagination == null || pagination.PageNumber < 1 || pagination.PageSize < 1)
             {
@@ -135,7 +147,6 @@ namespace API.Controllers.V1
                 return Unauthorized(StaticErrorMessages.PermissionDenied);
             }
 
-            existingPost.Title = request.Title;
             existingPost.Content = request.Content;
 
             var result = await _postService.UpdateAsync(existingPost, request.TagNames);

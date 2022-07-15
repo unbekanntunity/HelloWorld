@@ -23,8 +23,9 @@ namespace API.Services
         private readonly ITagService _tagService;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly INonQueryRepository<RefreshToken> _nonQueryRepository;
+        private readonly IFileManager _fileManager;
 
-        public IdentityService(UserManager<User> userManager, JwtSettings jwtSettings, TokenValidationParameters tokenValidationParameters, RoleManager<IdentityRole> roleManager, IRefreshTokenRepository refreshTokenRepository, INonQueryRepository<RefreshToken> nonQueryRepository, ITagService tagService)
+        public IdentityService(UserManager<User> userManager, JwtSettings jwtSettings, TokenValidationParameters tokenValidationParameters, RoleManager<IdentityRole> roleManager, IRefreshTokenRepository refreshTokenRepository, INonQueryRepository<RefreshToken> nonQueryRepository, ITagService tagService, IFileManager fileManager)
         {
             _userManager = userManager;
             _jwtSettings = jwtSettings;
@@ -33,6 +34,7 @@ namespace API.Services
             _refreshTokenRepository = refreshTokenRepository;
             _nonQueryRepository = nonQueryRepository;
             _tagService = tagService;
+            _fileManager = fileManager;
         }
 
         public async Task<AuthenticationResult> LoginAsync(string email, string password)
@@ -277,7 +279,9 @@ namespace API.Services
             };
         }
 
-        public async Task<User> GetUserByIdAsync(string userId) => await _userManager.FindByIdAsync(userId);
+        public async Task<User?> GetUserByIdAsync(string userId) => await _userManager.Users.Include(x => x.Tags).FirstOrDefaultAsync(item => item.Id == userId);
+
+        public async Task<User?> GetUserByIdWithNoTagsAsync(string userId) => await _userManager.FindByIdAsync(userId);
 
         public async Task<string?> GetIdByUserNameAsync(string userName)
         {
@@ -314,8 +318,13 @@ namespace API.Services
             return await queryable.Skip(skip).Take(pagination.PageSize).ToListAsync();
         }
 
-        public async Task<Result<User>> UpdateUserAsync(User user, IEnumerable<string> TagNames = null)
+        public async Task<Result<User>> UpdateUserAsync(User user, IEnumerable<string> TagNames = null, IFormFile file = null)
         {
+            if (file != null)
+            {
+                user.ImageUrl = await _fileManager.SaveImageAsync(user.Id, file);
+            }
+
             if (TagNames != null)
             {
                 var result = await _tagService.UpdateTagsAsync(user, TagNames);

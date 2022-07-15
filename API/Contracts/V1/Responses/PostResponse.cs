@@ -16,8 +16,8 @@ namespace API.Contracts.V1.Responses
 
         public string CreatorId { get; set; }
 
-        public List<MinimalTagResponse> Tags { get; set; } = new();
-        public List<string> UserLikedIds { get; set; } = new();
+        public List<string> Tags { get; set; } = new();
+        public List<string> UsersLikedIds { get; set; } = new();
         public List<CommentResponse> Comments { get; set; } = new();
     }
 }

@@ -1,6 +1,7 @@
 ﻿using API.Contracts.V1.Responses;
 using API.Domain.Database;
 using API.Services;
+using System.Collections.Immutable;
 
 namespace API.Extensions
 {
@@ -15,7 +16,7 @@ namespace API.Extensions
                 CreatorId = article.CreatorId,
                 DiscussionId = article.DiscussionId,
                 Id = article.Id,
-                UserLikedIds = article.UserLiked.Select(x => x.Id).ToList(),
+                UserLikedIds = article.UsersLiked.Select(x => x.Id).ToList(),
                 UpdatedAt = article.UpdatedAt,
                 Replies = article.Replies.Select(x => x.ToResponse()).ToList()
             };
@@ -45,7 +46,7 @@ namespace API.Extensions
                 CreatorId = comment.CreatorId,
                 PostId = comment.PostId,
                 Replies = comment.Replies.Select(x => x.ToResponse()).ToList(),
-                UserLikedIds = comment.UserLiked.Select(x => x.Id).ToList()
+                UsersLikedIds = comment.UsersLiked.Select(x => x.Id).ToList()
             };
         }
 
@@ -58,9 +59,10 @@ namespace API.Extensions
                 CreatorId = discussion.CreatorId,
                 Id = discussion.Id,
                 StartMessage = discussion.StartMessage,
-                Tags = discussion.Tags.Select(x => x.ToMinimalResponse()).ToList(),
+                Tags = discussion.Tags.Select(x => x.Name).ToList(),
                 Title = discussion.Title,
-                UpdatedAt = discussion.UpdatedAt
+                UpdatedAt = discussion.UpdatedAt,
+                UsersLikedIds = discussion.UsersLiked.Select(x => x.Id).ToList()
             };
         }
 
@@ -74,8 +76,9 @@ namespace API.Extensions
                 LastArticle = discussion.Articles.OrderByDescending(x => x.UpdatedAt).FirstOrDefault()?.ToMinimalResponse(),
                 Title = discussion.Title,
                 UpdatedAt = discussion.UpdatedAt,
-                Tags = discussion.Tags.Select(x => x.ToMinimalResponse()).ToList(),
-                StartMessage = discussion.StartMessage
+                Tags = discussion.Tags.Select(x => x.Name).ToList(),
+                StartMessage = discussion.StartMessage,
+                UsersLikedIds = discussion.UsersLiked.Select(x => x.Id).ToList()
             };
         }
 
@@ -89,10 +92,9 @@ namespace API.Extensions
                 Comments = post.Comments.Select(x => x.ToResponse()).ToList(),
                 Id = post.Id,
                 ImageUrls = post.ImagePaths.Select(x => fileManager.GetImageUrl(x.Url)).ToList(),
-                Tags = post.Tags.Select(x => x.ToMinimalResponse()).ToList(),
-                Title = post.Title,
+                Tags = post.Tags.Select(x => x.Name).ToList(),
                 UpdatedAt = post.UpdatedAt,
-                UserLikedIds = post.UserLiked.Select(x => x.Id).ToList()
+                UsersLikedIds = post.UsersLiked.Select(x => x.Id).ToList()
             };
         }
 
@@ -105,13 +107,12 @@ namespace API.Extensions
                 CreatorId = post.CreatorId,
                 Id = post.Id,
                 Tags = post.Tags.Select(x => x.ToResponse()).ToList(),
-                Title = post.Title,
                 UpdatedAt = post.UpdatedAt,
                 ImageUrls = post.ImagePaths.Select(x => fileManager.GetImageUrl(x.Url)).ToList()
             };
         }
 
-        public static PartialPostResponse ToPartialResponse(this Post post, IUriService uriService)
+        public static PartialPostResponse ToPartialResponse(this Post post, IFileManager fileManager)
         {
             return new PartialPostResponse
             {
@@ -120,11 +121,10 @@ namespace API.Extensions
                 Comments = post.Comments.Count,
                 Content = post.Content,
                 Id = post.Id,
-                ImageUrls = uriService.ConvertPathsToUrls(post.ImagePaths.Select(x => x.Url)),
-                Title = post.Title,
-                Tags = post.Tags.Select(x => x.ToMinimalResponse()).ToList(),
+                ImageUrls = post.ImagePaths.Select(x => fileManager.GetImageUrl(x.Url)).ToList(),
+                Tags = post.Tags.Select(x => x.Name).ToList(),
                 UpdatedAt = post.UpdatedAt,
-                UserLiked = post.UserLiked.Count
+                UsersLikedIds = post.UsersLiked.Select(x => x.Id).ToList()
             };
         }
 
@@ -138,9 +138,9 @@ namespace API.Extensions
                 Id = project.Id,
                 ImageUrls = project.ImagePaths.Select(x => fileManager.GetImageUrl(x.Url)).ToList(),
                 MemberIds = project.Members.Select(x => x.Id).ToList(),
-                Tags = project.Tags.Select(x => x.ToMinimalResponse()).ToList(),
+                Tags = project.Tags.Select(x => x.Name).ToList(),
                 Title = project.Title,
-                UserLikedIds = project.UserLiked.Select(x => x.Id).ToList(),
+                UsersLikedIds = project.UsersLiked.Select(x => x.Id).ToList(),
                 UpdatedAt = project.UpdatedAt
             };
         }
@@ -155,8 +155,9 @@ namespace API.Extensions
                 Id = project.Id,
                 ImageUrls = project.ImagePaths.Select(x => fileManager.GetImageUrl(x.Url)).ToList(),
                 Title = project.Title,
-                Tags = project.Tags.Select(x => x.ToMinimalResponse()).ToList(),
+                Tags = project.Tags.Select(x => x.Name).ToList(),
                 UpdatedAt = project.UpdatedAt,
+                UsersLikedIds = project.UsersLiked.Select(x => x.Id).ToList()
             };
         }
 
@@ -171,7 +172,7 @@ namespace API.Extensions
                 RepliedOnId = reply.RepliedOnCommentId ?? reply.RepliedOnArticleId ?? reply.RepliedOnReplyId,
                 Replies = reply.Replies?.Select(x => x.ToResponse()).ToList() ?? new List<ReplyResponse>(),
                 UpdatedAt = reply.UpdatedAt,
-                UserLikedIds = reply.UserLiked.Select(x => x.Id).ToList()
+                UserLikedIds = reply.UsersLiked.Select(x => x.Id).ToList()
             };
         }
 
@@ -197,33 +198,33 @@ namespace API.Extensions
                 Name = tag.Name,
                 DiscussionsTaged = tag.Discussions.Count,
                 PostsTaged = tag.Posts.Count,
-                ProjectsTaged = tag.Projects.Count
+                ProjectsTaged = tag.Projects.Count,
+                UsersTaged = tag.Users.Count
             };
         }
 
-        public static MinimalTagResponse ToMinimalResponse(this Tag tag)
-        {
-            return new MinimalTagResponse
-            {
-                Name = tag.Name
-            };
-        }
-
-        public static async Task<UserResponse> ToResponseAsync(this User user, IIdentityService identityService, IUriService uriService, IFileManager fileManager)
+        public static async Task<UserResponse> ToResponseAsync(this User user, IIdentityService identityService, IFileManager fileManager)
         {
             return new UserResponse
             {
                 CreatedAt = user.CreatedAt,
                 Description = user.Description,
                 UpdatedAt = user.UpdatedAt,
-                Discussions = user.Discussions.Select(x => x.ToPartialResponse()).ToList(),
                 Email = user.Email,
                 Id = user.Id,
                 ImageUrl = fileManager.GetImageUrl(user.ImageUrl),
-                Posts = user.Posts.Select(x => x.ToPartialResponse(uriService)).ToList(),
-                Projects = user.Projects.Select(x => x.ToPartialResponse(fileManager)).ToList(),
                 Roles = await identityService.GetAllRolesOfUserAsync(user),
-                Tags = user.Tags.Select(x => x.ToMinimalResponse()).ToList(),
+                Tags = user.Tags.Select(x => x.Name).ToList(),
+                UserName = user.UserName
+            };
+        }
+
+        public static MinimalUserResponse ToMinmalResponse(this User user, IFileManager fileManager)
+        {
+            return new MinimalUserResponse
+            {
+                Id = user.Id,
+                ImageUrl = fileManager.GetImageUrl(user.ImageUrl),
                 UserName = user.UserName
             };
         }

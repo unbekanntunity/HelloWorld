@@ -8,7 +8,7 @@ import report from '../images/error.png';
 import save from '../images/bookmark.png';
 import rightArrow from '../images/right-arrow2.png';
 import share from '../images/share.png';
-
+import filledHeart from '../images/filled-heart.png';
 import { formatDate } from '../util';
 import VisibilitySensor from 'react-visibility-sensor';
 
@@ -40,19 +40,16 @@ class Discussion extends Component {
                             {
                                 this.props.tags &&
                                 this.props.tags.map((item, index) =>
-                                    <Tag key={index} name={item.name} />
+                                    <Tag key={index} name={item} />
                                 )
                             }
                         </div>
                     </div>
                     <span className="header-actions">
-                        <div className="header-action">
-                            <img src={this.props.creatorImage} width={30} height={30} alt="" />
-                            <p className="header-likes">4</p>
-                        </div>
                         <div className="header-action" style={{ marginRight: '0px' }}>
-                            <img src={heart} width={30} height={30} alt="" />
-                            <p className="header-likes">100</p>
+                            <img src={this.props.usersLikedIds?.findIndex(id => id === this.props.sessionUserId) !== -1 ? filledHeart : heart} width={30} height={30} alt=""
+                                onClick={() => this.props.onLike(this.props.keyProp)} />
+                            <p className="header-likes">{this.props.usersLikedIds?.length ?? 0}</p>
                         </div>
                         <DropDown toggleButton={{
                             icon: undefined,

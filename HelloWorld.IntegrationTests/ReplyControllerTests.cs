@@ -118,7 +118,6 @@ namespace HelloWorld.IntegrationTests
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
                 Content = "Hello",
-                Title = "My first post",
                 TagNames = new List<string>()
             });
 
@@ -164,7 +163,6 @@ namespace HelloWorld.IntegrationTests
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
                 Content = "Hello",
-                Title = "My first post",
                 TagNames = new List<string>()
             });
 

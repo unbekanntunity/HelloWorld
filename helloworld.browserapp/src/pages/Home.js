@@ -8,7 +8,7 @@ import { Dialog, ReportDialog } from '../components/Dialog';
 
 import profile from '../images/profile.png';
 
-import { sendJSONRequest } from '../requestFuncs';
+import { handleUpdateRating, sendJSONRequest } from '../requestFuncs';
 
 import './Home.css';
 
@@ -58,7 +58,6 @@ class Home extends Component {
        
         showShareDialog: false,
         showReportDialog: false,
-        mulitInputText: 'short description'
     }
 
     componentDidMount() {
@@ -78,9 +77,9 @@ class Home extends Component {
     handleCreatorInfos = (index) => {
         let newPosts = this.state.posts;
 
-        sendJSONRequest("GET", `/users/get/${this.state.posts[index].creatorId}`, undefined, this.props.tokens.token)
+        sendJSONRequest("GET", `/user/get_minimal/${this.state.posts[index].creatorId}`, undefined, this.props.tokens.token)
             .then(response => {
-                newPosts[index].creatorImage = response.data.image;
+                newPosts[index].creatorImage = response.data.imageUrl;
                 newPosts[index].creatorName = response.data.userName;
                 this.setState({ posts: newPosts })
             }, error => {
@@ -93,30 +92,14 @@ class Home extends Component {
 
     }
 
-    handlePageSwitch = (page) => {
-        const navigate = useNavigate();
-        navigate(page)
-    }
-
-    handleReportShow = () => {
-        this.setState({ showReportDialog: true });
-    }
-
-    handleReportSent = () => {
-        this.setState({ showReportSentDialog: !this.state.showReportSentDialog });
-    }
-
     handleShare = () => {
          this.setState({ showShareDialog: !this.state.showShareDialog });
     }
 
-    handleMulitLineChange = (event) => {
-        this.setState({ mulitInputText: event.target.value });
-        console.log(this.state.mulitInputText);
-    }
-
-    handleReasonSelected = (reason) => {
-        this.setState({ showReportSentDialog: !this.state.showReportSentDialog });
+    handleSuccessRating = (index, response) => {
+        let newPosts = this.state.posts;
+        newPosts[index].usersLikedIds = response.data.usersLikedIds;
+        this.setState({ posts: newPosts })
     }
 
     render() {
@@ -128,11 +111,13 @@ class Home extends Component {
                         <Link className="link" to="/policies"><p>Policies</p></Link >
                         <Link className="link" to="/support"><p>Support</p></Link >
                     </div>
-                    <div className="home-posts">
+                    <div className="center-vertical column">
                         {
-                            Array.from(this.state.posts).map((post, index) =>
-                                <Post key={index} keyProp={index} text={post.content} title={post.title} images={post.imageUrls} imageHeight={200}
-                                    onFirstAppear={this.handleCreatorInfos} onReportClick={() => this.setState({ showReportDialog: true })} width={400} />
+                            Array.from(this.state.posts).map((item, index) =>
+                                <Post key={index} keyProp={index} text={item.content} title={item.title} images={item.imageUrls} imageHeight={200} usersLikedIds={item.usersLikedIds}
+                                    creatorName={item.creatorName} creatorImage={item.creatorImage} createdAt={item.createdAt} sessionUserId={this.props.sessionUserId} 
+                                    onFirstAppear={this.handleCreatorInfos} onReportClick={() => this.setState({ showReportDialog: true })} width={400}
+                                    onLike={(index) => handleUpdateRating(item.id, "post", this.props.tokens.token, this.props.onError, (response) => this.handleSuccessRating(index, response))} />
                             )
                         }
                     </div>

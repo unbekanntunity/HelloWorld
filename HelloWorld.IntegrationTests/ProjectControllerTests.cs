@@ -60,7 +60,7 @@ namespace HelloWorld.IntegrationTests
             var returnedProject = await response.Content.ReadAsAsync<Response<ProjectResponse>>();
             returnedProject.Data.Title.Should().Be(title);
             returnedProject.Data.Description.Should().Be(description);
-            returnedProject.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(tagNames);
+            returnedProject.Data.Tags.Should().BeEquivalentTo(tagNames);
             returnedProject.Data.CreatedAt.Day.Should().Be(DateTime.UtcNow.Day);
             returnedProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
 
@@ -70,7 +70,7 @@ namespace HelloWorld.IntegrationTests
             var doubleCheckProject = await doubleCheck.Content.ReadAsAsync<Response<ProjectResponse>>();
             doubleCheckProject.Data.Title.Should().Be(title);
             doubleCheckProject.Data.Description.Should().Be(description);
-            doubleCheckProject.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(tagNames);
+            doubleCheckProject.Data.Tags.Should().BeEquivalentTo(tagNames);
             doubleCheckProject.Data.CreatedAt.Day.Should().Be(DateTime.UtcNow.Day);
             doubleCheckProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
         }
@@ -100,7 +100,7 @@ namespace HelloWorld.IntegrationTests
             var returnedProject = await response.Content.ReadAsAsync<Response<ProjectResponse>>();
             returnedProject.Data.Title.Should().Be(title);
             returnedProject.Data.Description.Should().Be(description);
-            returnedProject.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(tagNames.Distinct());
+            returnedProject.Data.Tags.Should().BeEquivalentTo(tagNames.Distinct());
             returnedProject.Data.CreatedAt.Day.Should().Be(DateTime.UtcNow.Day);
             returnedProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
 
@@ -110,7 +110,7 @@ namespace HelloWorld.IntegrationTests
             var doubleCheckProject = await doubleCheck.Content.ReadAsAsync<Response<ProjectResponse>>();
             doubleCheckProject.Data.Title.Should().Be(title);
             doubleCheckProject.Data.Description.Should().Be(description);
-            doubleCheckProject.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(tagNames.Distinct());
+            doubleCheckProject.Data.Tags.Should().BeEquivalentTo(tagNames.Distinct());
             doubleCheckProject.Data.CreatedAt.Day.Should().Be(DateTime.UtcNow.Day);
             doubleCheckProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
         }
@@ -149,7 +149,7 @@ namespace HelloWorld.IntegrationTests
             var returnedProject = await response.Content.ReadAsAsync<Response<ProjectResponse>>();
             returnedProject.Data.Title.Should().Be(title);
             returnedProject.Data.Description.Should().Be(description);
-            returnedProject.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(tagNames.Distinct());
+            returnedProject.Data.Tags.Should().BeEquivalentTo(tagNames.Distinct());
             returnedProject.Data.CreatedAt.Day.Should().Be(DateTime.UtcNow.Day);
             returnedProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
 
@@ -159,7 +159,7 @@ namespace HelloWorld.IntegrationTests
             var doubleCheckProject = await doubleCheck.Content.ReadAsAsync<Response<ProjectResponse>>();
             doubleCheckProject.Data.Title.Should().Be(title);
             doubleCheckProject.Data.Description.Should().Be(description);
-            doubleCheckProject.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(tagNames.Distinct());
+            doubleCheckProject.Data.Tags.Should().BeEquivalentTo(tagNames.Distinct());
             doubleCheckProject.Data.CreatedAt.Day.Should().Be(DateTime.UtcNow.Day);
             doubleCheckProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
         }
@@ -394,7 +394,7 @@ namespace HelloWorld.IntegrationTests
             returnedProjects.Data.Should().HaveCount(1);
             returnedProjects.Data.First().Title.Should().Be(title);
             returnedProjects.Data.First().Description.Should().Be(description);
-            tagNames.Should().BeSubsetOf(returnedProjects.Data.First().Tags.Select(x => x.Name));
+            tagNames.Should().BeSubsetOf(returnedProjects.Data.First().Tags);
         }
 
         [Fact]
@@ -593,7 +593,7 @@ namespace HelloWorld.IntegrationTests
             returnedProject.Data.Title.Should().Be(newTitle);
             returnedProject.Data.Description.Should().Be(newDescription);
             returnedProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
-            returnedProject.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(newTags);
+            returnedProject.Data.Tags.Should().BeEquivalentTo(newTags);
 
             var doubleCheck = await TestClient.GetAsync(ApiRoutes.Project.Get.Replace("{id}", createdProject.Id.ToString()));
             doubleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -602,7 +602,7 @@ namespace HelloWorld.IntegrationTests
             doubleCheckProject.Data.Title.Should().Be(newTitle);
             doubleCheckProject.Data.Description.Should().Be(newDescription);
             doubleCheckProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
-            doubleCheckProject.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(newTags);
+            doubleCheckProject.Data.Tags.Should().BeEquivalentTo(newTags);
         }
 
         [Fact]
@@ -643,7 +643,7 @@ namespace HelloWorld.IntegrationTests
             returnedProject.Data.Title.Should().Be(newTitle);
             returnedProject.Data.Description.Should().Be(newDescription);
             returnedProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
-            returnedProject.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(newTags.Distinct());
+            returnedProject.Data.Tags.Should().BeEquivalentTo(newTags.Distinct());
 
             var doubleCheck = await TestClient.GetAsync(ApiRoutes.Project.Get.Replace("{id}", createdProject.Id.ToString()));
             doubleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -652,7 +652,7 @@ namespace HelloWorld.IntegrationTests
             doubleCheckProject.Data.Title.Should().Be(newTitle);
             doubleCheckProject.Data.Description.Should().Be(newDescription);
             doubleCheckProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
-            doubleCheckProject.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(newTags.Distinct());
+            doubleCheckProject.Data.Tags.Should().BeEquivalentTo(newTags.Distinct());
         }
 
         [Fact]
@@ -701,7 +701,7 @@ namespace HelloWorld.IntegrationTests
             returnedProject.Data.Title.Should().Be(newTitle);
             returnedProject.Data.Description.Should().Be(newDescription);
             returnedProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
-            returnedProject.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(newTags);
+            returnedProject.Data.Tags.Should().BeEquivalentTo(newTags);
 
             var doubleCheck = await TestClient.GetAsync(ApiRoutes.Project.Get.Replace("{id}", createdProject.Id.ToString()));
             doubleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -710,7 +710,7 @@ namespace HelloWorld.IntegrationTests
             doubleCheckProject.Data.Title.Should().Be(newTitle);
             doubleCheckProject.Data.Description.Should().Be(newDescription);
             doubleCheckProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
-            doubleCheckProject.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(newTags);
+            doubleCheckProject.Data.Tags.Should().BeEquivalentTo(newTags);
         }
 
         [Fact]
@@ -769,7 +769,7 @@ namespace HelloWorld.IntegrationTests
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var returnedProject = await response.Content.ReadAsAsync<Response<ProjectResponse>>();
-            returnedProject.Data.UserLikedIds.Should().Contain(GetUserId(token));
+            returnedProject.Data.UsersLikedIds.Should().Contain(GetUserId(token));
         }
 
         [Fact]
@@ -797,7 +797,7 @@ namespace HelloWorld.IntegrationTests
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var returnedProject = await response.Content.ReadAsAsync<Response<ProjectResponse>>();
-            returnedProject.Data.UserLikedIds.Should().NotContain(GetUserId(token));
+            returnedProject.Data.UsersLikedIds.Should().NotContain(GetUserId(token));
         }
     }
 }

@@ -26,6 +26,6 @@ namespace API.Domain.Database
 
         public List<Reply> Replies { get; set; } = new();
 
-        public List<User> UserLiked { get; set; } = new();
+        public List<User> UsersLiked { get; set; } = new();
     }
 }

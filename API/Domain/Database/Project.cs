@@ -17,9 +17,7 @@ namespace API.Domain.Database
 
         public List<Tag> Tags { get; set; } = new();
         public List<User> Members { get; set; } = new();
-
-        public List<User> UserLiked { get; set; } = new();
-
+        public List<User> UsersLiked { get; set; } = new();
         public List<ImagePath> ImagePaths { get; set; } = new();
     }
 }

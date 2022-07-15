@@ -4,6 +4,7 @@ import heart from '../images/heart.png';
 import report from '../images/error.png';
 import reply from '../images/reply.png';
 import remove from '../images/delete.png';
+import filledHeart from '../images/filled-heart.png';
 
 import VisibilitySensor from 'react-visibility-sensor';
 
@@ -15,6 +16,7 @@ class Comment extends Component {
     }
 
     render() {
+        console.log()
         return (
             <VisibilitySensor partialVisibility onChange={(isVisible) => isVisible && !this.props.creatorImage && this.props.onFirstAppear(this.props.keyProp)} >
                 <div className="comment-container" style={{
@@ -29,8 +31,9 @@ class Comment extends Component {
                                 <p className="comment-creator-name revert-margin">{this.props.creatorName}</p>
                                 <p className="comment-margin-left bold-gray-date revert-margin fill">10 min ago</p>
                                 <div className="comment-likes-container">
-                                    <img className="margin-right" src={heart} alt="" height={15} width={15} />
-                                    <p className="comment-likes revert-margin">100</p>
+                                    <img className="margin-right" src={this.props.usersLikedIds?.findIndex(id => id === this.props.sessionUserId) !== -1 ? filledHeart : heart}
+                                        alt="" height={15} width={15} onClick={() => this.props.onLike(this.props.keyProp)}/>
+                                    <p className="comment-likes revert-margin">{this.props.usersLikedIds?.length ?? 0}</p>
                                 </div>
                             </div>
                             <p className="comment-content">{this.props.content}</p>

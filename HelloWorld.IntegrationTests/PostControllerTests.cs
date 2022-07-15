@@ -22,7 +22,6 @@ namespace HelloWorld.IntegrationTests
         {
             var response = await TestClient.PostAsJsonAsync(ApiRoutes.Post.Create, new API.Contracts.V1.Requests.CreatePostRequest
             {
-                Title = "Test",
                 Content = "Test",
                 TagNames = new List<string>()
             });
@@ -43,7 +42,6 @@ namespace HelloWorld.IntegrationTests
             //Act
             var response = await TestClient.PostAsJsonAsync(ApiRoutes.Post.Create, new CreatePostRequest
             {
-                Title = title,
                 Content = content,
                 TagNames = tagNames
             });
@@ -54,7 +52,7 @@ namespace HelloWorld.IntegrationTests
             var returnedPost = await response.Content.ReadAsAsync<Response<PostResponse>>();
             returnedPost.Data.Title.Should().Be(title);
             returnedPost.Data.Content.Should().Be(content);
-            returnedPost.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(tagNames);
+            returnedPost.Data.Tags.Should().BeEquivalentTo(tagNames);
             returnedPost.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
             returnedPost.Data.CreatedAt.Day.Should().Be(DateTime.UtcNow.Day);
 
@@ -64,7 +62,7 @@ namespace HelloWorld.IntegrationTests
             var doubleCheckPost = await doubleCheck.Content.ReadAsAsync<Response<PostResponse>>();
             doubleCheckPost.Data.Title.Should().Be(title);
             doubleCheckPost.Data.Content.Should().Be(content);
-            doubleCheckPost.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(tagNames);
+            doubleCheckPost.Data.Tags.Should().BeEquivalentTo(tagNames);
             doubleCheckPost.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
             doubleCheckPost.Data.CreatedAt.Day.Should().Be(DateTime.UtcNow.Day);
         }
@@ -75,7 +73,6 @@ namespace HelloWorld.IntegrationTests
             //Arrange
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
-                Title = "New Post",
                 Content = "New Content",
                 TagNames = new List<string>(),
             });
@@ -98,7 +95,6 @@ namespace HelloWorld.IntegrationTests
             //Arrange
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
-                Title = "New Post",
                 Content = "New Content",
                 TagNames = new List<string>(),
             });
@@ -121,7 +117,6 @@ namespace HelloWorld.IntegrationTests
             //Arrange
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
-                Title = "New Post",
                 Content = "New Content",
                 TagNames = new List<string>(),
             });
@@ -168,7 +163,6 @@ namespace HelloWorld.IntegrationTests
 
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
-                Title = title,
                 Content = content,
                 TagNames = tagNames
             });
@@ -184,7 +178,7 @@ namespace HelloWorld.IntegrationTests
             var returnedPost = await response.Content.ReadAsAsync<Response<PostResponse>>();
             returnedPost.Data.Title.Should().Be(title);
             returnedPost.Data.Content.Should().Be(content);
-            returnedPost.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(tagNames);
+            returnedPost.Data.Tags.Should().BeEquivalentTo(tagNames);
         }
 
         [Fact]
@@ -193,7 +187,6 @@ namespace HelloWorld.IntegrationTests
             //Arrange
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
-                Title = "New Post",
                 Content = "New Content",
                 TagNames = new List<string> { "new Tag" }
             });
@@ -256,21 +249,18 @@ namespace HelloWorld.IntegrationTests
 
             var createdPostOne = await CreatePostAsync(new CreatePostRequest
             {
-                Title = titleOne,
                 Content = contentOne,
                 TagNames = tagOne
             });
 
             var createdPostTwo = await CreatePostAsync(new CreatePostRequest
             {
-                Title = "New PostTwo",
                 Content = "New ContentTwo",
                 TagNames = new List<string>() { "Supreme" }
             });
 
             var filter = new GetAllPostsFilters
             {
-                Title = "New Post",
                 TagNames = new List<string>() { "Supreme", "Kind" }
             };
 
@@ -286,7 +276,7 @@ namespace HelloWorld.IntegrationTests
             returnedPosts.Data.Should().HaveCount(1);
             returnedPosts.Data.First().Title.Should().Be(titleOne);
             returnedPosts.Data.First().Content.Should().Be(contentOne);
-            tagOne.Should().BeSubsetOf(returnedPosts.Data.First().Tags.Select(x => x.Name));
+            tagOne.Should().BeSubsetOf(returnedPosts.Data.First().Tags);
         }
 
         [Fact]
@@ -315,7 +305,6 @@ namespace HelloWorld.IntegrationTests
             {
                 await CreatePostAsync(new CreatePostRequest
                 {
-                    Title = "New Post",
                     Content = "New Content",
                     TagNames = new List<string>()
                 });
@@ -348,7 +337,6 @@ namespace HelloWorld.IntegrationTests
         {
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
-                Title = "New Post",
                 Content = "New Content",
                 TagNames = new List<string>()
             });
@@ -369,7 +357,6 @@ namespace HelloWorld.IntegrationTests
             //Arrange
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
-                Title = "New Post",
                 Content = "New Content",
                 TagNames = new List<string>()
             });
@@ -386,7 +373,6 @@ namespace HelloWorld.IntegrationTests
             //Act
             var response = await TestClient.PatchAsync(ApiRoutes.Post.Update.Replace("{id}", createdPost.Id.ToString()), JsonContent.Create(new UpdatePostReqest
             {
-                Title = "Updated Post",
                 Content = "Updated Post",
                 TagNames = new List<string>()
             }));
@@ -401,7 +387,6 @@ namespace HelloWorld.IntegrationTests
             //Arrange
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
-                Title = "New Post",
                 Content = "New Content",
                 TagNames = new List<string>()
             });
@@ -411,7 +396,6 @@ namespace HelloWorld.IntegrationTests
             //Act
             var response = await TestClient.PatchAsync(ApiRoutes.Post.Update.Replace("{id}", createdPost.Id.ToString()), JsonContent.Create(new UpdatePostReqest
             {
-                Title = "Edited By Admin",
                 Content = "Updated Post",
                 TagNames = new List<string>()
             }));
@@ -430,14 +414,12 @@ namespace HelloWorld.IntegrationTests
 
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
-                Title = "New Post",
                 Content = "New Content",
                 TagNames = new List<string>()
             });
 
             await CreatePostAsync(new CreatePostRequest
             {
-                Title = "New Post",
                 Content = "New Content",
                 TagNames = newTags
             });
@@ -447,7 +429,6 @@ namespace HelloWorld.IntegrationTests
             //Act
             var response = await TestClient.PatchAsync(ApiRoutes.Post.Update.Replace("{id}", createdPost.Id.ToString()), JsonContent.Create(new UpdatePostReqest
             {
-                Title = "New Post",
                 Content = newContent,
                 TagNames = new List<string>() { "Test" }
             }));
@@ -465,7 +446,7 @@ namespace HelloWorld.IntegrationTests
 
             doubleCheckPost.Data.Title.Should().Be(title);
             doubleCheckPost.Data.Content.Should().Be(newContent);
-            doubleCheckPost.Data.Tags.Select(x => x.Name).Should().BeEquivalentTo(newTags);
+            doubleCheckPost.Data.Tags.Should().BeEquivalentTo(newTags);
         }
 
 
@@ -475,7 +456,6 @@ namespace HelloWorld.IntegrationTests
             //Arrange
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
-                Title = "New Post",
                 Content = "New Content",
                 TagNames = new List<string>()
             });
@@ -506,7 +486,6 @@ namespace HelloWorld.IntegrationTests
             //Arrange
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
-                Title = "New Post",
                 Content = "New Content",
                 TagNames = new List<string>()
             });
@@ -520,13 +499,13 @@ namespace HelloWorld.IntegrationTests
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var returnedPost = await response.Content.ReadAsAsync<Response<PostResponse>>();
-            returnedPost.Data.UserLikedIds.Should().Contain(GetUserId(token));
+            returnedPost.Data.UsersLikedIds.Should().Contain(GetUserId(token));
 
             var doubleCheck = await TestClient.GetAsync(ApiRoutes.Post.Get.Replace("{id}", createdPost.Id.ToString()));
             doubleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var doubleCheckPost = await doubleCheck.Content.ReadAsAsync<Response<PostResponse>>();
-            doubleCheckPost.Data.UserLikedIds.Should().Contain(GetUserId(token));
+            doubleCheckPost.Data.UsersLikedIds.Should().Contain(GetUserId(token));
         }
 
         [Fact]
@@ -535,7 +514,6 @@ namespace HelloWorld.IntegrationTests
             //Arrange
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
-                Title = "New Post",
                 Content = "New Content",
                 TagNames = new List<string>()
             });
@@ -550,13 +528,13 @@ namespace HelloWorld.IntegrationTests
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var returnedPost = await response.Content.ReadAsAsync<Response<PostResponse>>();
-            returnedPost.Data.UserLikedIds.Should().NotContain(GetUserId(token));
+            returnedPost.Data.UsersLikedIds.Should().NotContain(GetUserId(token));
 
             var doubleCheck = await TestClient.GetAsync(ApiRoutes.Post.Get.Replace("{id}", createdPost.Id.ToString()));
             doubleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var doubleCheckPost = await doubleCheck.Content.ReadAsAsync<Response<PostResponse>>();
-            doubleCheckPost.Data.UserLikedIds.Should().NotContain(GetUserId(token));
+            doubleCheckPost.Data.UsersLikedIds.Should().NotContain(GetUserId(token));
         }
     }
 }

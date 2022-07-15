@@ -1,5 +1,5 @@
 import React, { Component, createRef } from 'react';
-import { sendFORMRequest, sendJSONRequest } from '../requestFuncs';
+import { handleUpdateRating, sendFORMRequest, sendJSONRequest } from '../requestFuncs';
 
 import Tag from './Tag';
 import ImageSlider from './ImageSlider';
@@ -16,6 +16,7 @@ import rightArrow from '../images/right-arrow2.png';
 import share from '../images/share.png';
 import emoji from '../images/emoji.png';
 import send from '../images/send.png';
+import filledHeart from '../images/filled-heart.png';
 
 import VisibilitySensor from 'react-visibility-sensor';
 
@@ -43,17 +44,18 @@ export class Post extends Component {
                     width: this.props.width
                 }}>
                     <div className="post-header">
-                        <img className="post-owner-pic" src={this.props.creatorPic} alt="" width={40} height={40} />
+                        <img className="post-owner-pic" src={this.props.creatorImage} alt="" width={40} height={40} />
                         <div className="post-owner">
                             <h6 className="post-owner-name">{this.props.creatorName}</h6>
-                            <p className="post-posted-at">24.06</p>
+                            <p className="post-posted-at">{formatDate(this.props.createdAt)}</p>
                         </div>
                         <div className="post-header-menu">
                             {
-                                this.props.tags && this.props.tags.length > 0 && <Tag name={this.props.tags[0].name} />
+                                this.props.tags && this.props.tags.length > 0 && <Tag name={this.props.tags[0]} />
                             }
-                            <img src={heart} width={30} height={30} alt="" />
-                            <p className="header-likes">100</p>
+                            <img src={this.props.usersLikedIds?.findIndex(id => id === this.props.sessionUserId) !== -1 ? filledHeart : heart} width={30} height={30} alt=""
+                                onClick={() => this.props.onLike(this.props.keyProp)} />
+                            <p className="header-likes">{this.props.usersLikedIds?.length ?? 0}</p>
                             <DropDown toggleButton={{
                                 icon: undefined,
                                 arrowIconOpen: menuOpened,
@@ -104,7 +106,7 @@ export class DetailedPost extends Component {
     componentDidMount() {
         this.getComments();
     }
-
+    
     getComments = () => {
         sendJSONRequest("GET", '/comment/get_all/', undefined, this.props.tokens.token, {
             postId: this.props.id
@@ -117,7 +119,7 @@ export class DetailedPost extends Component {
 
     handleCreatorInfos = (index) => {
         let newComments = this.state.comments;
-        sendJSONRequest("GET", `/users/get/${newComments[index].creatorId}`, undefined, this.props.tokens.token)
+        sendJSONRequest("GET", `/user/get/${newComments[index].creatorId}`, undefined, this.props.tokens.token)
             .then(response => {
                 newComments[index].creatorImage = response.data.imageUrl;
                 newComments[index].creatorName = response.data.userName;
@@ -132,7 +134,7 @@ export class DetailedPost extends Component {
     handleCreatorInfosForReply = (commentIndex, index) => {
         let newComments = this.state.comments;
         
-        sendJSONRequest("GET", `/users/get/${newComments[commentIndex].replies[index].creatorId}`, undefined, this.props.tokens.token)
+        sendJSONRequest("GET", `/user/get/${newComments[commentIndex].replies[index].creatorId}`, undefined, this.props.tokens.token)
             .then(response => {
                 newComments[commentIndex].replies[index].creatorImage = response.data.imageUrl;
                 newComments[commentIndex].replies[index].creatorName = response.data.userName;
@@ -184,6 +186,12 @@ export class DetailedPost extends Component {
         }
     }
 
+    handleSuccessRating = (index, response) => {
+        let newComments = this.state.comments;
+        newComments[index].usersLikedIds = response.data.usersLikedIds;
+        this.setState({ comments: newComments })
+    }
+
     handleRemoveComment = (id) => {
         sendJSONRequest("DELETE", `/comment/delete/${id}`, undefined, this.props.tokens.token)
             .then(_ => {
@@ -211,9 +219,6 @@ export class DetailedPost extends Component {
     }
 
     handleReply = (id, creatorName) => {
-        console.log(creatorName)
-        console.log(id)
-
         this.setState({
             currentComment: `@${creatorName} `,
             currentReply: id
@@ -234,15 +239,16 @@ export class DetailedPost extends Component {
                             <div className="post-owner">
                                 <div className="detailed-post-tags">
                                 {
-                                    this.props.tags.map((item, index) =>
-                                        <Tag key={index} paddingY="2px" name={item.name} />)
+                                    this.props.tags?.map((item, index) =>
+                                        <Tag key={index} paddingY="2px" name={item} />)
                                     }
                                 </div>
                                 <p className="detailed-post-posted-at">{formatDate(this.props.createdAt)}</p>
-                            </div>
+                            </div> 
                             <div className="post-header-menu">
-                                <img src={heart} width={30} height={30} alt="" />
-                                <p className="header-likes" style={{ marginLeft: 5 }}>100</p>
+                                <img src={this.props.usersLikedIds?.findIndex(id => id === this.props.sessionUserId) !== -1 ? filledHeart : heart}
+                                    width={30} height={30} alt="" onClick={() => this.props.onLike(this.props.keyProp)} />
+                                <p className="header-likes" style={{ marginLeft: 5 }}>{this.props.usersLikedIds?.length ?? 0}</p>
                                 <DropDown toggleButton={{
                                     icon: undefined,
                                     arrowIconOpen: menuOpened,
@@ -263,14 +269,17 @@ export class DetailedPost extends Component {
                     <div className="detailed-post-comments-section">
                         <div className="detailed-post-comments-container">
                         {
-                                this.state.comments.map((item, index) =>
-                                    <div key={index} className="detailed-post-comment">
-                                        <Comment keyProp={index} id={item.id} creatorName={item.creatorName} creatorImage={item.creatorImage}                                             content={item.content} replies={item.replies} userId={ this.props.userId}
-                                            ownComment={this.props.userId === item.creatorId} ownReply={this.props.checkOwn}
+                                this.state.comments?.map((item, index) => {
+                                    return ( <div key={index} className="detailed-post-comment">
+                                        <Comment keyProp={index} id={item.id} creatorName={item.creatorName} creatorImage={item.creatorImage}
+                                            content={item.content} replies={item.replies} sessionUserId={this.props.sessionUserId} usersLikedIds={item.usersLikedIds}
+                                            ownComment={this.props.sessionUserId === item.creatorId} ownReply={this.props.checkOwn}
                                             onFirstAppearReply={this.handleCreatorInfosForReply} onFirstAppear={this.handleCreatorInfos}
                                             onRemoveClick={this.handleRemoveComment} onRemoveReplyClick={this.handleRemoveReply}
-                                            onReportClick={this.props.onReportClick} onReplyClick={this.handleReply} />
-                                    </div>
+                                            onReportClick={this.props.onReportClick} onReplyClick={this.handleReply}
+                                            onLike={(index) => handleUpdateRating(item.id, "comment", this.props.tokens.token, this.props.onError, (response) => this.handleSuccessRating(index, response))} />
+                                    </div> )
+                                }
                             )
                             }
                         </div>

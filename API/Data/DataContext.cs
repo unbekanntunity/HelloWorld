@@ -29,7 +29,7 @@ namespace API.Data
                 .HasForeignKey(x => x.CreatorId);
 
             modelBuilder.Entity<Article>()
-               .HasMany(x => x.UserLiked)
+               .HasMany(x => x.UsersLiked)
                .WithMany(x => x.ArticlesLiked);
 
             modelBuilder.Entity<Article>()
@@ -43,7 +43,7 @@ namespace API.Data
                 .HasForeignKey(x => x.CreatorId);
 
             modelBuilder.Entity<Comment>()
-                .HasMany(x => x.UserLiked)
+                .HasMany(x => x.UsersLiked)
                 .WithMany(x => x.CommentsLiked);
 
             modelBuilder.Entity<Comment>()
@@ -65,7 +65,7 @@ namespace API.Data
                 .WithMany(x => x.Posts);
 
             modelBuilder.Entity<Post>()
-                .HasMany(x => x.UserLiked)
+                .HasMany(x => x.UsersLiked)
                 .WithMany(x => x.PostsLiked);
 
             modelBuilder.Entity<Post>()
@@ -82,7 +82,7 @@ namespace API.Data
                 .WithMany(x => x.Projects);
 
             modelBuilder.Entity<Project>()
-                .HasMany(x => x.UserLiked)
+                .HasMany(x => x.UsersLiked)
                 .WithMany(x => x.ProjectsLiked);
 
             modelBuilder.Entity<Project>()
@@ -130,7 +130,11 @@ namespace API.Data
 
             modelBuilder.Entity<User>()
               .HasMany(x => x.RepliesLiked)
-              .WithMany(x => x.UserLiked);
+              .WithMany(x => x.UsersLiked);
+
+            modelBuilder.Entity<User>()
+            .HasMany(x => x.DiscussionsLiked)
+            .WithMany(x => x.UsersLiked);
 
             modelBuilder.Entity<Reply>()
                 .HasMany(x => x.Replies)

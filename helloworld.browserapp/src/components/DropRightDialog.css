@@ -8,10 +8,9 @@
 
 .dr-dialog-content-show {
     display: block;
-    margin-left: 10px;
+    margin-left: 30px;
     border: 1px solid black;
     border-radius: 20px;
-    left:60px;
     position: absolute;
     background-color: white;
 }

@@ -10,7 +10,7 @@
         public string CreatorId { get; set; }
         public Guid PostId { get; set; }
 
-        public List<string> UserLikedIds { get; set; } = new();
+        public List<string> UsersLikedIds { get; set; } = new();
 
         public List<ReplyResponse> Replies { get; set; } = new();
     }

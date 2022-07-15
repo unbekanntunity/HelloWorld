@@ -36,7 +36,7 @@ class NavBar extends Component {
                     </Nav.Item>
                     <Nav.Item>
                         <div className="account-icon">
-                            <DropDown toggleButton={{ icon: this.props.accountIcon, }} iconSize={40} arrowIconSize={15} contentLeft="100px">
+                            <DropDown toggleButton={{ icon: this.props.accountIcon, }} iconSize={40} arrowIconSize={15} contentLeft="100px" zIndex={3}>
                                 <DropDown.Item linkTo={this.props.accountLink} icon={this.props.accountGenIcon} text="Profile" iconSize={35} />
                                 <DropDown.Item linkTo={this.props.savedLink} icon={this.props.savedIcon} text="Saved" iconSize={30} />
                                 <DropDown.Item linkTo={this.props.settingsLink} icon={this.props.settingsIcon} text="Settings" iconSize={30} />

@@ -22,9 +22,6 @@
 }
 
 .post-owner-pic {
-    border: 1px solid black;
-    border-radius: 100%;
-
     float: left;
     margin: 10px;
     width: 40px;

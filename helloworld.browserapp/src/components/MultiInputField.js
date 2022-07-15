@@ -4,7 +4,7 @@ import './MultiInputField.css';
 
 class MultiInputField extends Component {
 	state = {
-		letters: this.props.placeholder.lenght ?? 0,
+		letters: this.props.placeholder?.lenght ?? 0,
 		counterClasses: 'letters'
 	}
 
@@ -35,7 +35,7 @@ class MultiInputField extends Component {
 				<textarea className="textbox" style={{
 					height: this.props.height ?? '100%',
 					width: this.props.width ?? '100%'
-				}} placeholder={this.props.placeholder} onChangeCapture={this.handleChangeCapture} onChange={this.handleChange} />
+				}} placeholder={this.props.placeholder} onChangeCapture={this.handleChangeCapture} onChange={this.handleChange} value={this.props.value} />
 				<p className={this.state.counterClasses}>{this.state.letters}/{this.props.maxLetters}</p>
 			</div>
 		);

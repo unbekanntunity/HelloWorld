@@ -12,7 +12,9 @@
         public DateTime UpdatedAt { get; set; }
 
 
-        public List<MinimalTagResponse> Tags { get; set; }
+        public List<string> Tags { get; set; }
         public List<ArticleResponse> Articles { get; set; }
+
+        public List<string> UsersLikedIds { get; set; }
     }
 }

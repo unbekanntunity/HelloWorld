@@ -4,6 +4,6 @@ namespace API.Domain.Database.Interfaces
 {
     public interface IRateable
     {
-        public List<User> UserLiked { get; set; }
+        public List<User> UsersLiked { get; set; }
     }
 }

@@ -16,7 +16,6 @@ html, body, #root, #root > div {
     right: 70px;
     bottom: 60px;
     display: flex;
-    width: 100%;
     align-items: flex-end;
     justify-content: flex-end;
 }
@@ -71,7 +70,7 @@ html, body, #root, #root > div {
     height: 34px;
 }
 
-.center-horizontal{
+.center-horizontal {
     display: flex;
     justify-content: center;
 }
@@ -134,4 +133,8 @@ html, body, #root, #root > div {
     display: flex;
     align-items: center;
     margin-right: 10px;
+}
+
+.column{
+    flex-direction: column;
 }

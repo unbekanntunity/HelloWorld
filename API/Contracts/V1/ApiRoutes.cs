@@ -18,19 +18,21 @@ namespace API.Contracts.V1
             public const string Login = Base + "/identity/login";
 
 
-            public const string Create = Base + "/users/create";
+            public const string Create = Base + "/user/create";
 
-            public const string Get = Base + "/users/get/{id}";
+            public const string Get = Base + "/user/get/{id}";
 
-            public const string GetOwn = Base + "/users/get";
+            public const string GetOwn = Base + "/user/get";
 
-            public const string GetAll = Base + "/users/get_all";
+            public const string GetMinimal = Base + "/user/get_minimal/{id}";
 
-            public const string Delete = Base + "/users/delete/{id}";
+            public const string GetAll = Base + "/user/get_all";
 
-            public const string Update = Base + "/users/update/";
+            public const string Delete = Base + "/user/delete/{id}";
 
-            public const string UpdateLogin = Base + "/users/update_login/{id}";
+            public const string Update = Base + "/user/update";
+
+            public const string UpdateLogin = Base + "/user/update_login/{id}";
         }
 
         public static class Article
@@ -73,12 +75,13 @@ namespace API.Contracts.V1
 
             public const string Delete = Base + "/discussion/delete/{id}";
 
+            public const string DeleteAll = Base + "/discussion/delete_all";
+
             public const string Get = Base + "/discussion/get/{id}";
 
             public const string GetAll = Base + "/discussion/get_all";
 
-            public const string GetAllFast = Base + "/discussion/get_all_fast";
-
+            public const string UpdateRating = Base + "/discussion/update_rating/{id}";
         }
 
         public static class Project
@@ -115,6 +118,8 @@ namespace API.Contracts.V1
             public const string Get = Base + "/post/get/{id}";
 
             public const string GetAll = Base + "/post/get_all";
+
+            public const string GetAllMinimal = Base + "/post/get_all_minimal";
         }
 
         public static class Reply

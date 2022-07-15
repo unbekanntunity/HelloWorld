@@ -6,6 +6,7 @@ using API.Domain.Database;
 using API.Domain.Filters;
 using API.Extensions;
 using API.Helpers;
+using API.Repositories;
 using API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -18,15 +19,23 @@ namespace API.Controllers.V1
     {
         private readonly IUriService _uriService;
         private readonly IDiscussionService _discussionService;
+        private readonly IFileManager _fileManager;
+        private readonly IIdentityService _identityService;
+        private readonly IRateableService<Discussion> _rateableService;
+        private readonly INonQueryRepository<Discussion> _nonQueryRepository;
 
-        public DiscussionController(IDiscussionService discussionService, IUriService uriService)
+        public DiscussionController(IDiscussionService discussionService, IUriService uriService, IRateableService<Discussion> rateableService, IIdentityService identityService, IFileManager fileManager, INonQueryRepository<Discussion> nonQueryRepository)
         {
             _discussionService = discussionService;
             _uriService = uriService;
+            _rateableService = rateableService;
+            _identityService = identityService;
+            _fileManager = fileManager;
+            _nonQueryRepository = nonQueryRepository;
         }
 
         [HttpPost(ApiRoutes.Discussion.Create)]
-        public async Task<IActionResult> Create([FromBody] CreateDiscussionRequest request)
+        public async Task<IActionResult> Create([FromForm] CreateDiscussionRequest request)
         {
             var discussion = new Discussion
             {
@@ -112,6 +121,34 @@ namespace API.Controllers.V1
 
             var result = await _discussionService.DeleteAsync(id);
             return result.Success ? NoContent() : BadRequest(result);
+        }
+
+        [HttpDelete(ApiRoutes.Discussion.DeleteAll)]
+        public async Task<IActionResult> DeleteAll()
+        {
+            if (!HttpContext.HasRole("ContentAdmin"))
+            {
+                return Unauthorized();
+            }
+
+            var discussions = await _discussionService.GetAllAsync();
+            var result = await _nonQueryRepository.DeleteRangeAsync(discussions);
+            return result ? NoContent() : BadRequest();
+        }
+
+        [HttpPatch(ApiRoutes.Discussion.UpdateRating)]
+        public async Task<IActionResult> UpdateRating([FromRoute] Guid id)
+        {
+            var discussion = await _discussionService.GetByIdAsync(id);
+            var user = await _identityService.GetUserByIdAsync(HttpContext.GetUserId());
+            if (discussion == null || user == null)
+            {
+                return NotFound();
+            }
+
+            var result = await _rateableService.UpdateRatingAsync(discussion, user);
+            var response = result.Data.ToResponse();
+            return Ok(new Response<DiscussionResponse>(response));
         }
     }
 }

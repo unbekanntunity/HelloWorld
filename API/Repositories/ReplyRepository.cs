@@ -25,7 +25,7 @@ namespace API.Repositories
             .Include(x => x.RepliedOnComment)
             .Include(x => x.RepliedOnReply)
             .Include(x => x.Replies)
-            .Include(x => x.UserLiked)
+            .Include(x => x.UsersLiked)
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 }

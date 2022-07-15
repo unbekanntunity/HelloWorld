@@ -17,7 +17,7 @@ import { Dialog, ReportDialog } from '../components/Dialog';
 import MultiInputField from '../components/MultiInputField';
 import TopBanner from '../components/TopBanner/TopBanner';
 
-import { sendJSONRequest } from '../requestFuncs';
+import { handleUpdateRating, sendFORMRequest, sendJSONRequest } from '../requestFuncs';
 
 import "./Discussions.css";
 
@@ -31,11 +31,7 @@ class Discussions extends Component {
                 startMessage: "Hello guys, I spent the last weeks trying out the new MAUI framework. I liked that fact that the MAUI has similar elements to Xamarin, so that wasnt too tough to learn it.By and large, I had a nice experience and recommend to test it out as well.",
                 createdAt: "24.05",
                 creatorImage: null,
-                tags: [
-                    {
-                        name: "hello"
-                    }
-                ],
+                tags: ["C++"],
                 lastMessage: "Its quite nice, but some things are still...",
                 lastMessageAuthor: "HelloWorld",
                 lastMessageCreated: "25.05"
@@ -83,11 +79,15 @@ class Discussions extends Component {
             return;
         }
 
-        sendJSONRequest("POST", "/discussion/create", {
-            title: this.state.currentTitle,
-            startMessage: this.state.currentStartMessage,
-            tagNames: this.tagSectionRef.current.getTags(),
-        }, this.props.tokens.token)
+        let formData = new FormData();
+        formData.append("title", this.state.currentTitle);
+
+        let tags = this.tagSectionRef.current.getTags();
+        for (let i = 0; i < tags.length; i++) {
+            formData.append("tagNames", tags[i]);
+        }
+
+        sendFORMRequest("POST", "/discussion/create", formData, this.props.tokens.token)
             .then(response => {
                 if (response.errors) {
                     return;
@@ -95,24 +95,12 @@ class Discussions extends Component {
 
                 this.setState({
                     discussions: [...this.state.discussions, response.data],
-                    showCreatePostDialog: false,
-                    existsCreatePostDialog: false
+                    showCreateDiscussionDialog: false,
+                    existsCreateDiscussionsDialog: false
                 });
             }, error => {
                 this.props.onError(error.message);
             })
-    }
-
-    handleCreatorInfos = (index) => {
-        let newDiscussions = this.state.discussions;
-
-        sendJSONRequest("GET", `/users/get/${this.state.discussions[index].creatorId}`, undefined, this.props.tokens.token)
-            .then(response => {
-                newDiscussions[index].creatorImage = response.data.image;
-                this.setState({ discussions: newDiscussions })
-            }, error => {
-                this.props.onError(error.message);
-            }); 
     }
 
     handleStartPreview = () => {
@@ -151,9 +139,9 @@ class Discussions extends Component {
 
         let newDiscussions = this.state.discussions;
 
-        sendJSONRequest("GET", `/users/get/${this.state.discussions[index].creatorId}`, undefined, this.props.tokens.token)
+        sendJSONRequest("GET", `/user/get_minimal/${this.state.discussions[index].creatorId}`, undefined, this.props.tokens.token)
             .then(response => {
-                newDiscussions[index].creatorImage = response.data.image;
+                newDiscussions[index].creatorImage = response.data.imageUrl;
                 this.setState({
                     discussions: newDiscussions,
                     existsCreateDiscussionsDialog: false,
@@ -162,6 +150,12 @@ class Discussions extends Component {
             }, error => {
                 this.props.onError(error.message);
             });
+    }
+
+    handleSuccessRating = (index, response) => {
+        let newDiscussions = this.state.discussions;
+        newDiscussions[index].usersLikedIds = response.data.usersLikedIds;
+        this.setState({ discussions: newDiscussions })
     }
 
     validateDiscussion = () => {
@@ -189,15 +183,16 @@ class Discussions extends Component {
                         <TopBanner.SimpleItem name="Followed" selectedTextColor="white" unselectedTextColor="black" />
                         <TopBanner.SimpleItem name="Active" selectedTextColor="white" unselectedTextColor="black" />
                     </TopBanner>
-                    <div className="discussions-discussions">
+                    <div className="center-vertical column fill">
                     <div>
                     {
                         this.state.discussions.map((item, index) =>
                             <div key={index} style={{ borderBottom: index !== (this.state.discussions.length - 1) ? "1px solid black" : "none" }}>
                                 <Discussion keyProp={index} width={600} onFirstAppear={this.handleCreatorInfos}
                                     title={item.title} startMessage={item.startMessage} createdAt={item.createdAt} tags={item.tags} creatorImage={item.creatorImage}
-                                    lastMessage={item.lastMessage} lastMessageAuthor={item.lastMessageAuthor} lastMessageCreated={item.lastMessageCreated}
-                                    onFirstAppear={this.handleCreatorInfos} onReportClick={() => this.setState({ showReportDialog: true })}/>
+                                    lastMessage={item.lastMessage} lastMessageAuthor={item.lastMessageAuthor} lastMessageCreated={item.lastMessageCreated} sessionUserId={this.props.sessionUserId}
+                                    onFirstAppear={this.handleCreatorInfos} onReportClick={() => this.setState({ showReportDialog: true })} usersLikedIds={item.usersLikedIds}
+                                    onLike={(index) => handleUpdateRating(item.id, "discussion", this.props.tokens.token, this.props.onError, (response) => this.handleSuccessRating(index, response))} />
                             </div>
                         )
                     }

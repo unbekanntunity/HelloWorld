@@ -16,7 +16,7 @@ namespace API.Repositories
         public async Task<List<Article>> GetAllAsync()
         {
             return await _dataContext.Articles
-                .Include(x => x.UserLiked)
+                .Include(x => x.UsersLiked)
                 .Include(x => x.Replies)
                 .ToListAsync();
         }
@@ -26,7 +26,7 @@ namespace API.Repositories
             return await _dataContext.Articles
                 .Include(x => x.Creator)
                 .Include(x => x.Discussion)
-                .Include(x => x.UserLiked)
+                .Include(x => x.UsersLiked)
                 .Include(x => x.Replies)
                 .FirstOrDefaultAsync(x => x.Id == articleId);
         }

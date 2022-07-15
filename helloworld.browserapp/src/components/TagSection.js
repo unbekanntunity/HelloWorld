@@ -18,7 +18,6 @@ class TagSection extends Component {
         allTags: [],
         filteredTags: [],
         addedTags: [],
-
         currentInput: "",
     }
 
@@ -27,9 +26,11 @@ class TagSection extends Component {
     }
 
     getTags = () => {
-        console.log(this.state.addedTags.map(item => item.name));
-
         return this.state.addedTags.map(item => item.name);
+    }
+
+    updateAddedTags = (tags) => {
+        this.setState({ addedTags: tags });
     }
 
     getTagsPerRequest = async () => {
@@ -39,10 +40,10 @@ class TagSection extends Component {
                     allTags: response.data,
                     filteredTags: this.filterTags(response.data)
                 })
-            },
-                error => {
-                    this.props.onError(error.message);
-                });
+            }, error => {
+                this.props.onError(error.message);
+            }
+        );
     }
 
     filterTags = (allData) => {
@@ -105,6 +106,8 @@ class TagSection extends Component {
                 return `${item.discussionsTaged} discussions`;
             case "Projects":
                 return `${item.projectsTaged} projects`;
+            case "Users":
+                return `${item.usersTaged} users`;
             default:
                 return "No type supplied";
         }
@@ -114,24 +117,28 @@ class TagSection extends Component {
         return (
             <div>
                 <div className="section-header">
-                    <p className="section-header-text">Tags</p>
+                    <p className="section-header-text" style={{
+                        fontSize: this.props.headerSize ?? ""
+                    }}>Tags</p>
                     <div className="tagSection-headerDrop">
                         <DropRightDialog menuOpenedIcon={close} menuClosedIcon={add} iconSize={20}
                             onToggleButtonClick={this.handleDropRightToggle} show={this.state.showAddTagDialog} zIndex={this.props.zIndex}>
-                            <InputField design='m2' name="tagSearch" onItemClick={this.handleTagSelected} onChange={this.handleInput}>
+                            <div className="tagSection-headerdrop-container">
+                                <InputField design='m2' name="tagSearch" onItemClick={this.handleTagSelected} onChange={this.handleInput} showUnderline={true}>
                                 {
                                     this.renderTags()
                                 }
-                            </InputField>
+                                </InputField>
+                            </div>
                         </DropRightDialog>
                     </div>
                 </div>
-                <div className="tagSection-tags">
+                <div className="flex">
                 {
-                    this.state.addedTags.map((item, index) => {
-                        return <Tag key={index} name={item.name} propKey={index}
-                            removable={true} removeIcon={remove} iconSize={20} onRemove={this.handleRemove} />
-                    })
+                    this.state.addedTags &&
+                    this.state.addedTags.map((item, index) =>
+                        <Tag key={index} name={item.name ?? item} propKey={index} margin="0px 10px 0px 0px"
+                            removable={true} removeIcon={remove} iconSize={20} onRemove={this.handleRemove} /> )
                 }
                 </div>
             </div>

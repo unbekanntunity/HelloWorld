@@ -4,7 +4,6 @@
     {
         public Guid Id { get; set; }
 
-        public string Title { get; set; }
         public string Content { get; set; }
 
         public List<string> ImageUrls { get; set; }
@@ -14,9 +13,9 @@
 
         public string CreatorId { get; set; }
 
-        public int UserLiked { get; set; }
+        public List<string> UsersLikedIds { get; set; }
         public int Comments { get; set; }
 
-        public List<MinimalTagResponse> Tags { get; set; }
+        public List<string> Tags { get; set; }
     }
 }

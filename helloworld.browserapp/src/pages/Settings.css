@@ -1,10 +1,11 @@
 .settings-box{
+    margin-top: 30px;
     background-color: white;
     border: 1px solid black;
     border-radius: 20px;
 
     width: min-content;
-    height: 75vh;
+    height: min-content;
     padding: 20px 5px;
 }
 
@@ -34,13 +35,23 @@
 
 .settings-section{
     display: flex;
+    width: 100%;
+    margin-bottom: 20px;
 }
 
 .settings-section-title {
     font-weight: bold;
-    width: 30%;
+    width: 20%;
 }
 
 .settings-section-image-edit {
     margin-left: 10px;
+}
+
+.settings-section-image-input{
+    display: none;
+}
+
+.settings-section-button{
+    margin: 0px 10px;
 }

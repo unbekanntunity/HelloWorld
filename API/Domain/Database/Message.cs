@@ -15,6 +15,6 @@ namespace API.Domain.Database
 
         public string CreatorId { get; set; }
         public User Creator { get; set; }
-        public List<User> UserLiked { get; set; }
+        public List<User> UsersLiked { get; set; }
     }
 }

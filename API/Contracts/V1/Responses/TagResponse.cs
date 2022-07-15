@@ -7,5 +7,6 @@
         public int DiscussionsTaged { get; set; }
         public int PostsTaged { get; set; }
         public int ProjectsTaged { get; set; }
+        public int UsersTaged { get; set; }
     }
 }

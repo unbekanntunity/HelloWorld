@@ -16,12 +16,13 @@ namespace API.Repositories
         public async Task<List<Post>> GetAllAsync() => await _dataContext.Posts
             .Include(x => x.Tags)
             .Include(x => x.ImagePaths)
+            .Include(x => x.UsersLiked)
             .ToListAsync();
         public async Task<Post?> GetByIdAsync(Guid id) => await _dataContext.Posts
             .Include(x => x.Comments)
             .Include(x => x.Creator)
             .Include(x => x.Tags)
-            .Include(x => x.UserLiked)
+            .Include(x => x.UsersLiked)
             .Include(x => x.ImagePaths)
             .FirstOrDefaultAsync(x => x.Id == id);
     }

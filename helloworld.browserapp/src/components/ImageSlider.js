@@ -13,7 +13,7 @@ class ImageSlider extends Component {
         currentImage: this.props.images[0],
     }
 
-    handleSliderDotClick(element) {
+    handleSliderDotClick = (element) => {
         let dot = null;
 
         if (element.className !== "circle" && element.className !== "circle active") {
@@ -27,7 +27,10 @@ class ImageSlider extends Component {
         dots.forEach(a => a.lastChild.className = "circle");
 
         dot.className = "circle active";
-        this.setState({ currentDot: parseInt(dot.parentElement.id) });
+        this.setState({
+            currentDot: parseInt(dot.parentElement.id),
+            currentImage: this.props.images[parseInt(dot.parentElement.id)]
+        });
     }
 
     handlePicButtonPressed = (direction) => {
@@ -66,9 +69,9 @@ class ImageSlider extends Component {
                     </div>
                     {
                         this.props.images.map((_, index) =>
-                        <a id={index} key={index} href={`#slide-${index}`} onClick={(event) => this.handleSliderDotClick(event.target)}>
-                            <div className={index === 0 ? "circle active" : "circle"} />
-                        </a>
+                            <a id={index} key={index} onClick={(event) => this.handleSliderDotClick(event.target, event)}>
+                                <div className={index === 0 ? "circle active" : "circle"} />
+                            </a>
                     )
                     }
                 </div>

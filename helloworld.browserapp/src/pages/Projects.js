@@ -21,8 +21,9 @@ import Ex3 from '../images/Progress3.png';
 
 import ImageSection from '../components/ImageSection';
 import LinkSection from '../components/LinkSection';
-import { sendFORMRequest } from '../requestFuncs';
 import TagSection from '../components/TagSection';
+
+import { handleUpdateRating, sendFORMRequest, sendJSONRequest } from '../requestFuncs';
 
 import './Projects.css'
 
@@ -30,14 +31,9 @@ class Projects extends Component {
     state = {
         projects: [
             {
+                creatorId: this.props.user.id,
                 title: "HelloWorld",
-                tags: [
-                    {
-                        name: "C#"
-                    },
-                    {
-                        name: "MAUI"
-                    }                ],
+                tags: [ "C#", "MAUI"],
                 description: "A social media app, including frontend and backend for mulitple plattforms. Its only for learning prurpose.",
                 images: [Ex1, Ex2, Ex3],
                 createdAt: "25.04",
@@ -62,11 +58,47 @@ class Projects extends Component {
         this.linkSectionRef = createRef();
     }
 
+    componentDidMount() {
+        this.getProjects();
+    }
+
+    getProjects = () => {
+        sendJSONRequest("GET", "/project/get_all/", undefined, this.props.tokens.token, {
+            CreatorId: this.props.user.id
+        }).then(response => {
+            this.setState({ projects: [...this.state.projects, ...response.data] })
+        }, error => {
+            this.props.onError(error.message)
+        })
+    }
+
     handleCreateProject = () => {
         this.setState({
             showCreateProjectDialog: true,
             existsCreateProjectDialog: true
         })
+    }
+
+    handleCreatorInfos = (index) => {
+        if (this.state.showStopPreviewButton) {
+            return;
+        }
+
+        let newProjects = this.state.projects;
+
+        sendJSONRequest("GET", `/user/get_minimal/${this.state.projects[index].creatorId}`, undefined, this.props.tokens.token)
+            .then(response => {
+                console.log(response);
+
+                newProjects[index].creatorImage = response.data.imageUrl;
+                this.setState({
+                    projects: newProjects,
+                    existsCreateDiscussionsDialog: false,
+                    showCreateDiscussionDialog: false,
+                })
+            }, error => {
+                this.props.onError(error.message);
+            });
     }
 
     handleSubmit = () => {
@@ -90,10 +122,14 @@ class Projects extends Component {
             formData.append("links", links[i]);
         }
 
-        sendFORMRequest("POST", "/project/create", formData, this.props.tokens.token).then(
-            response => {
+        sendFORMRequest("POST", "/project/create", formData, this.props.tokens.token)
+            .then( response => {
                 console.log(response);
-                this.setState({ projects: [...this.state.projects, response.data] });
+                this.setState({
+                    projects: [...this.state.projects, response.data],
+                    showCreateProjectDialog: false,
+                    existsCreateProjectDialog: false
+                });
             },
             error => {
                 console.log(error);
@@ -136,6 +172,13 @@ class Projects extends Component {
         })
     }
 
+    handleSuccessRating = (index, response) => {
+        console.log(response);
+        let newProjects = this.state.projects;
+        newProjects[index].usersLikedIds = response.data.usersLikedIds;
+        this.setState({ projects: newProjects })
+    }
+
     validateProject = () => {
         let result = this.state.currentName.length !== 0 && this.state.currentDescription.length !== 0
 
@@ -152,13 +195,15 @@ class Projects extends Component {
                 <div>
                     <LeftBanner text="Projects" />
                 </div>
-                <div className="projects-projects">
+                <div className="center-vertical column fill">
                     {
-                    this.state.projects.map((item, index) =>
-                        <Project key={index} title={item.title} createdAt={item.createdAt} description={item.description}
-                            images={item.images} creatorImage={item.creatorImage} tags={item.tags} width={600} imageHeight={300} imageWidth={500}
-                            onReportClick={() => this.setState({ showReportDialog: true })} />
-                        )}
+                        this.state.projects.map((item, index) =>
+                            <Project key={index} keyProp={index} title={item.title} createdAt={item.createdAt} description={item.description} usersLikedIds={item.usersLikedIds}
+                            images={item.imageUrls} creatorImage={item.creatorImage} tags={item.tags} width={600} imageHeight={300} imageWidth={500}
+                            onReportClick={() => this.setState({ showReportDialog: true })} onFirstAppear={this.handleCreatorInfos} sessionUserId={this.props.sessionUserId}
+                            onLike={(index) => handleUpdateRating(item.id, "project", this.props.tokens.token, this.props.onError, (response) => this.handleSuccessRating(index, response))} />
+                        )
+                    }
                 </div>
                 <div className="actionMenu">
                     {
@@ -191,7 +236,7 @@ class Projects extends Component {
                             <TagSection ref={this.tagSectionRef} tokens={this.props.tokens} onError={this.props.onError} zIndex={2} tagType="Projects" />
                             <ImageSection ref={this.imageSectionRef} imageSize={40} />
                             <LinkSection ref={this.linkSectionRef} />
-                            <div className="center">
+                            <div className="center-horizontal">
                                 <Button text="Create" onClick={this.handleSubmit} />
                             </div>
                         </Dialog>

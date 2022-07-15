@@ -15,10 +15,6 @@ namespace API.Contracts.V1.Responses
         public DateTime UpdatedAt { get; set; }
 
         public List<string> Roles { get; set; }
-
-        public List<PartialProjectResponse> Projects { get; set; }
-        public List<PartialDiscussionResponse> Discussions { get; set; }
-        public List<PartialPostResponse> Posts { get; set; }
-        public List<MinimalTagResponse> Tags { get; set; }
+        public List<string> Tags { get; set; }
     }
 }

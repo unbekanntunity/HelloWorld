@@ -10,8 +10,9 @@
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
-        public List<MinimalTagResponse> Tags { get; set; }
+        public List<string> Tags { get; set; }
+        public List<string> UsersLikedIds { get; set; }
 
-        public MinimalArticleResponse LastArticle { get; set; };
+        public MinimalArticleResponse LastArticle { get; set; }
     }
 }

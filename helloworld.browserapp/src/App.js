@@ -37,19 +37,6 @@ class App extends Component {
     state = {
         user: {
             id: "f3680a0b-00cf-488f-a64a-2376143a07bb",
-            userName: "Admin",
-            email: "Admin@gmail.com",
-            imageUrl: "https://localhost:7113/Images/Public/default-profile.png",
-            description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna libe",
-            createdAt: "0001-01-01T00:00:00",
-            updatedAt: "0001-01-01T00:00:00",
-            tags: [{ name: 'C#' }, { name: 'ML' }],
-            roles: [
-                "RootAdmin",
-                "ContentAdmin",
-                "UserAdmin"
-            ],
-            imageUrl: "https://localhost:7113/Images/Public/default-profile.png"
         },
         tokens: {
             token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJBZG1pbkBnbWFpbC5jb20iLCJuYW1lIjoiQWRtaW4iLCJqdGkiOiJiNGZiNTNiYS1mZGE0LTRmYzMtOGU3Zi0xM2IyMDFlOWU5NzAiLCJlbWFpbCI6IkFkbWluQGdtYWlsLmNvbSIsImlkIjoiZjM2ODBhMGItMDBjZi00ODhmLWE2NGEtMjM3NjE0M2EwN2JiIiwicm9sZSI6WyJSb290QWRtaW4iLCJVc2VyQWRtaW4iLCJDb250ZW50QWRtaW4iXSwibmJmIjoxNjU3MjU2MzQ4LCJleHAiOjE2OTE4NTUwNDgsImlhdCI6MTY1NzI1NjM0OH0.zO-MEAv0MOa8B3P-YjpjKeHpVnYWFIO3284SGI31WKA"
@@ -61,22 +48,25 @@ class App extends Component {
         ]
     };
 
-    handleSuccessAuthentication = (token, refreshToken) => {
-        sendJSONRequest('GET', `/users/get`, undefined, token)
-            .then(
-                response => {
+    getUser = (token) => {
+        sendJSONRequest('GET', `/user/get`, undefined, token)
+            .then( response => {
                     console.log(response.data);
                     this.setState({ user: response.data });
-                })
-            .finally(() => {
-                this.setState({
-                    page: "home",
-                    tokens: {
-                        token,
-                        refreshToken
-                    }
-                });
-            });
+            }
+        )
+    }
+
+    handleSuccessAuthentication = (token, refreshToken) => {
+        this.getUser(token);
+
+        this.setState({
+            page: "home",
+            tokens: {
+                token,
+                refreshToken
+            }
+        });
 
         setTimeout(() => console.log(this.state), 2000);
     }
@@ -132,10 +122,7 @@ class App extends Component {
     }
 
     getStartPage = () => {
-        console.log(this.state.user === undefined);
         return this.state.user === undefined ? <Navigate to="/login" /> : <Navigate to="/home" /> 
-
-        this.render();
     }
 
     render() {
@@ -153,7 +140,7 @@ class App extends Component {
                         accountsLink="/accounts" accountsIcon={account}
                         projectsLink="/projects" projectsIcon={project}
                         postsLink="/posts" postsIcon={post}
-                        accountLink={`/account`} accountIcon={account} accountGenIcon={account}
+                        accountLink={`/account/${this.state.user.id}`} accountIcon={account} accountGenIcon={account}
                         savedLink="/saved" savedIcon={bookmark}
                         settingsLink="/settings" settingsIcon={setting}
                         logoutLink="/login" logoutIcon={exit} onLogoutClick={this.props.onLogoutClick}
@@ -163,16 +150,16 @@ class App extends Component {
                     <Route path="/" element={this.getStartPage()} />
                     <Route path="/login" element={<Login onLoginSuccess={this.handleSuccessAuthentication} onError={this.handleError} />} />
                     <Route path="/registration" element={<Registration onRegistrationSuccess={this.handleSuccessAuthentication} onError={this.handleError} />} />
-                    <Route path="/home" element={<Home onLogOutClick={this.handleLogout}
-                        onError={this.handleError} onNotifcation={this.handleNotification} tokens={this.state.tokens} />} />
-                    <Route path="/discussions" element={<Discussions onError={this.handleError} tokens={this.state.tokens} user={this.state.user} /> } />
-                    <Route path="/posts" element={<Posts tokens={this.state.tokens} user={this.state.user} onError={this.handleError} />} />
+                    <Route path="/home" element={<Home tokens={this.state.tokens} sessionUserId={this.state.user.id}
+                        onError={this.handleError} onNotifcation={this.handleNotification} onLogOutClick={this.handleLogout} />} />
+                    <Route path="/discussions" element={<Discussions onError={this.handleError} tokens={this.state.tokens} user={this.state.user} sessionUserId={this.state.user.id} />} />
+                    <Route path="/posts" element={<Posts tokens={this.state.tokens} user={this.state.user} onError={this.handleError} sessionUserId={this.state.user.id} />} />
                     <Route path="/projects" element={<Projects tokens={this.state.tokens} user={this.state.user}
-                        onError={this.handleError} onNotification={this.handleNotification} />} />
-                    <Route path="/account" element={<Account tokens={this.state.tokens} user={this.state.user}
+                        onError={this.handleError} onNotification={this.handleNotification} sessionUserId={this.state.user.id} />} />
+                    <Route path="/account/:id" element={<Account tokens={this.state.tokens} user={this.state.user} sessionUserId={this.state.user.id}
                         onError={this.handleError} onNotification={this.handleNotification} onSettings={() => this.redirectToPage("/settings")} />} />
-                    <Route path="/settings" element={<Settings tokens={this.state.tokens} user={this.state.user}
-                        onError={this.handleError} onNotification={this.handleNotification} onSettings={() => this.redirectToPage("/settings")} />} />
+                    <Route path="/settings" element={<Settings tokens={this.state.tokens} userId={this.state.user.id}
+                        onError={this.handleError} onNotification={this.handleNotification} onUserUpdated={() => this.getUser(this.state.tokens.token)} />} />
 
                     <Route path="*" element={<h1>404 Error: page does not exist!</h1>}  />
                 </Routes>

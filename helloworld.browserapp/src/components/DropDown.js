@@ -83,10 +83,11 @@ class DropDown extends Component {
 		const { icon } = this.props.toggleButton;
 
 		return (
-			<div className="dropdown" ref={this.myRef}>
+			<div className="dropdown" ref={this.myRef} style={{ zIndex: this.props.zIndex }}>
 				<div onClick={this.handleToggleButton}>
 					{icon !== undefined && <img src={icon} width={this.props.iconSize} height={this.props.iconSize} alt="" />}
-					{(this.props.toggleButton.arrowIconOpen !== undefined && this.props.toggleButton.arrowIconClose !== undefined) &&
+					{
+						(this.props.toggleButton.arrowIconOpen !== undefined && this.props.toggleButton.arrowIconClose !== undefined) &&
 						<img src={this.state.dropDownArrowIcon} width={this.props.arrowIconSize} height={this.props.arrowIconSize}
 							alt="" style={{ marginLeft: '8px' }} />
 					}

@@ -117,17 +117,13 @@ namespace API.Services
             {
                 queryable = queryable.Where(x => x.Creator.UserName == filter.CreatorName);
             }
-            if (!string.IsNullOrEmpty(filter.Title))
-            {
-                queryable = queryable.Where(x => x.Title.StartsWith(filter.Title));
-            }
             if (!string.IsNullOrEmpty(filter.UserLikedId))
             {
-                queryable = queryable.Where(x => x.UserLiked.Select(y => y.Id).Contains(filter.UserLikedId));
+                queryable = queryable.Where(x => x.UsersLiked.Select(y => y.Id).Contains(filter.UserLikedId));
             }
             if (!string.IsNullOrEmpty(filter.UserLikedName))
             {
-                queryable = queryable.Where(x => x.UserLiked.Select(y => y.UserName).Contains(filter.UserLikedName));
+                queryable = queryable.Where(x => x.UsersLiked.Select(y => y.UserName).Contains(filter.UserLikedName));
             }
             if (filter.TagNames.Count != 0)
             {

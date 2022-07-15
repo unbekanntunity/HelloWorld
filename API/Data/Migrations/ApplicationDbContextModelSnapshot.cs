@@ -186,10 +186,6 @@ namespace API.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -321,12 +317,12 @@ namespace API.Data.Migrations
                     b.Property<Guid>("ArticlesLikedId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("UserLikedId")
+                    b.Property<string>("UsersLikedId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("ArticlesLikedId", "UserLikedId");
+                    b.HasKey("ArticlesLikedId", "UsersLikedId");
 
-                    b.HasIndex("UserLikedId");
+                    b.HasIndex("UsersLikedId");
 
                     b.ToTable("ArticleUser");
                 });
@@ -336,12 +332,12 @@ namespace API.Data.Migrations
                     b.Property<Guid>("CommentsLikedId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("UserLikedId")
+                    b.Property<string>("UsersLikedId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("CommentsLikedId", "UserLikedId");
+                    b.HasKey("CommentsLikedId", "UsersLikedId");
 
-                    b.HasIndex("UserLikedId");
+                    b.HasIndex("UsersLikedId");
 
                     b.ToTable("CommentUser");
                 });
@@ -359,6 +355,21 @@ namespace API.Data.Migrations
                     b.HasIndex("TagsName");
 
                     b.ToTable("DiscussionTag");
+                });
+
+            modelBuilder.Entity("DiscussionUser", b =>
+                {
+                    b.Property<Guid>("DiscussionsLikedId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UsersLikedId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("DiscussionsLikedId", "UsersLikedId");
+
+                    b.HasIndex("UsersLikedId");
+
+                    b.ToTable("DiscussionUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -589,12 +600,12 @@ namespace API.Data.Migrations
                     b.Property<Guid>("PostsLikedId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("UserLikedId")
+                    b.Property<string>("UsersLikedId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("PostsLikedId", "UserLikedId");
+                    b.HasKey("PostsLikedId", "UsersLikedId");
 
-                    b.HasIndex("UserLikedId");
+                    b.HasIndex("UsersLikedId");
 
                     b.ToTable("PostUser");
                 });
@@ -619,12 +630,12 @@ namespace API.Data.Migrations
                     b.Property<Guid>("ProjectsLikedId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("UserLikedId")
+                    b.Property<string>("UsersLikedId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("ProjectsLikedId", "UserLikedId");
+                    b.HasKey("ProjectsLikedId", "UsersLikedId");
 
-                    b.HasIndex("UserLikedId");
+                    b.HasIndex("UsersLikedId");
 
                     b.ToTable("ProjectUser");
                 });
@@ -649,12 +660,12 @@ namespace API.Data.Migrations
                     b.Property<Guid>("RepliesLikedId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("UserLikedId")
+                    b.Property<string>("UsersLikedId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("RepliesLikedId", "UserLikedId");
+                    b.HasKey("RepliesLikedId", "UsersLikedId");
 
-                    b.HasIndex("UserLikedId");
+                    b.HasIndex("UsersLikedId");
 
                     b.ToTable("ReplyUser");
                 });
@@ -842,7 +853,7 @@ namespace API.Data.Migrations
 
                     b.HasOne("API.Domain.Database.User", null)
                         .WithMany()
-                        .HasForeignKey("UserLikedId")
+                        .HasForeignKey("UsersLikedId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -857,7 +868,7 @@ namespace API.Data.Migrations
 
                     b.HasOne("API.Domain.Database.User", null)
                         .WithMany()
-                        .HasForeignKey("UserLikedId")
+                        .HasForeignKey("UsersLikedId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -873,6 +884,21 @@ namespace API.Data.Migrations
                     b.HasOne("API.Domain.Database.Tag", null)
                         .WithMany()
                         .HasForeignKey("TagsName")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("DiscussionUser", b =>
+                {
+                    b.HasOne("API.Domain.Database.Discussion", null)
+                        .WithMany()
+                        .HasForeignKey("DiscussionsLikedId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("API.Domain.Database.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersLikedId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -953,7 +979,7 @@ namespace API.Data.Migrations
 
                     b.HasOne("API.Domain.Database.User", null)
                         .WithMany()
-                        .HasForeignKey("UserLikedId")
+                        .HasForeignKey("UsersLikedId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -983,7 +1009,7 @@ namespace API.Data.Migrations
 
                     b.HasOne("API.Domain.Database.User", null)
                         .WithMany()
-                        .HasForeignKey("UserLikedId")
+                        .HasForeignKey("UsersLikedId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -1013,7 +1039,7 @@ namespace API.Data.Migrations
 
                     b.HasOne("API.Domain.Database.User", null)
                         .WithMany()
-                        .HasForeignKey("UserLikedId")
+                        .HasForeignKey("UsersLikedId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -1036,7 +1062,7 @@ namespace API.Data.Migrations
             modelBuilder.Entity("API.Domain.Database.User", b =>
                 {
                     b.HasOne("API.Domain.Database.Message", null)
-                        .WithMany("UserLiked")
+                        .WithMany("UsersLiked")
                         .HasForeignKey("MessageId");
                 });
 
@@ -1057,7 +1083,7 @@ namespace API.Data.Migrations
 
             modelBuilder.Entity("API.Domain.Database.Message", b =>
                 {
-                    b.Navigation("UserLiked");
+                    b.Navigation("UsersLiked");
                 });
 
             modelBuilder.Entity("API.Domain.Database.Post", b =>

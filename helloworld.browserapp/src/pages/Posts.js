@@ -129,7 +129,7 @@ class Posts extends Component {
 
         let newPosts = this.state.posts;
 
-        sendJSONRequest("GET", `/users/get/${this.state.posts[index].creatorId}`, undefined, this.props.tokens.token)
+        sendJSONRequest("GET", `/user/get_minimal/${this.state.posts[index].creatorId}`, undefined, this.props.tokens.token)
             .then(response => {
                 newPosts[index].creatorImage = response.data.image;
                 newPosts[index].creatorName = response.data.userName;
@@ -143,7 +143,7 @@ class Posts extends Component {
         const previewPost = {
             title: "Post",
             content: this.state.content,
-            tags: [...this.tagSectionRef.current.getTags()].map((tagName) => { return { name: tagName } }),
+            tags: [...this.tagSectionRef.current.getTags()],
             rawImages: [...this.imageSectionRef.current.getImages()],
             creatorName: this.props.user.userName,
             creatorImage: this.props.user.image
@@ -207,7 +207,7 @@ class Posts extends Component {
                         {
                             this.state.posts.map((item, index) =>
                                 <div key={index} className="posts-post-container">
-                                    <Post keyProp={index} creatorPic={item.creatorImage} creatorName={item.creatorName}
+                                    <Post keyProp={index} creatorPic={item.creatorImage} creatorName={item.creatorName} createdAt={item.createdAt}
                                         tags={item.tags} images={item.imageUrls} imageHeight={200} imageWidth={280} text={item.content} width="100%"
                                         onFirstAppear={this.handleCreatorInfos} onReportClick={() => this.setState({ showReportDialog: true })} />
                                 </div>

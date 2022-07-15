@@ -24,7 +24,6 @@ namespace HelloWorld.IntegrationTests
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
                 Content = "Hello",
-                Title = "My first post",
                 TagNames = new List<string>()
             });
 
@@ -65,7 +64,6 @@ namespace HelloWorld.IntegrationTests
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
                 Content = "Hello",
-                Title = "My first post",
                 TagNames = new List<string>()
             });
 
@@ -108,7 +106,6 @@ namespace HelloWorld.IntegrationTests
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
                 Content = "Hello",
-                Title = "My first post",
                 TagNames = new List<string>()
             });
 
@@ -131,7 +128,6 @@ namespace HelloWorld.IntegrationTests
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
                 Content = "Hello",
-                Title = "My first post",
                 TagNames = new List<string>()
             });
 
@@ -169,7 +165,6 @@ namespace HelloWorld.IntegrationTests
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
                 Content = "Hello",
-                Title = "My first post",
                 TagNames = new List<string>()
             });
 
@@ -203,7 +198,6 @@ namespace HelloWorld.IntegrationTests
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
                 Content = "Hello",
-                Title = "My first post",
                 TagNames = new List<string>()
             });
 
@@ -237,7 +231,6 @@ namespace HelloWorld.IntegrationTests
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
                 Content = "Hello",
-                Title = "My first post",
                 TagNames = new List<string>()
             });
 
@@ -274,7 +267,6 @@ namespace HelloWorld.IntegrationTests
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
                 Content = content,
-                Title = "My first post",
                 TagNames = new List<string>()
             });
 
@@ -331,7 +323,6 @@ namespace HelloWorld.IntegrationTests
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
                 Content = content,
-                Title = "My first post",
                 TagNames = new List<string>()
             });
 
@@ -401,7 +392,6 @@ namespace HelloWorld.IntegrationTests
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
                 Content = "Hello",
-                Title = "My first post",
                 TagNames = new List<string>()
             });
 
@@ -440,7 +430,6 @@ namespace HelloWorld.IntegrationTests
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
                 Content = "Hello",
-                Title = "My first post",
                 TagNames = new List<string>()
             });
 
@@ -467,7 +456,6 @@ namespace HelloWorld.IntegrationTests
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
                 Content = "Hello",
-                Title = "My first post",
                 TagNames = new List<string>()
             });
 
@@ -495,7 +483,6 @@ namespace HelloWorld.IntegrationTests
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
                 Content = "Hello",
-                Title = "My first post",
                 TagNames = new List<string>()
             });
 
@@ -542,7 +529,6 @@ namespace HelloWorld.IntegrationTests
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
                 Content = "Hello",
-                Title = "My first post",
                 TagNames = new List<string>()
             });
 
@@ -589,7 +575,6 @@ namespace HelloWorld.IntegrationTests
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
                 Content = "Hello",
-                Title = "My first post",
                 TagNames = new List<string>()
             });
 
@@ -626,7 +611,6 @@ namespace HelloWorld.IntegrationTests
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
                 Content = "Hello",
-                Title = "My first post",
                 TagNames = new List<string>()
             });
 
@@ -645,7 +629,7 @@ namespace HelloWorld.IntegrationTests
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var returnedProject = await response.Content.ReadAsAsync<Response<CommentResponse>>();
-            returnedProject.Data.UserLikedIds.Should().Contain(GetUserId(token));
+            returnedProject.Data.UsersLikedIds.Should().Contain(GetUserId(token));
         }
 
         [Fact]
@@ -655,7 +639,6 @@ namespace HelloWorld.IntegrationTests
             var createdPost = await CreatePostAsync(new CreatePostRequest
             {
                 Content = "Hello",
-                Title = "My first post",
                 TagNames = new List<string>()
             });
 
@@ -676,7 +659,7 @@ namespace HelloWorld.IntegrationTests
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var returnedProject = await response.Content.ReadAsAsync<Response<CommentResponse>>();
-            returnedProject.Data.UserLikedIds.Should().NotContain(GetUserId(token));
+            returnedProject.Data.UsersLikedIds.Should().NotContain(GetUserId(token));
         }
     }
 }

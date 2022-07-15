@@ -74,4 +74,11 @@ async function sendRequest(urlWithQuery, request) {
     }
 }
 
-
+export function handleUpdateRating(id, type, token, onError, onSuccess) {
+    sendJSONRequest("PATCH", `/${type}/update_rating/${id}`, undefined, token)
+        .then(response => {
+            onSuccess(response);
+    }, error => {
+        onError(error.message);
+    });
+}

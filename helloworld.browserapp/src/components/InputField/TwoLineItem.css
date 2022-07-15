@@ -1,6 +1,6 @@
 .twoLineItem-container {
     display: flex;
-
+    margin-top: 5px;
 }
 
 .twoLineItem-container:hover {
@@ -12,7 +12,6 @@
 }
 
 .twoLineItem-texts {
-    margin-left: 10px;
     width: 100%;
 }
 
@@ -24,6 +23,7 @@
 
 .twoLineItem-text {
     font-size: 13px;
+    margin-bottom: 0px;
 }
 
 .twoLineItem-sideNote {

@@ -17,7 +17,7 @@ namespace API.Domain.Database
         public Guid PostId { get; set; }
         public Post Post { get; set; }
 
-        public List<User> UserLiked { get; set; } = new();
+        public List<User> UsersLiked { get; set; } = new();
 
         public List<Reply> Replies { get; set; } = new();
     }

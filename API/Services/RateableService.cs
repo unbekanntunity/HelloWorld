@@ -17,13 +17,13 @@ namespace API.Services
 
         public async Task<Result<T>> UpdateRatingAsync(T item, User user)
         {
-            if (item.UserLiked.Contains(user))
+            if (item.UsersLiked.Contains(user))
             {
-                item.UserLiked.Remove(user);
+                item.UsersLiked.Remove(user);
             }
             else
             {
-                item.UserLiked.Add(user);
+                item.UsersLiked.Add(user);
             }
 
             var updated = await _nonQueryRepository.UpdateAsync(item);

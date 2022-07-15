@@ -7,7 +7,6 @@ class Tag extends Component {
         if (!this.props.name) {
             return;
         }
-
         if (this.props.name.indexOf("Support") !== -1) {
             return "red";
         }

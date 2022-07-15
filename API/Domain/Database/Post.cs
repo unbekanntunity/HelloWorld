@@ -7,7 +7,6 @@ namespace API.Domain.Database
     {
         [Key]
         public Guid Id { get; set; }
-        public string Title { get; set; }
         public string Content { get; set; }
 
         public List<ImagePath> ImagePaths { get; set; } = new();
@@ -19,7 +18,7 @@ namespace API.Domain.Database
         public User Creator { get; set; }
 
         public List<Tag> Tags { get; set; } = new();
-        public List<User> UserLiked { get; set; } = new();
+        public List<User> UsersLiked { get; set; } = new();
         public List<Comment> Comments { get; set; } = new();
     }
 }

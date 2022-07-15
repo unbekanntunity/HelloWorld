@@ -45,7 +45,7 @@ namespace API.Controllers.V1
                 return BadRequest(result.Errors);
             }
 
-            var userResponse = await result.Data.ToResponseAsync(_identityService, _uriService, _fileManager);
+            var userResponse = await result.Data.ToResponseAsync(_identityService, _fileManager);
             userResponse.Roles = await _identityService.GetAllRolesOfUserAsync(result.Data);
 
             var locationUri = _uriService.GetUri(ApiRoutes.Identity.Get, result.Data.Id.ToString());
@@ -79,8 +79,21 @@ namespace API.Controllers.V1
                 return NotFound();
             }
 
-            var userResponse = await user.ToResponseAsync(_identityService, _uriService, _fileManager);
+            var userResponse = await user.ToResponseAsync(_identityService, _fileManager);
             return Ok(new Response<UserResponse>(userResponse));
+        }
+
+        [HttpGet(ApiRoutes.Identity.GetMinimal)]
+        public async Task<IActionResult> GetMinimal([FromRoute] string id)
+        {
+            var user = await _identityService.GetUserByIdWithNoTagsAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var userResponse = user.ToMinmalResponse(_fileManager);
+            return Ok(new Response<MinimalUserResponse>(userResponse));
         }
 
         [HttpGet(ApiRoutes.Identity.GetOwn)]
@@ -92,7 +105,7 @@ namespace API.Controllers.V1
                 return NotFound();
             }
 
-            return Ok(new Response<UserResponse>(await user.ToResponseAsync(_identityService, _uriService, _fileManager)));
+            return Ok(new Response<UserResponse>(await user.ToResponseAsync(_identityService, _fileManager)));
         }
 
         [HttpGet(ApiRoutes.Identity.GetAll)]
@@ -115,20 +128,20 @@ namespace API.Controllers.V1
         }
 
         [HttpPatch(ApiRoutes.Identity.Update)]
-        public async Task<IActionResult> Update([FromBody] UpdateUserRequest request)
+        public async Task<IActionResult> Update([FromForm] UpdateUserRequest request)
         {
             var existingUser = await _identityService.GetUserByIdAsync(HttpContext.GetUserId());
 
             existingUser.UserName = request.UserName;
             existingUser.Description = request.Description;
 
-            var result = await _identityService.UpdateUserAsync(existingUser, request.TagNames);
+            var result = await _identityService.UpdateUserAsync(existingUser, request.TagNames, request.Image);
             if (!result.Success)
             {
                 return BadRequest(result);
             }
 
-            var userResponse = await existingUser.ToResponseAsync(_identityService, _uriService, _fileManager);
+            var userResponse = await existingUser.ToResponseAsync(_identityService, _fileManager);
             userResponse.Roles = await _identityService.GetAllRolesOfUserAsync(existingUser);
             return Ok(new Response<UserResponse>(userResponse));
         }

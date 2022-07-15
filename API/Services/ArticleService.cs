@@ -96,11 +96,11 @@ namespace API.Services
             }
             if (!string.IsNullOrEmpty(filter.UserLikedId))
             {
-                queryable = queryable.Where(x => x.UserLiked.Select(x => x.Id).Contains(filter.UserLikedId));
+                queryable = queryable.Where(x => x.UsersLiked.Select(x => x.Id).Contains(filter.UserLikedId));
             }
             if (!string.IsNullOrEmpty(filter.UserLikedName))
             {
-                queryable = queryable.Where(x => x.UserLiked.Select(x => x.UserName).Contains(filter.UserLikedName));
+                queryable = queryable.Where(x => x.UsersLiked.Select(x => x.UserName).Contains(filter.UserLikedName));
             }
             if (filter.CreatedAt != null)
             {

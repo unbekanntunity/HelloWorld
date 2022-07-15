@@ -2,8 +2,6 @@
 {
     public class GetAllPostsFilters
     {
-        public string? Title { get; set; }
-
         public string? CreatorId { get; set; }
         public string? CreatorName { get; set; }
 
