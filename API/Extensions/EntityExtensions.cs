@@ -82,6 +82,15 @@ namespace API.Extensions
             };
         }
 
+        public static LinkResponse ToResponse(this Link link)
+        {
+            return new LinkResponse
+            {
+                Name = link.Name,
+                Value = link.Value
+            };
+        }
+
         public static PostResponse ToResponse(this Post post, IFileManager fileManager)
         {
             return new PostResponse
@@ -138,6 +147,7 @@ namespace API.Extensions
                 Id = project.Id,
                 ImageUrls = project.ImagePaths.Select(x => fileManager.GetImageUrl(x.Url)).ToList(),
                 MemberIds = project.Members.Select(x => x.Id).ToList(),
+                Links = project.Links.Select(x => x.ToResponse()).ToList(),
                 Tags = project.Tags.Select(x => x.Name).ToList(),
                 Title = project.Title,
                 UsersLikedIds = project.UsersLiked.Select(x => x.Id).ToList(),
@@ -154,6 +164,7 @@ namespace API.Extensions
                 Description = project.Desciption,
                 Id = project.Id,
                 ImageUrls = project.ImagePaths.Select(x => fileManager.GetImageUrl(x.Url)).ToList(),
+                MemberIds = project.Members.Select(x => x.Id).ToList(),
                 Title = project.Title,
                 Tags = project.Tags.Select(x => x.Name).ToList(),
                 UpdatedAt = project.UpdatedAt,
@@ -209,13 +220,21 @@ namespace API.Extensions
             {
                 CreatedAt = user.CreatedAt,
                 Description = user.Description,
+                Discussions = user.Discussions.Select(x => x.ToResponse()).ToList(),
                 UpdatedAt = user.UpdatedAt,
                 Email = user.Email,
+                FollowerIds = user.Followers.Select(x => x.Id).ToList(),
+                FollowingIds = user.Followed.Select(x => x.Id).ToList(),
                 Id = user.Id,
                 ImageUrl = fileManager.GetImageUrl(user.ImageUrl),
+                Posts = user.Posts.Select(x => x.ToResponse(fileManager)).ToList(),
+                Projects = user.Projects.Select(x => x.ToResponse(fileManager)).ToList(),
                 Roles = await identityService.GetAllRolesOfUserAsync(user),
+                SavedDiscussions = user.SavedDiscussions.Select(x => x.ToResponse()).ToList(),
+                SavedPosts = user.SavedPosts.Select(x => x.ToResponse(fileManager)).ToList(),
+                SavedProjects = user.SavedProjects.Select(x => x.ToResponse(fileManager)).ToList(),
                 Tags = user.Tags.Select(x => x.Name).ToList(),
-                UserName = user.UserName
+                UserName = user.UserName,
             };
         }
 
@@ -223,6 +242,7 @@ namespace API.Extensions
         {
             return new MinimalUserResponse
             {
+                Email = user.Email,
                 Id = user.Id,
                 ImageUrl = fileManager.GetImageUrl(user.ImageUrl),
                 UserName = user.UserName

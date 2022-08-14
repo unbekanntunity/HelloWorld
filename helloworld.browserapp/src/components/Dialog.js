@@ -6,6 +6,7 @@ import MultiInputField from './MultiInputField';
 import { Button } from './Button';
 
 import './Dialog.css';
+import { sendJSONRequest } from '../requestFuncs';
 
 export class Dialog extends Component {
 	render() {
@@ -121,4 +122,65 @@ export class ReportDialog extends Component {
 			</div>
 		)
 	}
+}
+
+
+export class UsersDialog extends Component {
+	state = {
+		users: [],
+    }
+
+	componentDidMount() {
+		let fullUsers = [];
+
+		for (let i = 0; i < this.props.userIds.length; i++) {
+			sendJSONRequest("GET", `/user/get/${this.props.userIds[i]}`, undefined, this.props.tokens.token)
+				.then(response => {
+					fullUsers = [...fullUsers, response.data]
+
+					if (i === (this.props.userIds.length - 1)) {
+						this.setState({ users: fullUsers });
+						setTimeout(() => console.log(this.state), 100)
+                    }
+				}, error => {
+					this.props.onError(error.message)
+                }
+			)
+        }
+	}
+
+
+	render() {
+		return (
+			<Dialog title={this.props.title} width="400px" paddingX="20px" paddingY="20px" onBackClick={this.props.onClose} backButton={true}>
+				{
+					this.state.users.map((item, index) =>
+						<div key={index} className="flex" onClick={() => this.props.onElementClicked(item.id)}>
+							<img src={item.imageUrl} alt="" height={40} width={40} />
+							<div className="users-dialog-texts">
+								<p className="users-dialog-name">{item.userName}</p>
+								<p className="users-dialog-email">{item.email}</p>
+							</div>
+						</div>
+					)
+                }
+
+			</Dialog>
+		)
+    }
+}
+
+export class DeleteConfirmDialog extends Component {
+	render() {
+		return (
+			<Dialog title="Remove permenant?" height="fit-content" width="400px" paddingX="20px" paddingY="20px"
+				onBackClick={this.props.onBack} backButton={true}>
+				<p>Do you really want to delete this item?</p>
+				<div className="center-horizontal">
+					<Button margin="0px 5px" text="Cancel" onClick={this.props.onCancel} />
+					<Button margin="0px 5px" color="red" text="Remove" onClick={this.props.onConfirm} />
+				</div>
+			</Dialog>	
+		)
+    }
 }

@@ -9,6 +9,11 @@ namespace API.Contracts.V1
 
         public const string Base = $"{Root}/{Version}";
 
+        public static class Image
+        {
+            public const string Get = Base + "/image/get/{userId}/{id}";
+        }
+
         public static class Identity
         {
             public const string Register = Base + "/identity/register";
@@ -24,6 +29,8 @@ namespace API.Contracts.V1
 
             public const string GetOwn = Base + "/user/get";
 
+            public const string GetSaved = Base + "/user/get_saved/{id}";
+
             public const string GetMinimal = Base + "/user/get_minimal/{id}";
 
             public const string GetAll = Base + "/user/get_all";
@@ -31,6 +38,8 @@ namespace API.Contracts.V1
             public const string Delete = Base + "/user/delete/{id}";
 
             public const string Update = Base + "/user/update";
+
+            public const string UpdateFollowing = Base + "/user/update_following/{id}";
 
             public const string UpdateLogin = Base + "/user/update_login/{id}";
         }
@@ -73,6 +82,8 @@ namespace API.Contracts.V1
 
             public const string UpdateMembers = Base + "/discussion/update_members/{id}";
 
+            public const string UpdateSave = Base + "/discussion/update_saving/{id}";
+
             public const string Delete = Base + "/discussion/delete/{id}";
 
             public const string DeleteAll = Base + "/discussion/delete_all";
@@ -91,6 +102,8 @@ namespace API.Contracts.V1
             public const string Update = Base + "/project/update/{id}";
 
             public const string UpdateRating = Base + "/project/update_rating/{id}";
+
+            public const string UpdateSave = Base + "/project/update_saving/{id}";
 
             public const string Delete = Base + "/project/delete/{id}";
 
@@ -111,6 +124,8 @@ namespace API.Contracts.V1
 
             public const string UpdateRating = Base + "/post/update_rating/{id}";
 
+            public const string UpdateSave = Base + "/post/update_saving/{id}";
+
             public const string Delete = Base + "/post/delete/{id}";
 
             public const string DeleteAll = Base + "/post/delete_all";
@@ -120,6 +135,8 @@ namespace API.Contracts.V1
             public const string GetAll = Base + "/post/get_all";
 
             public const string GetAllMinimal = Base + "/post/get_all_minimal";
+
+            public const string GetSaved = Base + "/post/get_saved/{id}";
         }
 
         public static class Reply

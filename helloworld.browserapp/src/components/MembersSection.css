@@ -1,0 +1,30 @@
+.members-section-container {
+    border: 1px solid black;
+    padding: 20px;
+    border-radius: 20px;
+    width: 100%;
+}
+
+.members-section-header {
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: revert;
+    margin-bottom: revert;
+}
+
+.members-section-no-result-text {
+    text-align: center;
+    margin-top: revert;
+}
+
+.members-section-preview-box{
+    position: absolute;
+    background-color: white;
+}
+
+.members-section-member{
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}

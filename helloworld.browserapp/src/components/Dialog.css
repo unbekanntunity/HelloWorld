@@ -22,6 +22,7 @@
     background-color: white;
     opacity: 1;
     border-radius: 20px;
+    overflow-x: hidden;
 }
 
 .dialog-header {
@@ -101,4 +102,20 @@
 
 .report-confirmation{
     margin-top: 20px;
+}
+
+.users-dialog-texts {
+    margin-left: 10px;
+}
+
+.users-dialog-name {
+    font-weight: bold;
+    margin-bottom: 0px;
+    margin-top: 0px;
+}
+
+.users-dialog-email {
+    font-size: 12px;
+    margin-bottom: 0px;
+    margin-top: 0px;
 }

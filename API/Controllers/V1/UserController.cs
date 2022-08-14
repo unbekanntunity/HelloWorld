@@ -10,6 +10,7 @@ using API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel;
 
 namespace API.Controllers.V1
 {
@@ -74,6 +75,19 @@ namespace API.Controllers.V1
         public async Task<IActionResult> Get([FromRoute] string id)
         {
             var user = await _identityService.GetUserByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var userResponse = await user.ToResponseAsync(_identityService, _fileManager);
+            return Ok(new Response<UserResponse>(userResponse));
+        }
+
+        [HttpGet(ApiRoutes.Identity.GetSaved)]
+        public async Task<IActionResult> GetSaved([FromRoute] string id)
+        {
+            var user = await _identityService.GetOnlyUsersSavedByIdAsync(id);
             if (user == null)
             {
                 return NotFound();
@@ -157,6 +171,31 @@ namespace API.Controllers.V1
 
             var result = await _identityService.UpdateLoginAsync(id, request.Email, request.OldPassword, request.NewPassword);
             return result.Success ? Ok(new Response<string>(result.Data)) : BadRequest(result);
+        }
+
+        [HttpPatch(ApiRoutes.Identity.UpdateFollowing)]
+        public async Task<IActionResult> UpdateFollowing([FromRoute] string id)
+        {
+            var user = await _identityService.GetUserByIdAsync(id);
+            var requestUser = await _identityService.GetUserByIdAsync(HttpContext.GetUserId());
+            if (user == null || requestUser == null)
+            {
+                return NotFound();
+            }
+
+            if (id == HttpContext.GetUserId())
+            {
+                return BadRequest(new { errors = "You can not follow yourself" });
+            }
+
+            var result = await _identityService.UpdateFollowingAsync(user, requestUser);
+            if(result.Success)
+            {
+                var userResponse = await result.Data.ToResponseAsync(_identityService, _fileManager);
+                return Ok(new Response<UserResponse>(userResponse));
+            }
+
+            return BadRequest(result);
         }
     }
 }

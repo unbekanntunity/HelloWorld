@@ -11,6 +11,5 @@ namespace API.Services
         Task<Result<Post>> UpdateAsync(Post post, IEnumerable<string> newTags);
         Task<Post?> GetByIdAsync(Guid id);
         Task<List<Post>> GetAllAsync(GetAllPostsFilters filter = null, PaginationFilter pagination = null);
-
     }
 }

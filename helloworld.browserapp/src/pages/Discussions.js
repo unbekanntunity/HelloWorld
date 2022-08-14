@@ -13,7 +13,7 @@ import Discussion from '../components/Discussion';
 import LeftBanner from '../components/LeftBanner';
 import SpeedDial from '../components/SpeedDial';
 import { RoundButton, Button } from '../components/Button';
-import { Dialog, ReportDialog } from '../components/Dialog';
+import { DeleteConfirmDialog, Dialog, ReportDialog } from '../components/Dialog';
 import MultiInputField from '../components/MultiInputField';
 import TopBanner from '../components/TopBanner/TopBanner';
 
@@ -26,7 +26,7 @@ class Discussions extends Component {
     state = {
         discussions: [
             {
-                creatorId: this.props.user.id,
+                creatorId: this.props.sessionUserId,
                 title: "How is ur opinion about MAUI?",
                 startMessage: "Hello guys, I spent the last weeks trying out the new MAUI framework. I liked that fact that the MAUI has similar elements to Xamarin, so that wasnt too tough to learn it.By and large, I had a nice experience and recommend to test it out as well.",
                 createdAt: "24.05",
@@ -43,6 +43,9 @@ class Discussions extends Component {
         showStopPreviewButton: false,
         showCreateDiscussionDialog: false,
         existsCreateDiscussionsDialog: true,
+
+        showDeleteConfirmDialog: false,
+        currentDeleteItemIndex: null,
     }
 
     constructor(props) {
@@ -56,13 +59,10 @@ class Discussions extends Component {
     }
 
     getDiscussions = () => {
-        sendJSONRequest("GET", "/discussion/get_all/", undefined, this.props.tokens.token, {
-            CreatorId: this.props.user.id
-        }).then(response => {
+        sendJSONRequest("GET", "/discussion/get_all/", undefined, this.props.tokens.token)
+            .then(response => {
             this.setState({ discussions: [...this.state.discussions, ...response.data] })
-            console.log(response)
         }, error => {
-            console.log(error)
             this.props.onError(error.message)
         })
     }
@@ -81,6 +81,7 @@ class Discussions extends Component {
 
         let formData = new FormData();
         formData.append("title", this.state.currentTitle);
+        formData.append("startMessage", this.state.currentStartMessage);
 
         let tags = this.tagSectionRef.current.getTags();
         for (let i = 0; i < tags.length; i++) {
@@ -158,6 +159,24 @@ class Discussions extends Component {
         this.setState({ discussions: newDiscussions })
     }
 
+    handleDelete = () => {
+        let id = this.state.discussions[this.state.currentDeleteItemIndex].id;
+        sendJSONRequest("DELETE", `/discussion/delete/${id}`, undefined, this.props.tokens.token)
+            .then(_ => {
+                this.setState({
+                    discussions: this.state.discussions.filter((_, index) => index !== this.state.currentDeleteItemIndex),
+                    currentDeleteItemIndex: null,
+                    showDeleteConfirmDialog: false
+                });
+
+                this.props.onNotification("Item successfully removed");
+                }, error => {
+                    console.log(error);
+                    this.props.onError(error.message);
+                }
+            )
+    }
+
     validateDiscussion = () => {
         let result = this.state.currentTitle.length !== 0 && this.state.currentTitle.length !== 0;
 
@@ -188,10 +207,14 @@ class Discussions extends Component {
                     {
                         this.state.discussions.map((item, index) =>
                             <div key={index} style={{ borderBottom: index !== (this.state.discussions.length - 1) ? "1px solid black" : "none" }}>
-                                <Discussion keyProp={index} width={600} onFirstAppear={this.handleCreatorInfos}
-                                    title={item.title} startMessage={item.startMessage} createdAt={item.createdAt} tags={item.tags} creatorImage={item.creatorImage}
+                                <Discussion keyProp={index} width={600} usersLikedIds={item.usersLikedIds} item={item}
+                                    title={item.title} startMessage={item.startMessage} createdAt={item.createdAt} tags={item.tags} creatorImage={item.creatorImage} creatorId={item.creatorId}
                                     lastMessage={item.lastMessage} lastMessageAuthor={item.lastMessageAuthor} lastMessageCreated={item.lastMessageCreated} sessionUserId={this.props.sessionUserId}
-                                    onFirstAppear={this.handleCreatorInfos} onReportClick={() => this.setState({ showReportDialog: true })} usersLikedIds={item.usersLikedIds}
+                                    onFirstAppear={this.handleCreatorInfos} onReportClick={() => this.setState({ showReportDialog: true })}
+                                    onDelete={(index) => this.setState({
+                                        showDeleteConfirmDialog: true,
+                                        currentDeleteItemIndex: index
+                                    })}
                                     onLike={(index) => handleUpdateRating(item.id, "discussion", this.props.tokens.token, this.props.onError, (response) => this.handleSuccessRating(index, response))} />
                             </div>
                         )
@@ -226,7 +249,7 @@ class Discussions extends Component {
                                     <TagSection ref={this.tagSectionRef} tokens={this.props.tokens} onError={this.props.onError} zIndex={2} tagType="Discussions"/>
                                 </div>
                                 <div className="discussions-multi-container">
-                                    <p className="discussions-multi-label">Description</p>
+                                    <p className="discussions-multi-label">Start message</p>
                                     <MultiInputField placeholder="" height="200px" maxLetters={300}
                                         onChange={(event) => this.setState({ currentStartMessage: event.target.value })} zindex={1} />
                                 </div>
@@ -239,6 +262,16 @@ class Discussions extends Component {
                 {
                     this.state.showReportDialog &&
                     <ReportDialog onClose={() => this.setState({ showReportDialog: false })} onNotifcation={this.props.onNotifcation} />
+                }
+                {
+                    this.state.showDeleteConfirmDialog &&
+                    <DeleteConfirmDialog onBack={() => this.setState({
+                        showDeleteConfirmDialog: false,
+                        currentDeleteItemIndex: null
+                    })} onCancel={() => this.setState({
+                        showDeleteConfirmDialog: false,
+                        currentDeleteItemIndex: null
+                    })} onConfirm={this.handleDelete} />
                 }
             </div>
         )

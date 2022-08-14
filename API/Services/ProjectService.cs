@@ -72,6 +72,11 @@ namespace API.Services
 
         public async Task<Result<Project>> DeleteAsync(Project project)
         {
+            foreach (var imagePath in project.ImagePaths)
+            {
+                _fileManager.RemoveImage(imagePath.Url);
+            }
+
             var result = await _nonQueryRepository.DeleteAsync(project);
             return new Result<Project>
             {

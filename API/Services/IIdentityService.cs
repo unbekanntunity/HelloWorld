@@ -15,12 +15,14 @@ namespace API.Services
         Task<Result> DeleteUserAsync(string userId);
         Task<User?> GetUserByIdAsync(string userId);
         Task<User?> GetUserByIdWithNoTagsAsync(string userId);
+        Task<User?> GetOnlyUsersSavedByIdAsync(string userId);
         Task<string?> GetIdByUserNameAsync(string userName);
         Task<User> GetUserByTokenAsync(string token);
 
         Task<List<User>> GetUsersAsync(GetAllUserFilter filter = null, PaginationFilter pagination = null);
         Task<Result<User>> UpdateUserAsync(User user, IEnumerable<string> TagNames, IFormFile image);
         Task<Result<string>> UpdateLoginAsync(string userId, string newEmail, string oldPassword, string newPassword);
+        Task<Result<User>> UpdateFollowingAsync(User targetUser, User requestUser);
 
         Task<bool> OwnUser(string ownId, string targetId);
 

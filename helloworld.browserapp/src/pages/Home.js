@@ -103,6 +103,7 @@ class Home extends Component {
     }
 
     render() {
+        console.log(this.state.posts)
         return (
             <div style={{height: "100%"} }>
                 <div className="home-body">
@@ -114,9 +115,9 @@ class Home extends Component {
                     <div className="center-vertical column">
                         {
                             Array.from(this.state.posts).map((item, index) =>
-                                <Post key={index} keyProp={index} text={item.content} title={item.title} images={item.imageUrls} imageHeight={200} usersLikedIds={item.usersLikedIds}
-                                    creatorName={item.creatorName} creatorImage={item.creatorImage} createdAt={item.createdAt} sessionUserId={this.props.sessionUserId} 
-                                    onFirstAppear={this.handleCreatorInfos} onReportClick={() => this.setState({ showReportDialog: true })} width={400}
+                                <Post key={index} keyProp={index} imageHeight={200} item={item}
+                                    sessionUserId={this.props.sessionUserId} onShareClick={() => this.setState({ showShareDialog: true })}
+                                    onFirstAppear={this.handleCreatorInfos} onReportClick={() => this.setState({ showReportDialog: true })} width={400} creatorId={item.creatorId}
                                     onLike={(index) => handleUpdateRating(item.id, "post", this.props.tokens.token, this.props.onError, (response) => this.handleSuccessRating(index, response))} />
                             )
                         }
@@ -142,7 +143,6 @@ class Home extends Component {
                     this.state.showReportDialog &&
                     <ReportDialog onClose={() => this.setState({ showReportDialog: false })} onNotifcation={this.props.onNotifcation} />
                 }
-               
             </div>
         );
     }

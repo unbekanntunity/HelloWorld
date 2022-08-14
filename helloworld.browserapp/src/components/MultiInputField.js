@@ -31,11 +31,11 @@ class MultiInputField extends Component {
 
 	render() {
 		return (
-			<div className="multi-container" style={{ zIndex: this.props.zIndex ?? 1 }}>
-				<textarea className="textbox" style={{
+			<div className="multi-container" style={{
 					height: this.props.height ?? '100%',
 					width: this.props.width ?? '100%'
-				}} placeholder={this.props.placeholder} onChangeCapture={this.handleChangeCapture} onChange={this.handleChange} value={this.props.value} />
+				}}>
+				<textarea className="textbox" placeholder={this.props.placeholder} onChangeCapture={this.handleChangeCapture} onChange={this.handleChange} value={this.props.value} />
 				<p className={this.state.counterClasses}>{this.state.letters}/{this.props.maxLetters}</p>
 			</div>
 		);

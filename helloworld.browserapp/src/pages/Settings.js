@@ -28,8 +28,6 @@ class Settings extends Component {
     componentDidMount() {
         sendJSONRequest("GET", `/user/get/${this.props.userId}`, undefined, this.props.tokens.token)
             .then(response => {
-                console.log(response);
-
                 this.setState({
                     user: response.data,
                     values: {
@@ -167,7 +165,7 @@ class Settings extends Component {
     render() {
         return (
             <div className="page-body center-horizontal">
-                <div className="settings-box">
+                <div className="box settings-box">
                     {
                         this.state.sections.map((item, index) =>
                             <div key={index} className={index === this.state.selectedSection ? "settings-categories-item settings-categories-selected" : "settings-categories-item"}
@@ -177,7 +175,7 @@ class Settings extends Component {
                         )
                         }
                 </div>
-                <div className="settings-box settings-category">
+                <div className="box settings-box settings-category">
                     {
                         this.renderSection()
                     }

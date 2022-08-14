@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
+using Microsoft.Net.Http.Headers;
+using System;
 
 namespace API.Services
 {
@@ -32,6 +35,31 @@ namespace API.Services
             var fullPath = Path.Combine(_basePath, imagePath);
 
             return File.Exists(fullPath) ? new Uri(Path.Combine(_baseDomain, imagePath)).ToString() : string.Empty;
+        }
+
+        public bool RemoveImage(string imagePath)
+        {
+            var fullPath = Path.Combine(_basePath, imagePath);
+
+            if(File.Exists(fullPath))
+            {
+                File.Delete(fullPath);
+                return true;
+            }
+
+            return false;
+        }
+
+        public byte[] GetImage(string userId, Guid id)
+        {
+            var fullPath = Path.Combine(_basePath, Path.Combine("Images", userId, id.ToString() + ".png"));
+
+            if (File.Exists(fullPath))
+            {
+                return File.ReadAllBytes(fullPath);
+            }
+
+            return Array.Empty<byte>();
         }
     }
 }

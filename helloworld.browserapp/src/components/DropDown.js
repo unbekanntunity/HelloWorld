@@ -89,14 +89,14 @@ class DropDown extends Component {
 					{
 						(this.props.toggleButton.arrowIconOpen !== undefined && this.props.toggleButton.arrowIconClose !== undefined) &&
 						<img src={this.state.dropDownArrowIcon} width={this.props.arrowIconSize} height={this.props.arrowIconSize}
-							alt="" style={{ marginLeft: '8px' }} />
+							alt="" />
 					}
 				</div>
 				<div className={this.state.dropDownContentClass} style={{
 					width: this.props.contentWidth ?? 'fit-content',
 					left: `-${this.props.contentLeft}`
 				}}>
-					{this.props.children && this.props.children.map((x, index) => this.getItem(x, index))}
+					{this.props.children?.map((x, index) => this.getItem(x, index))}
 				</div>
 			</div>
 		);

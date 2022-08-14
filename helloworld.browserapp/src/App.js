@@ -36,10 +36,10 @@ import Settings from './pages/Settings';
 class App extends Component {
     state = {
         user: {
-            id: "f3680a0b-00cf-488f-a64a-2376143a07bb",
+            id: "5bc98757-7755-49fa-94c7-0a1f1febf33a",
         },
         tokens: {
-            token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJBZG1pbkBnbWFpbC5jb20iLCJuYW1lIjoiQWRtaW4iLCJqdGkiOiJiNGZiNTNiYS1mZGE0LTRmYzMtOGU3Zi0xM2IyMDFlOWU5NzAiLCJlbWFpbCI6IkFkbWluQGdtYWlsLmNvbSIsImlkIjoiZjM2ODBhMGItMDBjZi00ODhmLWE2NGEtMjM3NjE0M2EwN2JiIiwicm9sZSI6WyJSb290QWRtaW4iLCJVc2VyQWRtaW4iLCJDb250ZW50QWRtaW4iXSwibmJmIjoxNjU3MjU2MzQ4LCJleHAiOjE2OTE4NTUwNDgsImlhdCI6MTY1NzI1NjM0OH0.zO-MEAv0MOa8B3P-YjpjKeHpVnYWFIO3284SGI31WKA"
+            token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJBZG1pbkBnbWFpbC5jb20iLCJuYW1lIjoiQWRtaW4iLCJqdGkiOiI0MWY1NDJkZC1kZDRjLTQ0MzQtOGQzNi1mNmQ0ZDcyMDZlYmQiLCJlbWFpbCI6IkFkbWluQGdtYWlsLmNvbSIsImlkIjoiNWJjOTg3NTctNzc1NS00OWZhLTk0YzctMGExZjFmZWJmMzNhIiwicm9sZSI6WyJDb250ZW50QWRtaW4iLCJSb290QWRtaW4iLCJVc2VyQWRtaW4iXSwibmJmIjoxNjU4MzE2OTY1LCJleHAiOjE2OTI5MTU2NjUsImlhdCI6MTY1ODMxNjk2NX0.6iu50Q5RPz_Cjdzp4WI1iTvTfWZlLbQjibi0kQQmYtM"
         },
         errorMessage: "",
         notificationMesasge: "",
@@ -61,7 +61,6 @@ class App extends Component {
         this.getUser(token);
 
         this.setState({
-            page: "home",
             tokens: {
                 token,
                 refreshToken
@@ -122,7 +121,7 @@ class App extends Component {
     }
 
     getStartPage = () => {
-        return this.state.user === undefined ? <Navigate to="/login" /> : <Navigate to="/home" /> 
+        return this.state.user.id === undefined ? <Navigate to="/login" /> : <Navigate to="/home" /> 
     }
 
     render() {
@@ -130,7 +129,7 @@ class App extends Component {
             <div id="app-container" style={{ backgroundColor: this.getBackgroundColor() }}>
                 {
                     this.isListedUrl(window.location.pathname) &&
-                    <NavBar navbar={this.state.navbar}
+                    <NavBar
                         logoLink="/home" logoIcon={logo} searchIcon={search}
                         notificationIcon={bell} exploreIcon={binoculars}
                         arrowUpIcon={arrowUp} arrowDownIcon={arrowDown}
@@ -152,12 +151,13 @@ class App extends Component {
                     <Route path="/registration" element={<Registration onRegistrationSuccess={this.handleSuccessAuthentication} onError={this.handleError} />} />
                     <Route path="/home" element={<Home tokens={this.state.tokens} sessionUserId={this.state.user.id}
                         onError={this.handleError} onNotifcation={this.handleNotification} onLogOutClick={this.handleLogout} />} />
-                    <Route path="/discussions" element={<Discussions onError={this.handleError} tokens={this.state.tokens} user={this.state.user} sessionUserId={this.state.user.id} />} />
+                    <Route path="/discussions" element={<Discussions onError={this.handleError} tokens={this.state.tokens} sessionUserId={this.state.user.id} />} />
                     <Route path="/posts" element={<Posts tokens={this.state.tokens} user={this.state.user} onError={this.handleError} sessionUserId={this.state.user.id} />} />
                     <Route path="/projects" element={<Projects tokens={this.state.tokens} user={this.state.user}
                         onError={this.handleError} onNotification={this.handleNotification} sessionUserId={this.state.user.id} />} />
-                    <Route path="/account/:id" element={<Account tokens={this.state.tokens} user={this.state.user} sessionUserId={this.state.user.id}
-                        onError={this.handleError} onNotification={this.handleNotification} onSettings={() => this.redirectToPage("/settings")} />} />
+                    <Route path="/account/:id" element={<Account tokens={this.state.tokens} sessionUserId={this.state.user.id}
+                        onError={this.handleError} onNotification={this.handleNotification} onJumpToAccount={(id) => this.redirectToPage(`/account/${id}`)}
+                        onSettings={() => this.redirectToPage("/settings")} />} />
                     <Route path="/settings" element={<Settings tokens={this.state.tokens} userId={this.state.user.id}
                         onError={this.handleError} onNotification={this.handleNotification} onUserUpdated={() => this.getUser(this.state.tokens.token)} />} />
 

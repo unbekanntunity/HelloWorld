@@ -24,8 +24,17 @@ class ImageSection extends Component {
         return this.state.images;
     }
 
+    updateImages = (images, imageUrls) => {
+        this.setState({
+            preview: imageUrls,
+            images: images
+        })
+    }
+
     handleChange = (event) => {
+
         const addedImages = [...this.state.images, ...event.target.files];
+        console.log(addedImages);
 
         this.setState({
             images: addedImages,

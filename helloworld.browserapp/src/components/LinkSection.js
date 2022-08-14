@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, createRef } from 'react';
 
 import DropDown from './DropDown';
 import InputField from './InputField/InputField';

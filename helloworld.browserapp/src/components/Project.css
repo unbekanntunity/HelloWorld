@@ -24,3 +24,24 @@
     margin-bottom: -10px;
 }
 
+.project-members-container{
+    position: absolute;
+    background-color: white;
+    border-radius: 10px;
+    border: 1px solid black;
+    margin-top: 90px;
+}
+
+.project-link{
+    margin-left: 10px;
+    font-size: 12px;
+}
+
+.project-links-container {
+    border: 1px solid black;
+    border-radius: 20px;
+    width: min-content;
+    min-width: 40%;
+    padding: 10px 10px;
+    margin: 10px 0px 20px 40px;
+}

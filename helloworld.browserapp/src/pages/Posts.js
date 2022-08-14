@@ -14,10 +14,10 @@ import ImageSection from '../components/ImageSection';
 import MultiInputField from '../components/MultiInputField';
 import LeftBanner from '../components/LeftBanner';
 import { Post } from '../components/Post';
-import { Dialog, ReportDialog } from '../components/Dialog';
+import { DeleteConfirmDialog, Dialog, ReportDialog } from '../components/Dialog';
 
 import { Button, RoundButton } from '../components/Button';
-import { sendFORMRequest, sendJSONRequest  } from '../requestFuncs';
+import { handleUpdateRating, sendFORMRequest, sendJSONRequest  } from '../requestFuncs';
 
 import './Posts.css';
 
@@ -29,6 +29,10 @@ class Posts extends Component {
         showCreatePostDialog: false,
         showStopPreviewButton: false,
         existsCreatePostDialog: true,
+
+        showDeleteConfirmDialog: false,
+        currentDeleteItemIndex: null,
+
         maxLetters: 300,
 
         content: "",
@@ -48,13 +52,14 @@ class Posts extends Component {
    
 
     getPosts = () => {
-        sendJSONRequest("GET", "/post/get_all", undefined, this.props.tokens.token).then(response => {
-            this.setState({ posts: response.data })
-            console.log(response);
-        }, error => {
-            console.log(error);
-            this.props.onError(error.message)
-        });
+        sendJSONRequest("GET", "/post/get_all", undefined, this.props.tokens.token)
+            .then(response => {
+                this.setState({ posts: response.data })
+                console.log(response);
+            }, error => {
+                console.log(error);
+                this.props.onError(error.message)
+            });
     }
 
     handleMulitLineChange = (event) => {
@@ -131,7 +136,7 @@ class Posts extends Component {
 
         sendJSONRequest("GET", `/user/get_minimal/${this.state.posts[index].creatorId}`, undefined, this.props.tokens.token)
             .then(response => {
-                newPosts[index].creatorImage = response.data.image;
+                newPosts[index].creatorImage = response.data.imageUrl;
                 newPosts[index].creatorName = response.data.userName;
                 this.setState({ posts: newPosts })
             }, error => {
@@ -170,20 +175,32 @@ class Posts extends Component {
         })
     }
 
-    handleReport = () => {
-        this.setState({ showReportDialog: !this.state.showReportDialog });
-    }
-
     handleShare = () => {
         this.setState({ showShareDialog: !this.state.showShareDialog });
     }
 
-    handleMulitLineChange = (event) => {
-        this.setState({ });
+    handleDelete = () => {
+        let id = this.state.posts[this.state.currentDeleteItemIndex].id;
+        sendJSONRequest("DELETE", `/post/delete/${id}`, undefined, this.props.tokens.token)
+            .then(_ => {
+                this.setState({
+                    posts: this.state.posts.filter((_, index) => index !== this.state.currentDeleteItemIndex),
+                    currentDeleteItemIndex: null,
+                    showDeleteConfirmDialog: false
+                });
+
+                this.props.onNotification("Item successfully removed");
+            }, error => {
+                console.log(error);
+                this.props.onError(error.message);
+            }
+            )
     }
 
-    handleReasonSelected = (reason) => {
-        this.setState({ showReportSentDialog: !this.state.showReportSentDialog });
+    handleSuccessRating = (index, response) => {
+        let newPosts = this.state.newPosts;
+        newPosts[index].usersLikedIds = response.data.usersLikedIds;
+        this.setState({ posts: newPosts })
     }
 
     validatePost = () => {
@@ -207,9 +224,14 @@ class Posts extends Component {
                         {
                             this.state.posts.map((item, index) =>
                                 <div key={index} className="posts-post-container">
-                                    <Post keyProp={index} creatorPic={item.creatorImage} creatorName={item.creatorName} createdAt={item.createdAt}
+                                    <Post keyProp={index} creatorImage={item.creatorImage} creatorName={item.creatorName} createdAt={item.createdAt}
                                         tags={item.tags} images={item.imageUrls} imageHeight={200} imageWidth={280} text={item.content} width="100%"
-                                        onFirstAppear={this.handleCreatorInfos} onReportClick={() => this.setState({ showReportDialog: true })} />
+                                        onDelete={(index) => this.setState({
+                                            showDeleteConfirmDialog: true,
+                                            currentDeleteItemIndex: index
+                                        })}
+                                        onFirstAppear={this.handleCreatorInfos} onReportClick={() => this.setState({ showReportDialog: true })}
+                                        onLike={(index) => handleUpdateRating(item.id, "post", this.props.tokens.token, this.props.onError, (response) => this.handleSuccessRating(index, response))} />
                                 </div>
                             )
                         }
@@ -255,6 +277,16 @@ class Posts extends Component {
                 {
                     this.state.showReportDialog &&
                     <ReportDialog onClose={() => this.setState({ showReportDialog: false })} onNotifcation={this.props.onNotifcation} />
+                }
+                {
+                    this.state.showDeleteConfirmDialog &&
+                    <DeleteConfirmDialog onBack={() => this.setState({
+                        showDeleteConfirmDialog: false,
+                        currentDeleteItemIndex: null
+                    })} onCancel={() => this.setState({
+                        showDeleteConfirmDialog: false,
+                        currentDeleteItemIndex: null
+                    })} onConfirm={() => this.handleDelete} />
                 }
             </div>
         );

@@ -25,7 +25,7 @@ namespace API.Services
             if (reset)
             {
                 await _dataContext.Database.EnsureDeletedAsync();
-                return;
+                Environment.Exit(0);
             }
 
             if (!await _roleManager.RoleExistsAsync("ContentAdmin"))
@@ -80,7 +80,7 @@ namespace API.Services
                 var user = new User { 
                     UserName = "UserAdmin", 
                     Email = "UserAdmin@gmail.com",
-                    ImageUrl = "Public/default-profile.png"
+                    ImageUrl = "Images/Public/default-profile.png"
                 };
 
                 await _userManager.CreateAsync(user, "Admin1234!");

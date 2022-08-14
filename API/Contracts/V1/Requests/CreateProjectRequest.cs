@@ -8,9 +8,9 @@ namespace API.Contracts.V1.Requests
         public string Description { get; set; }
 
         public List<string> TagNames { get; set; } = new List<string>();
-        public List<string> MembersIds { get; set; } = new List<string>();
+        public List<string> MemberIds { get; set; } = new List<string>();
 
         public List<IFormFile> RawImages { get; set; } = new List<IFormFile>();
-        public List<Link> Links { get; set; } = new List<Link>();
+        public List<string> Links { get; set; } = new List<string>();
     }
 }

@@ -25,7 +25,7 @@ namespace HelloWorld.IntegrationTests
             {
                 Title = "HelloWorld",
                 Description = "New Project here",
-                MembersIds = new List<string>(),
+                MemberIds = new List<string>(),
                 TagNames = new List<string>()
             });
 
@@ -48,7 +48,7 @@ namespace HelloWorld.IntegrationTests
             {
                 Title = title,
                 Description = description,
-                MembersIds = new List<string>(),
+                MemberIds = new List<string>(),
                 TagNames = tagNames,
             });
 
@@ -90,7 +90,7 @@ namespace HelloWorld.IntegrationTests
             {
                 Title = title,
                 Description = description,
-                MembersIds = new List<string>(),
+                MemberIds = new List<string>(),
                 TagNames = tagNames,
             });
 
@@ -128,7 +128,7 @@ namespace HelloWorld.IntegrationTests
             {
                 Title = "HelloWorld2",
                 Description = "Another new project",
-                MembersIds = new List<string>(),
+                MemberIds = new List<string>(),
                 TagNames = new List<string>() { "Tags" }
             });
 
@@ -139,7 +139,7 @@ namespace HelloWorld.IntegrationTests
             {
                 Title = title,
                 Description = description,
-                MembersIds = new List<string>(),
+                MemberIds = new List<string>(),
                 TagNames = tagNames,
             });
 
@@ -172,7 +172,7 @@ namespace HelloWorld.IntegrationTests
             {
                 Title = "HelloWorld",
                 Description = "New project here",
-                MembersIds = new List<string>(),
+                MemberIds = new List<string>(),
                 TagNames = new List<string>()
             });
 
@@ -191,7 +191,7 @@ namespace HelloWorld.IntegrationTests
             {
                 Title = "HelloWorld",
                 Description = "New project here",
-                MembersIds = new List<string>(),
+                MemberIds = new List<string>(),
                 TagNames = new List<string>()
             });
 
@@ -212,7 +212,7 @@ namespace HelloWorld.IntegrationTests
             {
                 Title = "HelloWorld",
                 Description = "New project here",
-                MembersIds = new List<string>(),
+                MemberIds = new List<string>(),
                 TagNames = new List<string>()
             });
 
@@ -236,7 +236,7 @@ namespace HelloWorld.IntegrationTests
             {
                 Title = "HelloWorld",
                 Description = "New project here",
-                MembersIds = new List<string>(),
+                MemberIds = new List<string>(),
                 TagNames = new List<string>()
             });
 
@@ -273,7 +273,7 @@ namespace HelloWorld.IntegrationTests
             {
                 Title = "HelloWorld",
                 Description = "New Project here",
-                MembersIds = new List<string>(),
+                MemberIds = new List<string>(),
                 TagNames = new List<string>()
             });
 
@@ -308,7 +308,7 @@ namespace HelloWorld.IntegrationTests
             {
                 Title = title,
                 Description = description,
-                MembersIds = new List<string>(),
+                MemberIds = new List<string>(),
                 TagNames = new List<string>()
             });
 
@@ -364,7 +364,7 @@ namespace HelloWorld.IntegrationTests
             {
                 Title = title,
                 Description = description,
-                MembersIds = new List<string>(),
+                MemberIds = new List<string>(),
                 TagNames = tagNames
             });
 
@@ -372,7 +372,7 @@ namespace HelloWorld.IntegrationTests
             {
                 Title = "HelloWorld2",
                 Description = "New project here",
-                MembersIds = new List<string>(),
+                MemberIds = new List<string>(),
                 TagNames = new List<string>()
             });
 
@@ -426,7 +426,7 @@ namespace HelloWorld.IntegrationTests
                 {
                     Title = "HelloWorld2",
                     Description = "New project here",
-                    MembersIds = new List<string>(),
+                    MemberIds = new List<string>(),
                     TagNames = new List<string>()
                 });
             }
@@ -461,7 +461,7 @@ namespace HelloWorld.IntegrationTests
             {
                 Title = "HelloWorld",
                 Description = "New Project here",
-                MembersIds = new List<string>(),
+                MemberIds = new List<string>(),
                 TagNames = new List<string>()
             });
 
@@ -487,7 +487,7 @@ namespace HelloWorld.IntegrationTests
             {
                 Title = "HelloWorld",
                 Description = "New Project here",
-                MembersIds = new List<string>(),
+                MemberIds = new List<string>(),
                 TagNames = new List<string>()
             });
 
@@ -515,7 +515,7 @@ namespace HelloWorld.IntegrationTests
             {
                 Title = "HelloWorld",
                 Description = "New project here",
-                MembersIds = new List<string>(),
+                MemberIds = new List<string>(),
                 TagNames = new List<string>()
             });
 
@@ -570,7 +570,7 @@ namespace HelloWorld.IntegrationTests
             {
                 Title = "HelloWorld",
                 Description = "New Project here",
-                MembersIds = new List<string>(),
+                MemberIds = new List<string>(),
                 TagNames = new List<string>()
             });
 
@@ -620,7 +620,7 @@ namespace HelloWorld.IntegrationTests
             {
                 Title = "HelloWorld",
                 Description = "New Project here",
-                MembersIds = new List<string>(),
+                MemberIds = new List<string>(),
                 TagNames = new List<string>()
             });
 
@@ -670,7 +670,7 @@ namespace HelloWorld.IntegrationTests
             {
                 Title = "HelloWorld",
                 Description = "New Project here",
-                MembersIds = new List<string>(),
+                MemberIds = new List<string>(),
                 TagNames = new List<string>()
             });
 
@@ -678,7 +678,7 @@ namespace HelloWorld.IntegrationTests
             {
                 Title = "HelloWorld",
                 Description = "New Project here",
-                MembersIds = new List<string>(),
+                MemberIds = new List<string>(),
                 TagNames = new List<string>() { "Tag" }
             });
 
@@ -721,7 +721,7 @@ namespace HelloWorld.IntegrationTests
             {
                 Title = "HelloWorld",
                 Description = "New Project here",
-                MembersIds = new List<string>(),
+                MemberIds = new List<string>(),
                 TagNames = new List<string>() { "Tag" }
             });
 
@@ -755,7 +755,7 @@ namespace HelloWorld.IntegrationTests
             {
                 Title = "HelloWorld",
                 Description = "New Project here",
-                MembersIds = new List<string>(),
+                MemberIds = new List<string>(),
                 TagNames = new List<string>() { "Tag" }
             });
 
@@ -782,7 +782,7 @@ namespace HelloWorld.IntegrationTests
             {
                 Title = "HelloWorld",
                 Description = "New Project here",
-                MembersIds = new List<string>() { GetUserId(token) },
+                MemberIds = new List<string>() { GetUserId(token) },
                 TagNames = new List<string>() { "Tag" }
             });
 

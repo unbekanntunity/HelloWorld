@@ -2,11 +2,14 @@ import React, { Component, createRef } from 'react';
 
 import InputField from '../components/InputField/InputField';
 import LeftBanner from '../components/LeftBanner';
-import Project from '../components/Project';
+import { Project } from '../components/Project';
 import SpeedDial from '../components/SpeedDial';
-import { Button, RoundButton } from '../components/Button';
-import { Dialog, ReportDialog } from '../components/Dialog';
 import MultiInputField from '../components/MultiInputField';
+import ImageSection from '../components/ImageSection';
+import LinkSection from '../components/LinkSection';
+import TagSection from '../components/TagSection';
+import { Button, RoundButton } from '../components/Button';
+import { DeleteConfirmDialog, Dialog, ReportDialog } from '../components/Dialog';
 
 import menuOpened from '../images/close.png';
 import menuClosed from '../images/dots-vertical.png';
@@ -18,10 +21,6 @@ import title from '../images/title.png';
 import Ex1 from '../images/Progress1.png';
 import Ex2 from '../images/Progress2.png';
 import Ex3 from '../images/Progress3.png';
-
-import ImageSection from '../components/ImageSection';
-import LinkSection from '../components/LinkSection';
-import TagSection from '../components/TagSection';
 
 import { handleUpdateRating, sendFORMRequest, sendJSONRequest } from '../requestFuncs';
 
@@ -45,6 +44,9 @@ class Projects extends Component {
         showStopPreviewButton: false,
         showCreateProjectDialog: false,
         existsCreateProjectDialog: true,
+
+        showDeleteConfirmDialog: false,
+        currentDeleteItemIndex: null,
 
         currentName: "",
         currentDescription: ""
@@ -179,6 +181,24 @@ class Projects extends Component {
         this.setState({ projects: newProjects })
     }
 
+    handleDelete = () => {
+        let id = this.state.projects[this.state.currentDeleteItemIndex].id;
+        sendJSONRequest("DELETE", `/project/delete/${id}`, undefined, this.props.tokens.token)
+            .then(_ => {
+                this.setState({
+                    projects: this.state.projects.filter((_, index) => index !== this.state.currentDeleteItemIndex),
+                    currentDeleteItemIndex: null,
+                    showDeleteConfirmDialog: false
+                });
+
+                this.props.onNotification("Item successfully removed");
+            }, error => {
+                console.log(error);
+                this.props.onError(error.message);
+            }
+            )
+    }
+
     validateProject = () => {
         let result = this.state.currentName.length !== 0 && this.state.currentDescription.length !== 0
 
@@ -199,9 +219,13 @@ class Projects extends Component {
                     {
                         this.state.projects.map((item, index) =>
                             <Project key={index} keyProp={index} title={item.title} createdAt={item.createdAt} description={item.description} usersLikedIds={item.usersLikedIds}
-                            images={item.imageUrls} creatorImage={item.creatorImage} tags={item.tags} width={600} imageHeight={300} imageWidth={500}
-                            onReportClick={() => this.setState({ showReportDialog: true })} onFirstAppear={this.handleCreatorInfos} sessionUserId={this.props.sessionUserId}
-                            onLike={(index) => handleUpdateRating(item.id, "project", this.props.tokens.token, this.props.onError, (response) => this.handleSuccessRating(index, response))} />
+                                images={item.imageUrls} creatorImage={item.creatorImage} tags={item.tags} width={600} imageHeight={300} imageWidth={500}
+                                onReportClick={() => this.setState({ showReportDialog: true })} onFirstAppear={this.handleCreatorInfos} sessionUserId={this.props.sessionUserId}
+                                onDelete={(index) => this.setState({
+                                    showDeleteConfirmDialog: true,
+                                    currentDeleteItemIndex: index
+                                })}
+                                onLike={(index) => handleUpdateRating(item.id, "project", this.props.tokens.token, this.props.onError, (response) => this.handleSuccessRating(index, response))} />
                         )
                     }
                 </div>
@@ -245,6 +269,16 @@ class Projects extends Component {
                 {
                     this.state.showReportDialog &&
                     <ReportDialog onClose={() => this.setState({ showReportDialog: false })} onNotification={this.props.onNotification} />
+                }
+                {
+                    this.state.showDeleteConfirmDialog &&
+                    <DeleteConfirmDialog onBack={() => this.setState({
+                        showDeleteConfirmDialog: false,
+                        currentDeleteItemIndex: null
+                    })} onCancel={() => this.setState({
+                        showDeleteConfirmDialog: false,
+                        currentDeleteItemIndex: null
+                    })} onConfirm={this.handleDelete} />
                 }
             </div>
         )

@@ -4,8 +4,20 @@ html, body, #root, #root > div {
     margin: 0;
 }
 
-.toastContainer{
-    position: absolute;
+.menbers-container{
+
+}
+
+.box {
+    margin-top: 30px;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 20px;
+    height: min-content;
+}
+
+.toastContainer {
+    position: fixed;
     left: 10px;
     bottom: 10px;
     z-index: 10;

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, createRef } from 'react';
 
 import DropRightDialog from './DropRightDialog';
 import InputField from './InputField/InputField';
@@ -21,12 +21,8 @@ class TagSection extends Component {
         currentInput: "",
     }
 
-    componentDidMount() {
-        setInterval(() => this.getTagsPerRequest(), 1000);
-    }
-
     getTags = () => {
-        return this.state.addedTags.map(item => item.name);
+        return this.state.addedTags.map(item => item.name ?? item);
     }
 
     updateAddedTags = (tags) => {
@@ -70,11 +66,6 @@ class TagSection extends Component {
         });
     }
 
-    handleDropRightToggle = () => {
-        this.setState({
-            showAddTagDialog: !this.state.showAddTagDialog
-        })
-    }
 
     handleRemove = (index) => {
         const filteredArray = [...this.state.filteredTags, this.state.addedTags[index]];
@@ -121,8 +112,7 @@ class TagSection extends Component {
                         fontSize: this.props.headerSize ?? ""
                     }}>Tags</p>
                     <div className="tagSection-headerDrop">
-                        <DropRightDialog menuOpenedIcon={close} menuClosedIcon={add} iconSize={20}
-                            onToggleButtonClick={this.handleDropRightToggle} show={this.state.showAddTagDialog} zIndex={this.props.zIndex}>
+                        <DropRightDialog menuOpenedIcon={close} menuClosedIcon={add} iconSize={20} onShow={this.getTagsPerRequest} zIndex={this.props.zIndex}>
                             <div className="tagSection-headerdrop-container">
                                 <InputField design='m2' name="tagSearch" onItemClick={this.handleTagSelected} onChange={this.handleInput} showUnderline={true}>
                                 {

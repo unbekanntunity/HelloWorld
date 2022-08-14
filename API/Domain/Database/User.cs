@@ -29,5 +29,12 @@ namespace API.Domain.Database
         public List<Project> ProjectsLiked { get; set; } = new();
         public List<Post> PostsLiked { get; set; } = new();
         public List<Reply> RepliesLiked { get; set; } = new();
+
+        public List<User> Followers { get; set; } = new();
+        public List<User> Followed { get; set; } = new();
+
+        public List<Post> SavedPosts { get; set; } = new();
+        public List<Discussion> SavedDiscussions { get; set; } = new();
+        public List<Project> SavedProjects { get; set; } = new();
     }
 }

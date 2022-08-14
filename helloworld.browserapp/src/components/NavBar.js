@@ -8,6 +8,7 @@ import './NavBar.css';
 
 class NavBar extends Component {
     render() {
+        console.log(this.props);
         return (
             <Nav className="navbar" style={{ boxShadow: '0px 1px 18px #FFB30B'}}  >
                 <a className="navbar-brand" href={this.props.logoLink}>

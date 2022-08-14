@@ -13,6 +13,16 @@
 .account-name {
     font-size: 20px;
     font-weight: bold;
+    margin-bottom: 0px;
+}
+
+.account-follower {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.account-follower:hover{
+    cursor: pointer;
 }
 
 .account-description {
@@ -21,7 +31,11 @@
 }
 
 .account-description-container{
-    max-width: 500px;
+    width: 500px;
+}
+
+.account-tags{
+    min-width: 135px;
 }
 
 .account-items{
@@ -41,4 +55,33 @@
     position: absolute;
     right: 30px;
     height: 70px;
+}
+
+.account-confirm-button {
+    margin: 10px 5px;
+}
+
+.account-members-section{
+    margin-left: 40px;
+}
+
+.account-saved-grid {
+    display: grid;
+    justify-items: center;
+    justify-content: center;
+    grid-template-columns: minmax(0, auto) minmax(0, auto);
+    margin: 20px 0px;
+    height: fit-content;
+    gap: 50px;
+}
+
+.account-saved-list {
+}
+
+
+.account-saved-category {
+    padding: 10px 20px;
+    min-width: 600px;
+    width: max-content;
+    margin-left: 50px;
 }

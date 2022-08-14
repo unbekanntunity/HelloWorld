@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace API.Domain.Database
 {
-    public class Post : IRateable, ITagable
+    public class Post : IRateable, ITagable, ISavable
     {
         [Key]
         public Guid Id { get; set; }
@@ -20,5 +20,6 @@ namespace API.Domain.Database
         public List<Tag> Tags { get; set; } = new();
         public List<User> UsersLiked { get; set; } = new();
         public List<Comment> Comments { get; set; } = new();
+        public List<User> SavedBy { get; set; } = new();
     }
 }

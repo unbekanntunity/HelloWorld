@@ -36,6 +36,7 @@ namespace API.Installers
             services.AddScoped<ICommentService, CommentService>();
             services.AddScoped<IReplyService, ReplyService>();
             services.AddScoped(typeof(IRateableService<>), typeof(RateableService<>));
+            services.AddScoped(typeof(ISaveService<>), typeof(SaveService<>));
 
             services.AddSingleton<IFileManager>(provider =>
             {

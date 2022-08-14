@@ -19,12 +19,15 @@ namespace API.Repositories
                 .Include(x => x.UsersLiked)
                 .Include(x => x.Tags)
                 .Include(x => x.ImagePaths)
+                .Include(x => x.Members)
                 .ToListAsync();
 
         public async Task<Project?> GetByIdAsync(Guid id) => await _dataContext.Projects
                 .Include(x => x.Creator)
+                .Include(x => x.SavedBy)
                 .Include(x => x.UsersLiked)
                 .Include(x => x.Tags)
+                .Include(x => x.ImagePaths)
                 .FirstOrDefaultAsync(x => x.Id == id);
     }
 }

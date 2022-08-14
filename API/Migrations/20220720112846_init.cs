@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace HelloWorldAPI.Migrations
+namespace API.Migrations
 {
-    public partial class Init : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -76,17 +76,17 @@ namespace HelloWorldAPI.Migrations
                 columns: table => new
                 {
                     ArticlesLikedId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserLikedId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    UsersLikedId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ArticleUser", x => new { x.ArticlesLikedId, x.UserLikedId });
+                    table.PrimaryKey("PK_ArticleUser", x => new { x.ArticlesLikedId, x.UsersLikedId });
                     table.ForeignKey(
                         name: "FK_ArticleUser_Articles_ArticlesLikedId",
                         column: x => x.ArticlesLikedId,
                         principalTable: "Articles",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -145,6 +145,7 @@ namespace HelloWorldAPI.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     MessageId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -234,7 +235,6 @@ namespace HelloWorldAPI.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -321,6 +321,29 @@ namespace HelloWorldAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserUser",
+                columns: table => new
+                {
+                    FollowedId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FollowersId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserUser", x => new { x.FollowedId, x.FollowersId });
+                    table.ForeignKey(
+                        name: "FK_UserUser_AspNetUsers_FollowedId",
+                        column: x => x.FollowedId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserUser_AspNetUsers_FollowersId",
+                        column: x => x.FollowersId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "DiscussionTag",
                 columns: table => new
                 {
@@ -342,6 +365,54 @@ namespace HelloWorldAPI.Migrations
                         principalTable: "Tags",
                         principalColumn: "Name",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DiscussionUser",
+                columns: table => new
+                {
+                    DiscussionsLikedId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UsersLikedId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DiscussionUser", x => new { x.DiscussionsLikedId, x.UsersLikedId });
+                    table.ForeignKey(
+                        name: "FK_DiscussionUser_AspNetUsers_UsersLikedId",
+                        column: x => x.UsersLikedId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_DiscussionUser_Discussions_DiscussionsLikedId",
+                        column: x => x.DiscussionsLikedId,
+                        principalTable: "Discussions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DiscussionUser1",
+                columns: table => new
+                {
+                    SavedById = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SavedDiscussionsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DiscussionUser1", x => new { x.SavedById, x.SavedDiscussionsId });
+                    table.ForeignKey(
+                        name: "FK_DiscussionUser1_AspNetUsers_SavedById",
+                        column: x => x.SavedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_DiscussionUser1_Discussions_SavedDiscussionsId",
+                        column: x => x.SavedDiscussionsId,
+                        principalTable: "Discussions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -373,24 +444,6 @@ namespace HelloWorldAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ImageUrls",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Url = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PostId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ImageUrls", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ImageUrls_Posts_PostId",
-                        column: x => x.PostId,
-                        principalTable: "Posts",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "PostTag",
                 columns: table => new
                 {
@@ -419,14 +472,14 @@ namespace HelloWorldAPI.Migrations
                 columns: table => new
                 {
                     PostsLikedId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserLikedId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    UsersLikedId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PostUser", x => new { x.PostsLikedId, x.UserLikedId });
+                    table.PrimaryKey("PK_PostUser", x => new { x.PostsLikedId, x.UsersLikedId });
                     table.ForeignKey(
-                        name: "FK_PostUser_AspNetUsers_UserLikedId",
-                        column: x => x.UserLikedId,
+                        name: "FK_PostUser_AspNetUsers_UsersLikedId",
+                        column: x => x.UsersLikedId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -436,6 +489,54 @@ namespace HelloWorldAPI.Migrations
                         principalTable: "Posts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PostUser1",
+                columns: table => new
+                {
+                    SavedById = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SavedPostsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PostUser1", x => new { x.SavedById, x.SavedPostsId });
+                    table.ForeignKey(
+                        name: "FK_PostUser1_AspNetUsers_SavedById",
+                        column: x => x.SavedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PostUser1_Posts_SavedPostsId",
+                        column: x => x.SavedPostsId,
+                        principalTable: "Posts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ImageUrls",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Url = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PostId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ProjectId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ImageUrls", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ImageUrls_Posts_PostId",
+                        column: x => x.PostId,
+                        principalTable: "Posts",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ImageUrls_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -467,14 +568,14 @@ namespace HelloWorldAPI.Migrations
                 columns: table => new
                 {
                     ProjectsLikedId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserLikedId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    UsersLikedId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProjectUser", x => new { x.ProjectsLikedId, x.UserLikedId });
+                    table.PrimaryKey("PK_ProjectUser", x => new { x.ProjectsLikedId, x.UsersLikedId });
                     table.ForeignKey(
-                        name: "FK_ProjectUser_AspNetUsers_UserLikedId",
-                        column: x => x.UserLikedId,
+                        name: "FK_ProjectUser_AspNetUsers_UsersLikedId",
+                        column: x => x.UsersLikedId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -511,18 +612,42 @@ namespace HelloWorldAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProjectUser2",
+                columns: table => new
+                {
+                    SavedById = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SavedProjectsId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectUser2", x => new { x.SavedById, x.SavedProjectsId });
+                    table.ForeignKey(
+                        name: "FK_ProjectUser2_AspNetUsers_SavedById",
+                        column: x => x.SavedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProjectUser2_Projects_SavedProjectsId",
+                        column: x => x.SavedProjectsId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CommentUser",
                 columns: table => new
                 {
                     CommentsLikedId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserLikedId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    UsersLikedId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CommentUser", x => new { x.CommentsLikedId, x.UserLikedId });
+                    table.PrimaryKey("PK_CommentUser", x => new { x.CommentsLikedId, x.UsersLikedId });
                     table.ForeignKey(
-                        name: "FK_CommentUser_AspNetUsers_UserLikedId",
-                        column: x => x.UserLikedId,
+                        name: "FK_CommentUser_AspNetUsers_UsersLikedId",
+                        column: x => x.UsersLikedId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -578,14 +703,14 @@ namespace HelloWorldAPI.Migrations
                 columns: table => new
                 {
                     RepliesLikedId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserLikedId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    UsersLikedId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ReplyUser", x => new { x.RepliesLikedId, x.UserLikedId });
+                    table.PrimaryKey("PK_ReplyUser", x => new { x.RepliesLikedId, x.UsersLikedId });
                     table.ForeignKey(
-                        name: "FK_ReplyUser_AspNetUsers_UserLikedId",
-                        column: x => x.UserLikedId,
+                        name: "FK_ReplyUser_AspNetUsers_UsersLikedId",
+                        column: x => x.UsersLikedId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -608,9 +733,9 @@ namespace HelloWorldAPI.Migrations
                 column: "DiscussionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ArticleUser_UserLikedId",
+                name: "IX_ArticleUser_UsersLikedId",
                 table: "ArticleUser",
-                column: "UserLikedId");
+                column: "UsersLikedId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -667,9 +792,9 @@ namespace HelloWorldAPI.Migrations
                 column: "PostId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CommentUser_UserLikedId",
+                name: "IX_CommentUser_UsersLikedId",
                 table: "CommentUser",
-                column: "UserLikedId");
+                column: "UsersLikedId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Discussions_CreatorId",
@@ -682,9 +807,24 @@ namespace HelloWorldAPI.Migrations
                 column: "TagsName");
 
             migrationBuilder.CreateIndex(
+                name: "IX_DiscussionUser_UsersLikedId",
+                table: "DiscussionUser",
+                column: "UsersLikedId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DiscussionUser1_SavedDiscussionsId",
+                table: "DiscussionUser1",
+                column: "SavedDiscussionsId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ImageUrls_PostId",
                 table: "ImageUrls",
                 column: "PostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ImageUrls_ProjectId",
+                table: "ImageUrls",
+                column: "ProjectId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Messages_CreatorId",
@@ -702,9 +842,14 @@ namespace HelloWorldAPI.Migrations
                 column: "TagsName");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PostUser_UserLikedId",
+                name: "IX_PostUser_UsersLikedId",
                 table: "PostUser",
-                column: "UserLikedId");
+                column: "UsersLikedId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PostUser1_SavedPostsId",
+                table: "PostUser1",
+                column: "SavedPostsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Projects_CreatorId",
@@ -717,14 +862,19 @@ namespace HelloWorldAPI.Migrations
                 column: "TagsName");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectUser_UserLikedId",
+                name: "IX_ProjectUser_UsersLikedId",
                 table: "ProjectUser",
-                column: "UserLikedId");
+                column: "UsersLikedId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProjectUser1_ProjectsJoinedId",
                 table: "ProjectUser1",
                 column: "ProjectsJoinedId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectUser2_SavedProjectsId",
+                table: "ProjectUser2",
+                column: "SavedProjectsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RefreshTokens_UserId",
@@ -752,14 +902,19 @@ namespace HelloWorldAPI.Migrations
                 column: "RepliedOnReplyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ReplyUser_UserLikedId",
+                name: "IX_ReplyUser_UsersLikedId",
                 table: "ReplyUser",
-                column: "UserLikedId");
+                column: "UsersLikedId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TagUser_UsersId",
                 table: "TagUser",
                 column: "UsersId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserUser_FollowersId",
+                table: "UserUser",
+                column: "FollowersId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Articles_AspNetUsers_CreatorId",
@@ -778,12 +933,12 @@ namespace HelloWorldAPI.Migrations
                 onDelete: ReferentialAction.NoAction);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_ArticleUser_AspNetUsers_UserLikedId",
+                name: "FK_ArticleUser_AspNetUsers_UsersLikedId",
                 table: "ArticleUser",
-                column: "UserLikedId",
+                column: "UsersLikedId",
                 principalTable: "AspNetUsers",
                 principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                onDelete: ReferentialAction.NoAction);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_AspNetUserClaims_AspNetUsers_UserId",
@@ -848,6 +1003,12 @@ namespace HelloWorldAPI.Migrations
                 name: "DiscussionTag");
 
             migrationBuilder.DropTable(
+                name: "DiscussionUser");
+
+            migrationBuilder.DropTable(
+                name: "DiscussionUser1");
+
+            migrationBuilder.DropTable(
                 name: "ImageUrls");
 
             migrationBuilder.DropTable(
@@ -855,6 +1016,9 @@ namespace HelloWorldAPI.Migrations
 
             migrationBuilder.DropTable(
                 name: "PostUser");
+
+            migrationBuilder.DropTable(
+                name: "PostUser1");
 
             migrationBuilder.DropTable(
                 name: "ProjectTag");
@@ -866,6 +1030,9 @@ namespace HelloWorldAPI.Migrations
                 name: "ProjectUser1");
 
             migrationBuilder.DropTable(
+                name: "ProjectUser2");
+
+            migrationBuilder.DropTable(
                 name: "RefreshTokens");
 
             migrationBuilder.DropTable(
@@ -873,6 +1040,9 @@ namespace HelloWorldAPI.Migrations
 
             migrationBuilder.DropTable(
                 name: "TagUser");
+
+            migrationBuilder.DropTable(
+                name: "UserUser");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

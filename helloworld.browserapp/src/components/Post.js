@@ -1,5 +1,5 @@
-import React, { Component, createRef } from 'react';
-import { handleUpdateRating, sendFORMRequest, sendJSONRequest } from '../requestFuncs';
+import React, { Component } from 'react';
+import { handleUpdateRating, sendJSONRequest } from '../requestFuncs';
 
 import Tag from './Tag';
 import ImageSlider from './ImageSlider';
@@ -17,6 +17,9 @@ import share from '../images/share.png';
 import emoji from '../images/emoji.png';
 import send from '../images/send.png';
 import filledHeart from '../images/filled-heart.png';
+import remove from '../images/delete.png';
+import save from '../images/bookmark.png';
+import saved from '../images/bookmarked.png';
 
 import VisibilitySensor from 'react-visibility-sensor';
 
@@ -36,44 +39,53 @@ export class Post extends Component {
     }
 
     render() {
+        let { content, tags, creatorImage, creatorName, createdAt, creatorId, imageUrls, usersLikedIds, previewMode } = this.props.item;
+
         return (
-            <VisibilitySensor partialVisibility onChange={(isVisible) => isVisible && !this.props.creatorImage && this.props.onFirstAppear(this.props.keyProp)} >
+            <VisibilitySensor partialVisibility onChange={(isVisible) => isVisible && !creatorImage && this.props.onFirstAppear(this.props.keyProp)} >
                 <div className="post-container" style={{
                     opacity: this.state.visibility ? 1 : 0.25,
                     transition: 'opacity 500ms linear',
                     width: this.props.width
                 }}>
                     <div className="post-header">
-                        <img className="post-owner-pic" src={this.props.creatorImage} alt="" width={40} height={40} />
+                        <img className="post-owner-pic" src={creatorImage} alt="" width={40} height={40} />
                         <div className="post-owner">
-                            <h6 className="post-owner-name">{this.props.creatorName}</h6>
-                            <p className="post-posted-at">{formatDate(this.props.createdAt)}</p>
+                            <h6 className="post-owner-name">{creatorName}</h6>
+                            <p className="post-posted-at">{formatDate(createdAt)}</p>
                         </div>
                         <div className="post-header-menu">
                             {
-                                this.props.tags && this.props.tags.length > 0 && <Tag name={this.props.tags[0]} />
+                                tags && tags.length > 0 && <Tag name={tags[0]} />
                             }
-                            <img src={this.props.usersLikedIds?.findIndex(id => id === this.props.sessionUserId) !== -1 ? filledHeart : heart} width={30} height={30} alt=""
+                            <img src={usersLikedIds?.findIndex(id => id === this.props.sessionUserId) !== -1 ? filledHeart : heart} width={30} height={30} alt=""
                                 onClick={() => this.props.onLike(this.props.keyProp)} />
-                            <p className="header-likes">{this.props.usersLikedIds?.length ?? 0}</p>
-                            <DropDown toggleButton={{
-                                icon: undefined,
-                                arrowIconOpen: menuOpened,
-                                arrowIconClose: menuClosed
-                            }}
-                                arrowIconSize={30} onHeaderClick={this.handleMenu}>
-                                <DropDown.Item icon={report} textColor="red" text="Report" iconSize={30} onClick={this.props.onReportClick} />
-                                <DropDown.Item icon={unfollow} textColor="red" text="Unfollow" iconSize={30} onClick={this.props.onUnfollowClick} />
-                                <DropDown.Item icon={rightArrow} text="Jump" iconSize={30} onClick={this.props.onRightArrowClick} />
-                                <DropDown.Item icon={share} text="Share" iconSize={30} onClick={this.props.onShareClick} />
-                            </DropDown>
+                            <p className="header-likes">{usersLikedIds?.length ?? 0}</p>
+                            {
+                                !previewMode &&
+                                <DropDown toggleButton={{
+                                    icon: undefined,
+                                    arrowIconOpen: menuOpened,
+                                    arrowIconClose: menuClosed
+                                }}
+                                    arrowIconSize={30} onHeaderClick={this.handleMenu}>
+                                    {
+                                        this.props.sessionUserId === creatorId &&
+                                        <DropDown.Item icon={remove} textColor="red" text="Delete" iconSize={30} onClick={() => this.props.onDelete(this.props.keyProp)} />
+                                    }
+                                    <DropDown.Item icon={report} textColor="red" text="Report" iconSize={30} onClick={this.props.onReportClick} />
+                                    <DropDown.Item icon={unfollow} textColor="red" text="Unfollow" iconSize={30} onClick={this.props.onUnfollowClick} />
+                                    <DropDown.Item icon={rightArrow} text="Jump" iconSize={30} onClick={this.props.onRightArrowClick} />
+                                    <DropDown.Item icon={share} text="Share" iconSize={30} onClick={this.props.onShareClick} />
+                                </DropDown>
+                            }
                         </div>
                     </div>
 
-                    <p className="post-text">{this.props.text}</p>
+                    <p className="post-text">{content}</p>
                     {
-                        this.props.images &&
-                        <ImageSlider images={this.props.images} imageHeight={this.props.imageHeight} imageWidth={this.props.imageWidth} />
+                        imageUrls &&
+                        <ImageSlider images={imageUrls} imageHeight={this.props.imageHeight} imageWidth={this.props.imageWidth} />
                     }
                 </div>
             </VisibilitySensor>
@@ -85,9 +97,9 @@ export class DetailedPost extends Component {
     state = {
         visibility: true,
         menuOpen: false,
+        savedIcon: save,
 
-        comments: [
-        ],
+        comments: [],
 
         currentComment: "",
         currentReply: "",
@@ -109,7 +121,7 @@ export class DetailedPost extends Component {
     
     getComments = () => {
         sendJSONRequest("GET", '/comment/get_all/', undefined, this.props.tokens.token, {
-            postId: this.props.id
+            postId: this.props?.item.id
         }).then(response => {
             this.setState({ comments: response.data });
         }, error => {
@@ -152,7 +164,7 @@ export class DetailedPost extends Component {
         }
 
         if (this.state.currentReply === "") {
-            sendJSONRequest("POST", `/comment/create/${this.props.id}`, {
+            sendJSONRequest("POST", `/comment/create/${this.props.item.id}`, {
                 content: this.state.currentComment
             }, this.props.tokens.token).then(response => {
                 console.log(response.data);
@@ -226,8 +238,10 @@ export class DetailedPost extends Component {
     }
 
     render() {
+        let { content, tags, creatorImage, createdAt, creatorId, imageUrls, usersLikedIds, previewMode } = this.props.item;
+
         return (
-            <VisibilitySensor partialVisibility onChange={(isVisible) => isVisible && !this.props.creatorImage && this.props.onFirstAppear(this.props.keyProp)} >
+            <VisibilitySensor partialVisibility onChange={(isVisible) => isVisible && !creatorImage && this.props.onFirstAppear(this.props.keyProp)} >
                 <div className="detailed-post-container" style={{
                     opacity: this.state.visibility ? 1 : 0.25,
                     transition: 'opacity 500ms linear',
@@ -235,35 +249,45 @@ export class DetailedPost extends Component {
                 }}>
                     <div className="detailed-post-post-section">
                         <div className="post-header">
-                            <img className="post-owner-pic" src={this.props.creatorImage} alt="" width={40} height={40} />
+                            <img className="post-owner-pic" src={creatorImage} alt="" width={40} height={40} />
                             <div className="post-owner">
                                 <div className="detailed-post-tags">
                                 {
-                                    this.props.tags?.map((item, index) =>
+                                    tags?.map((item, index) =>
                                         <Tag key={index} paddingY="2px" name={item} />)
                                     }
                                 </div>
-                                <p className="detailed-post-posted-at">{formatDate(this.props.createdAt)}</p>
+                                <p className="detailed-post-posted-at">{formatDate(createdAt)}</p>
                             </div> 
                             <div className="post-header-menu">
-                                <img src={this.props.usersLikedIds?.findIndex(id => id === this.props.sessionUserId) !== -1 ? filledHeart : heart}
-                                    width={30} height={30} alt="" onClick={() => this.props.onLike(this.props.keyProp)} />
-                                <p className="header-likes" style={{ marginLeft: 5 }}>{this.props.usersLikedIds?.length ?? 0}</p>
-                                <DropDown toggleButton={{
-                                    icon: undefined,
-                                    arrowIconOpen: menuOpened,
-                                    arrowIconClose: menuClosed
-                                }}
-                                    arrowIconSize={30} onHeaderClick={this.handleMenu}>
-                                    <DropDown.Item icon={report} textColor="red" text="Report" iconSize={30} onClick={this.props.onReportClick} />
-                                    <DropDown.Item icon={share} text="Share" iconSize={30} onClick={this.props.onShareClick} />
-                                </DropDown>
+                                <img src={this.props.saved ? saved : save} alt="" height={30} width={30} onClick={() => this.props.onSave(this.props.id)} />
+                                <div className="flex">
+                                    <img src={usersLikedIds?.findIndex(id => id === this.props.sessionUserId) !== -1 ? filledHeart : heart}
+                                        width={30} height={30} alt="" onClick={() => this.props.onLike(this.props.keyProp)} />
+                                    <p className="header-likes" style={{ marginLeft: 5 }}>{usersLikedIds?.length ?? 0}</p>
+                                </div>
+                                {
+                                    !previewMode &&
+                                    <DropDown toggleButton={{
+                                        icon: undefined,
+                                        arrowIconOpen: menuOpened,
+                                        arrowIconClose: menuClosed
+                                    }}
+                                        arrowIconSize={30} onHeaderClick={this.handleMenu}>
+                                        {
+                                            this.props.sessionUserId === creatorId &&
+                                            <DropDown.Item icon={remove} textColor="red" text="Delete" iconSize={30} onClick={() => this.props.onDelete(this.props.keyProp)} />
+                                        }
+                                        <DropDown.Item icon={report} textColor="red" text="Report" iconSize={30} onClick={this.props.onReportClick} />
+                                        <DropDown.Item icon={share} text="Share" iconSize={30} onClick={this.props.onShareClick} />
+                                    </DropDown>
+                                }
                             </div>
                         </div>
-                        <p className="post-text">{this.props.text}</p>
+                        <p className="post-text">{content}</p>
                         {
-                            this.props.images &&
-                            <ImageSlider images={this.props.images} imageHeight={this.props.imageHeight} imageWidth={this.props.imageWidth} />
+                            imageUrls &&
+                            <ImageSlider images={imageUrls} imageHeight={this.props.imageHeight} imageWidth={this.props.imageWidth} />
                         }
                     </div>
                     <div className="detailed-post-comments-section">

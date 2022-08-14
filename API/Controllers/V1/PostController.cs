@@ -20,65 +20,65 @@ namespace API.Controllers.V1
         private readonly IUriService _uriService;
         private readonly IIdentityService _identityService;
         private readonly IRateableService<Post> _rateableService;
+        private readonly ISaveService<Post> _saveService;
         private readonly IFileManager _fileManager;
 
-        public PostController(IPostService postService, IUriService uriService, IIdentityService identityService, IRateableService<Post> rateableService, IFileManager fileManager)
+        public PostController(IPostService postService, IUriService uriService, IIdentityService identityService, IRateableService<Post> rateableService, IFileManager fileManager, ISaveService<Post> saveService)
         {
             _postService = postService;
             _uriService = uriService;
             _identityService = identityService;
             _rateableService = rateableService;
             _fileManager = fileManager;
+            _saveService = saveService;
         }
 
 
         [HttpPost(ApiRoutes.Post.Create)]
         public async Task<IActionResult> Create([FromForm] CreatePostRequest request)
         {
+            var id = HttpContext.GetUserId();
+            var post = new Post
+            {
+                CreatorId = id,
+                Content = request.Content,
+            };
+
+            var result = await _postService.CreateAsync(post, request.TagNames, request.RawImages);
+            if (!result.Success)
+            {
+                return BadRequest(result.Data);
+            }
+
+            var response = result.Data.ToResponse(_fileManager);
+            var loaction = _uriService.GetUri(ApiRoutes.Post.Get, result.Data.Id.ToString());
+            return Created(loaction, new Response<PostResponse>(response));
+        }
+
+        [HttpDelete(ApiRoutes.Post.Delete)]
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
+        {
             try
             {
-                var id = HttpContext.GetUserId();
-
-                var post = new Post
+                var existingPost = await _postService.GetByIdAsync(id);
+                if (existingPost == null)
                 {
-                    CreatorId = id,
-                    Content = request.Content,
-                };
-
-                var result = await _postService.CreateAsync(post, request.TagNames, request.RawImages);
-                if (!result.Success)
-                {
-                    return BadRequest(result.Data);
+                    return NotFound();
                 }
 
-                var response = result.Data.ToResponse(_fileManager);
-                var loaction = _uriService.GetUri(ApiRoutes.Post.Get, result.Data.Id.ToString());
-                return Created(loaction, new Response<PostResponse>(response));
+                if (existingPost.CreatorId != HttpContext.GetUserId() && !HttpContext.HasRole("ContentAdmin"))
+                {
+                    return Unauthorized(StaticErrorMessages.PermissionDenied);
+                }
 
+                var result = await _postService.DeleteAsync(existingPost);
+                return result.Success ? NoContent() : BadRequest(result.Errors);
             }
             catch (Exception e)
             {
 
                 throw;
             }
-        }
-
-        [HttpDelete(ApiRoutes.Post.Delete)]
-        public async Task<IActionResult> Delete([FromRoute] Guid id)
-        {
-            var existingPost = await _postService.GetByIdAsync(id);
-            if (existingPost == null)
-            {
-                return NotFound();
-            }
-
-            if (existingPost.CreatorId != HttpContext.GetUserId() && !HttpContext.HasRole("ContentAdmin"))
-            {
-                return Unauthorized(StaticErrorMessages.PermissionDenied);
-            }
-
-            var result = await _postService.DeleteAsync(existingPost);
-            return result.Success ? NoContent() : BadRequest(result.Errors);
         }
 
         [HttpDelete(ApiRoutes.Post.DeleteAll)]
@@ -92,7 +92,6 @@ namespace API.Controllers.V1
 
             return NoContent();
         }
-
 
         [HttpGet(ApiRoutes.Post.Get)]
         public async Task<IActionResult> Get([FromRoute] Guid id)
@@ -133,6 +132,26 @@ namespace API.Controllers.V1
             return Ok(paginationResponse);
         }
 
+        [HttpGet(ApiRoutes.Post.GetSaved)]
+        public async Task<IActionResult> GetSaved([FromRoute] Guid id)
+        {
+            var user = await _identityService.GetUserByIdAsync(HttpContext.GetUserId());
+            if(user == null)
+            {
+                return NotFound();
+            }
+
+            var post = await _postService.GetByIdAsync(id);
+            if(post == null)
+            {
+                return NotFound();
+            }
+
+            var result = await _saveService.SaveAsync(post, user);
+            var response = result.Data.ToResponse(_fileManager);
+            return Ok(new Response<PostResponse>(response));
+        }
+
         [HttpPatch(ApiRoutes.Post.Update)]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdatePostReqest request)
         {
@@ -159,6 +178,7 @@ namespace API.Controllers.V1
             return Ok(new Response<PostResponse>(response));
         }
 
+
         [HttpPatch(ApiRoutes.Post.UpdateRating)]
         public async Task<IActionResult> UpdateRating([FromRoute] Guid id)
         {
@@ -172,6 +192,21 @@ namespace API.Controllers.V1
             var result = await _rateableService.UpdateRatingAsync(post, user);
             var response = result.Data.ToResponse(_fileManager);
             return Ok(new Response<PostResponse>(response));
+        }
+
+        [HttpPatch(ApiRoutes.Post.UpdateSave)]
+        public async Task<IActionResult> UpdateSave([FromRoute] Guid id)
+        {
+            var post = await _postService.GetByIdAsync(id);
+            var user = await _identityService.GetUserByIdAsync(HttpContext.GetUserId());
+            if (post == null || user == null)
+            {
+                return NotFound();
+            }
+            var result = await _saveService.SaveAsync(post, user);
+
+            var newUser = await _identityService.GetUserByIdAsync(HttpContext.GetUserId());
+            return Ok(new Response<List<PostResponse>>(newUser.SavedPosts.Select(x => x.ToResponse(_fileManager)).ToList()));
         }
     }
 }

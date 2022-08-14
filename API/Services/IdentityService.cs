@@ -279,7 +279,50 @@ namespace API.Services
             };
         }
 
-        public async Task<User?> GetUserByIdAsync(string userId) => await _userManager.Users.Include(x => x.Tags).FirstOrDefaultAsync(item => item.Id == userId);
+        public async Task<User?> GetUserByIdAsync(string userId) => await _userManager.Users
+            .Include(x => x.Tags)
+            .Include(x => x.Followers)
+            .Include(x => x.Followed)
+            .Include(x => x.Posts)
+                .ThenInclude(x => x.Tags)
+            .Include(x => x.Posts)
+                .ThenInclude(x => x.ImagePaths)
+            .Include(x => x.Posts)
+                .ThenInclude(x => x.UsersLiked)
+            .Include(x => x.Projects)
+                .ThenInclude(x => x.UsersLiked)
+            .Include(x => x.Projects)
+                .ThenInclude(x => x.Links)
+            .Include(x => x.Projects)
+                .ThenInclude(x => x.Tags)
+            .Include(x => x.Projects)
+                .ThenInclude(x => x.ImagePaths)
+            .Include(x => x.Projects)
+                .ThenInclude(x => x.Members)
+            .Include(x => x.Discussions)
+                .ThenInclude(x => x.Tags)
+            .Include(x => x.SavedPosts)
+            .Include(x => x.SavedPosts)
+                .ThenInclude(x => x.Tags)
+            .Include(x => x.SavedPosts)
+                .ThenInclude(x => x.ImagePaths)
+            .Include(x => x.SavedPosts)
+                .ThenInclude(x => x.UsersLiked)
+            .Include(x => x.SavedDiscussions)
+                .ThenInclude(x => x.Tags)
+            .Include(x => x.SavedProjects)
+                .ThenInclude(x => x.Tags)
+            .Include(x => x.SavedProjects)
+                .ThenInclude(x => x.ImagePaths)
+            .Include(x => x.SavedProjects)
+                .ThenInclude(x => x.Members)
+            .FirstOrDefaultAsync(item => item.Id == userId);
+
+        public async Task<User?> GetOnlyUsersSavedByIdAsync(string userId) => await _userManager.Users
+            .Include(x => x.SavedPosts)
+            .Include(x => x.SavedDiscussions)
+            .Include(x => x.SavedProjects)
+            .FirstOrDefaultAsync(item => item.Id == userId);
 
         public async Task<User?> GetUserByIdWithNoTagsAsync(string userId) => await _userManager.FindByIdAsync(userId);
 
@@ -344,6 +387,29 @@ namespace API.Services
             {
                 Success = updated.Succeeded,
                 Data = updated.Succeeded ? user : null,
+                Errors = updated.Errors.Select(x => x.Description),
+            };
+        }
+
+        public async Task<Result<User>> UpdateFollowingAsync(User targetUser, User requestUser)
+        {
+            if (targetUser.Followers.Select(x => x.Id).Contains(requestUser.Id))
+            {
+                targetUser.Followers.Remove(requestUser);
+            }
+            else
+            {
+                targetUser.Followers.Add(requestUser);
+            }
+
+            targetUser.UpdatedAt = DateTime.UtcNow;
+            requestUser.UpdatedAt = DateTime.UtcNow;
+
+            var updated = await _userManager.UpdateAsync(targetUser);
+            return new Result<User>
+            {
+                Success = updated.Succeeded,
+                Data = updated.Succeeded ? targetUser : null,
                 Errors = updated.Errors.Select(x => x.Description),
             };
         }

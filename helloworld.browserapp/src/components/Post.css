@@ -6,6 +6,10 @@
     padding: 10px 10px 0px 10px;
 }
 
+.post-owner{
+    width: 100%;
+}
+
 .post-header{
     padding: 5px 10px 10px 10px;
     display: flex;
@@ -15,9 +19,8 @@
 
 .post-header-menu {
     display: flex;
-    justify-content: space-around;
-    width: 100%;
-    justify-content: right;
+    justify-content: space-between;
+    width: 60%;
     align-items: center;
 }
 
@@ -31,6 +34,7 @@
 .post-owner-name{
     font-weight: bold;
     margin-top: 15px;
+    text-align: left;
 }
 
 .post-posted-at {

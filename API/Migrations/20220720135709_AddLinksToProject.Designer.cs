@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace API.Data.Migrations
+namespace API.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20220714100912_AddUserLikedAtDiscussion")]
-    partial class AddUserLikedAtDiscussion
+    [Migration("20220720135709_AddLinksToProject")]
+    partial class AddLinksToProject
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -144,6 +144,30 @@ namespace API.Data.Migrations
                     b.ToTable("ImageUrls");
                 });
 
+            modelBuilder.Entity("API.Domain.Database.Link", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("Links");
+                });
+
             modelBuilder.Entity("API.Domain.Database.Message", b =>
                 {
                     b.Property<Guid>("Id")
@@ -187,10 +211,6 @@ namespace API.Data.Migrations
                     b.Property<string>("CreatorId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -376,6 +396,21 @@ namespace API.Data.Migrations
                     b.HasIndex("UsersLikedId");
 
                     b.ToTable("DiscussionUser");
+                });
+
+            modelBuilder.Entity("DiscussionUser1", b =>
+                {
+                    b.Property<string>("SavedById")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("SavedDiscussionsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("SavedById", "SavedDiscussionsId");
+
+                    b.HasIndex("SavedDiscussionsId");
+
+                    b.ToTable("DiscussionUser1");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -616,6 +651,21 @@ namespace API.Data.Migrations
                     b.ToTable("PostUser");
                 });
 
+            modelBuilder.Entity("PostUser1", b =>
+                {
+                    b.Property<string>("SavedById")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("SavedPostsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("SavedById", "SavedPostsId");
+
+                    b.HasIndex("SavedPostsId");
+
+                    b.ToTable("PostUser1");
+                });
+
             modelBuilder.Entity("ProjectTag", b =>
                 {
                     b.Property<Guid>("ProjectsId")
@@ -661,6 +711,21 @@ namespace API.Data.Migrations
                     b.ToTable("ProjectUser1");
                 });
 
+            modelBuilder.Entity("ProjectUser2", b =>
+                {
+                    b.Property<string>("SavedById")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("SavedProjectsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("SavedById", "SavedProjectsId");
+
+                    b.HasIndex("SavedProjectsId");
+
+                    b.ToTable("ProjectUser2");
+                });
+
             modelBuilder.Entity("ReplyUser", b =>
                 {
                     b.Property<Guid>("RepliesLikedId")
@@ -689,6 +754,21 @@ namespace API.Data.Migrations
                     b.HasIndex("UsersId");
 
                     b.ToTable("TagUser");
+                });
+
+            modelBuilder.Entity("UserUser", b =>
+                {
+                    b.Property<string>("FollowedId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("FollowersId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("FollowedId", "FollowersId");
+
+                    b.HasIndex("FollowersId");
+
+                    b.ToTable("UserUser");
                 });
 
             modelBuilder.Entity("API.Domain.Database.User", b =>
@@ -774,6 +854,17 @@ namespace API.Data.Migrations
                     b.HasOne("API.Domain.Database.Project", null)
                         .WithMany("ImagePaths")
                         .HasForeignKey("ProjectId");
+                });
+
+            modelBuilder.Entity("API.Domain.Database.Link", b =>
+                {
+                    b.HasOne("API.Domain.Database.Project", "Project")
+                        .WithMany("Links")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("API.Domain.Database.Message", b =>
@@ -909,6 +1000,21 @@ namespace API.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("DiscussionUser1", b =>
+                {
+                    b.HasOne("API.Domain.Database.User", null)
+                        .WithMany()
+                        .HasForeignKey("SavedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("API.Domain.Database.Discussion", null)
+                        .WithMany()
+                        .HasForeignKey("SavedDiscussionsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -990,6 +1096,21 @@ namespace API.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("PostUser1", b =>
+                {
+                    b.HasOne("API.Domain.Database.User", null)
+                        .WithMany()
+                        .HasForeignKey("SavedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("API.Domain.Database.Post", null)
+                        .WithMany()
+                        .HasForeignKey("SavedPostsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("ProjectTag", b =>
                 {
                     b.HasOne("API.Domain.Database.Project", null)
@@ -1035,6 +1156,21 @@ namespace API.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ProjectUser2", b =>
+                {
+                    b.HasOne("API.Domain.Database.User", null)
+                        .WithMany()
+                        .HasForeignKey("SavedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("API.Domain.Database.Project", null)
+                        .WithMany()
+                        .HasForeignKey("SavedProjectsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("ReplyUser", b =>
                 {
                     b.HasOne("API.Domain.Database.Reply", null)
@@ -1062,6 +1198,21 @@ namespace API.Data.Migrations
                         .WithMany()
                         .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("UserUser", b =>
+                {
+                    b.HasOne("API.Domain.Database.User", null)
+                        .WithMany()
+                        .HasForeignKey("FollowedId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("API.Domain.Database.User", null)
+                        .WithMany()
+                        .HasForeignKey("FollowersId")
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
                 });
 
@@ -1102,6 +1253,8 @@ namespace API.Data.Migrations
             modelBuilder.Entity("API.Domain.Database.Project", b =>
                 {
                     b.Navigation("ImagePaths");
+
+                    b.Navigation("Links");
                 });
 
             modelBuilder.Entity("API.Domain.Database.Reply", b =>

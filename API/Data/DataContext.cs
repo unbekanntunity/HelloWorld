@@ -17,6 +17,8 @@ namespace API.Data
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Reply> Replies { get; set; }
 
+        public DbSet<Link> Links { get; set; }
+
         public DataContext(DbContextOptions<DataContext> options)
             : base(options)
         {
@@ -74,6 +76,10 @@ namespace API.Data
                 .HasForeignKey(x => x.PostId);
 
             modelBuilder.Entity<Post>()
+                .HasOne(x => x.Creator)
+                .WithMany(x => x.Posts);
+
+            modelBuilder.Entity<Post>()
                 .HasMany(x => x.ImagePaths)
                 .WithOne();
 
@@ -89,6 +95,11 @@ namespace API.Data
                 .HasMany(x => x.Members)
                 .WithMany(x => x.ProjectsJoined);
 
+            modelBuilder.Entity<Project>()
+                .HasMany(x => x.Links)
+                .WithOne(x => x.Project)
+                .HasForeignKey(x => x.ProjectId);
+
             modelBuilder.Entity<User>()
                 .HasMany(x => x.Articles)
                 .WithOne(x => x.Creator)
@@ -96,11 +107,6 @@ namespace API.Data
 
             modelBuilder.Entity<User>()
                 .HasMany(x => x.Comments)
-                .WithOne(x => x.Creator)
-                .HasForeignKey(x => x.CreatorId);
-
-            modelBuilder.Entity<User>()
-                .HasMany(x => x.Posts)
                 .WithOne(x => x.Creator)
                 .HasForeignKey(x => x.CreatorId);
 
@@ -124,17 +130,33 @@ namespace API.Data
                 .WithMany(x => x.Users);
 
             modelBuilder.Entity<User>()
-              .HasMany(x => x.Replies)
-              .WithOne(x => x.Creator)
-              .HasForeignKey(x => x.CreatorId);
+                .HasMany(x => x.Replies)
+                .WithOne(x => x.Creator)
+                .HasForeignKey(x => x.CreatorId);
 
             modelBuilder.Entity<User>()
-              .HasMany(x => x.RepliesLiked)
-              .WithMany(x => x.UsersLiked);
+                .HasMany(x => x.RepliesLiked)
+                .WithMany(x => x.UsersLiked);
 
             modelBuilder.Entity<User>()
-            .HasMany(x => x.DiscussionsLiked)
-            .WithMany(x => x.UsersLiked);
+                .HasMany(x => x.DiscussionsLiked)
+                .WithMany(x => x.UsersLiked);
+
+            modelBuilder.Entity<User>()
+              .HasMany(x => x.SavedPosts)
+              .WithMany(x => x.SavedBy);
+
+            modelBuilder.Entity<User>()
+              .HasMany(x => x.SavedDiscussions)
+              .WithMany(x => x.SavedBy);
+
+            modelBuilder.Entity<User>()
+              .HasMany(x => x.SavedProjects)
+              .WithMany(x => x.SavedBy);
+
+            modelBuilder.Entity<User>()
+                .HasMany(x => x.Followers)
+                .WithMany(x => x.Followed);
 
             modelBuilder.Entity<Reply>()
                 .HasMany(x => x.Replies)

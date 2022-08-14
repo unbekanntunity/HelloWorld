@@ -14,6 +14,7 @@
         public string CreatorId { get; set; }
 
         public List<string> Tags { get; set; }
+        public List<string> MemberIds { get; set; }
         public List<string> UsersLikedIds { get; set; }
     }
 }

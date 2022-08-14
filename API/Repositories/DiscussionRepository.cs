@@ -22,6 +22,7 @@ namespace API.Repositories
 
         public async Task<Discussion?> GetByIdAsync(Guid id) => await _dataContext.Discussions
             .Include(x => x.Tags)
+            .Include(x => x.SavedBy)
             .Include(x => x.Articles)
             .Include(x => x.UsersLiked)
             .FirstOrDefaultAsync(x => x.Id == id);

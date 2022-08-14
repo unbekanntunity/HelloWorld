@@ -24,6 +24,7 @@ namespace API.Repositories
             .Include(x => x.Tags)
             .Include(x => x.UsersLiked)
             .Include(x => x.ImagePaths)
+            .Include(x => x.SavedBy)
             .FirstOrDefaultAsync(x => x.Id == id);
     }
 }

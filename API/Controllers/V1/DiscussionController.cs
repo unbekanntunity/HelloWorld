@@ -23,8 +23,9 @@ namespace API.Controllers.V1
         private readonly IIdentityService _identityService;
         private readonly IRateableService<Discussion> _rateableService;
         private readonly INonQueryRepository<Discussion> _nonQueryRepository;
+        private readonly ISaveService<Discussion> _saveService;
 
-        public DiscussionController(IDiscussionService discussionService, IUriService uriService, IRateableService<Discussion> rateableService, IIdentityService identityService, IFileManager fileManager, INonQueryRepository<Discussion> nonQueryRepository)
+        public DiscussionController(IDiscussionService discussionService, IUriService uriService, IRateableService<Discussion> rateableService, IIdentityService identityService, IFileManager fileManager, INonQueryRepository<Discussion> nonQueryRepository, ISaveService<Discussion> saveService)
         {
             _discussionService = discussionService;
             _uriService = uriService;
@@ -32,6 +33,7 @@ namespace API.Controllers.V1
             _identityService = identityService;
             _fileManager = fileManager;
             _nonQueryRepository = nonQueryRepository;
+            _saveService = saveService;
         }
 
         [HttpPost(ApiRoutes.Discussion.Create)]
@@ -61,7 +63,6 @@ namespace API.Controllers.V1
         {
             var discussions = await _discussionService.GetAllAsync(filter, pagination);
             var responses = discussions.Select(x => x.ToPartialResponse()).ToList();
-
             if (pagination == null || pagination.PageNumber < 1 || pagination.PageSize < 1)
             {
                 return Ok(new PagedResponse<PartialDiscussionResponse>(responses));
@@ -149,6 +150,21 @@ namespace API.Controllers.V1
             var result = await _rateableService.UpdateRatingAsync(discussion, user);
             var response = result.Data.ToResponse();
             return Ok(new Response<DiscussionResponse>(response));
+        }
+
+        [HttpPatch(ApiRoutes.Discussion.UpdateSave)]
+        public async Task<IActionResult> UpdateSave([FromRoute] Guid id)
+        {
+            var post = await _discussionService.GetByIdAsync(id);
+            var user = await _identityService.GetUserByIdAsync(HttpContext.GetUserId());
+            if (post == null || user == null)
+            {
+                return NotFound();
+            }
+            var result = await _saveService.SaveAsync(post, user);
+
+            var newUser = await _identityService.GetUserByIdAsync(HttpContext.GetUserId());
+            return Ok(new Response<List<DiscussionResponse>>(newUser.SavedDiscussions.Select(x => x.ToResponse()).ToList()));
         }
     }
 }
