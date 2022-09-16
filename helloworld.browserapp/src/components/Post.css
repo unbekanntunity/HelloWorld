@@ -19,7 +19,7 @@
 
 .post-header-menu {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     width: 60%;
     align-items: center;
 }
@@ -113,4 +113,8 @@
 
 .detailed-post-comment{
     margin-bottom: 10px;
+}
+
+.detailed-post-header-saved {
+    margin-right: 10px;
 }

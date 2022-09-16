@@ -8,7 +8,6 @@ import './NavBar.css';
 
 class NavBar extends Component {
     render() {
-        console.log(this.props);
         return (
             <Nav className="navbar" style={{ boxShadow: '0px 1px 18px #FFB30B'}}  >
                 <a className="navbar-brand" href={this.props.logoLink}>
@@ -28,7 +27,7 @@ class NavBar extends Component {
                                 <DropDown.Item linkTo={this.props.discussionsLink} icon={this.props.discussionsIcon} text="Discussions" iconSize={35}/>
                                 <DropDown.Item linkTo={this.props.projectsLink} icon={this.props.projectsIcon} text="Projects" iconSize={30}/>
                                 <DropDown.Item linkTo={this.props.postsLink} icon={this.props.postsIcon} text="Posts" iconSize={30} />
-                                <DropDown.Item linkTo={this.props.accountsLink} icon={this.props.accountsIcon} text="Accounts" iconSize={30} />
+                                <DropDown.Item linkTo={this.props.accountsLink} icon={this.props.accountGenIcon} text="Accounts" iconSize={30} />
                             </DropDown>
                         </div>
                     </Nav.Item>

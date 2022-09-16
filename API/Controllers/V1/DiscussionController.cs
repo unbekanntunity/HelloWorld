@@ -37,7 +37,7 @@ namespace API.Controllers.V1
         }
 
         [HttpPost(ApiRoutes.Discussion.Create)]
-        public async Task<IActionResult> Create([FromForm] CreateDiscussionRequest request)
+        public async Task<IActionResult> Create([FromBody] CreateDiscussionRequest request)
         {
             var discussion = new Discussion
             {

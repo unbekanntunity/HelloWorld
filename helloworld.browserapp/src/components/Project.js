@@ -34,7 +34,8 @@ export class Project extends Component {
     }
 
     render() {
-        console.log(this.props);
+        let { id, title, description, tags, creatorImage, createdAt, creatorId, memberIds, imageUrls, usersLikedIds } = this.props.item;
+
         return (
             <VisibilitySensor partialVisibility onChange={(isVisible) => isVisible && !this.props.creatorImage && this.props.onFirstAppear(this.props.keyProp)}>
                 <div className="project-container" style={{
@@ -43,63 +44,84 @@ export class Project extends Component {
                     width: this.props.width
                 }} >
                     <div className="header-container">
-                        <img src={this.props.creatorImage} alt="" height={30} width={30} />
+                        <img src={creatorImage} alt="" height={30} width={30} />
                         <div className="header-middle">
                             <div className="header-text-container">
-                                <p className="header-text">{this.props.title}</p>
+                                <p className="header-text">{title}</p>
                                 {
-                                    this.props.createdAt &&
-                                    <p className="bold-gray-date header-date">{formatDate(this.props.createdAt)}</p>
+                                    createdAt &&
+                                    <p className="bold-gray-date header-date">{formatDate(createdAt)}</p>
                                 }
                             </div>
                             <div className="header-tags">
                                 {
-                                    this.props.tags &&
-                                    this.props.tags.map((item, index) =>
-                                        <Tag key={index} name={item} />
+                                    tags &&
+                                    tags.map((item, index) =>
+                                        <Tag key={index} margin="0px 5px" name={item} />
                                     )
                                 }
                             </div>
                         </div>
                         <span className="header-actions">
-                            <div className="header-action" onClick={() => this.props.onSave(this.props.id)}>
-                                <img src={this.props.saved ? saved : save} alt="" height={30} width={30} />
+                            <div className="header-action">
+                                {
+                                    this.props.previewMode &&
+                                    <img src={save} width={30} height={30} alt="" />
+                                }
+                                {
+                                    !this.props.previewMode &&
+                                    <img src={this.props.saved ? saved : save} alt="" height={30} width={30} onClick={() => this.props.onSave(id)}/>
+                                }
                             </div>
                             <div className="header-action">
                                 <img src={user} width={30} height={30} alt="" />
-                                <p className="header-likes">{this.props.memberIds?.length ?? 0}</p>
+                                <p className="header-likes">{memberIds?.length ?? 0}</p>
                             </div>
                             <div className="header-action" style={{ marginRight: '0px' }}>
-                                <img src={this.props.usersLikedIds?.findIndex(id => id === this.props.sessionUserId) !== -1 ? filledHeart : heart} width={30} height={30} alt=""
-                                    onClick={() => this.props.onLike(this.props.keyProp)} />
-                                <p className="header-likes">{this.props.usersLikedIds?.length ?? 0}</p>
+                                {
+                                    this.props.previewMode &&
+                                    <img src={heart} width={30} height={30} alt="" />
+                                }
+                                {
+                                    !this.props.previewMode &&
+                                    <img src={this.props.usersLikedIds?.findIndex(id => id === this.props.sessionUserId) !== -1 ? filledHeart : heart} width={30} height={30} alt=""
+                                        onClick={() => this.props.onLike(this.props.keyProp)} />
+                                }
+                                <p className="header-likes">{usersLikedIds?.length ?? 0}</p>
                             </div>
-                            <DropDown toggleButton={{
-                                icon: undefined,
-                                arrowIconOpen: menuOpened,
-                                arrowIconClose: menuClosed
-                            }}
-                                arrowIconSize={30} onHeaderClick={this.handleMenu}>
-                                {
-                                    this.props.sessionUserId === this.props.creatorId &&
-                                    <DropDown.Item icon={remove} textColor="red" text="Delete" iconSize={30} onClick={() => this.props.onDelete(this.props.keyProp)} />
-                                }
-                                <DropDown.Item icon={report} textColor="red" text="Report" iconSize={30} onClick={this.props.onReportClick} />
-                                {
-                                    this.props.sessionUserId === this.props.creatorId &&
-                                    <DropDown.Item icon={edit} text="edit" iconSize={30} onClick={() => this.props.onEdit(this.props.keyProp)} />
-                                }
-                                <DropDown.Item icon={rightArrow} text="Jump" iconSize={30} onClick={this.props.onRightArrowClick} />
-                                <DropDown.Item icon={share} text="Share" iconSize={30} onClick={this.props.onShareClick} />
-                            </DropDown>
+                            {
+                                this.props.previewMode &&
+                                <img src={menuClosed} width={30} height={30} alt="" />
+                            }
+                            {
+                                !this.props.previewMode &&
+                                <DropDown toggleButton={{
+                                    icon: undefined,
+                                    arrowIconOpen: menuOpened,
+                                    arrowIconClose: menuClosed
+                                }}
+                                    arrowIconSize={30} onHeaderClick={this.handleMenu}>
+                                    {
+                                        this.props.sessionUserId === creatorId &&
+                                        <DropDown.Item icon={remove} textColor="red" text="Delete" iconSize={30} onClick={() => this.props.onDelete(this.props.keyProp)} />
+                                    }
+                                    <DropDown.Item icon={report} textColor="red" text="Report" iconSize={30} onClick={this.props.onReportClick} />
+                                    {
+                                        this.props.sessionUserId === creatorId &&
+                                        <DropDown.Item icon={edit} text="edit" iconSize={30} onClick={() => this.props.onEdit(this.props.keyProp)} />
+                                    }
+                                    <DropDown.Item icon={rightArrow} text="Jump" iconSize={30} onClick={this.props.onRightArrowClick} />
+                                    <DropDown.Item icon={share} text="Share" iconSize={30} onClick={this.props.onShareClick} />
+                                </DropDown>
+                            }
                         </span>
                     </div>
                     <div className="description-container">
-                        <p>{this.props.description}</p>
+                        <p>{description}</p>
                     </div>
                     {
-                        this.props.images !== undefined &&
-                        <ImageSlider images={this.props.images} imageHeight={this.props.imageHeight} imageWidth={this.props.imageWidth} />
+                        imageUrls &&
+                        <ImageSlider images={imageUrls} imageHeight={this.props.imageHeight} imageWidth={this.props.imageWidth} />
                     }
                 </div>
             </VisibilitySensor>
@@ -144,7 +166,7 @@ export class DetailedProject extends Component {
     }
 
     render() {
-        let { id, title, description, tags, creatorImage, createdAt, creatorId, memberIds, links, imageUrls, usersLikedIds, previewMode } = this.props.item;
+        let { id, title, description, tags, creatorImage, createdAt, creatorId, memberIds, links, imageUrls, usersLikedIds } = this.props.item;
 
         return (
             <VisibilitySensor partialVisibility onChange={(isVisible) => isVisible && !creatorImage && this.props.onFirstAppear(this.props.keyProp)}>
@@ -192,24 +214,28 @@ export class DetailedProject extends Component {
                                 <p className="header-likes">{usersLikedIds?.length ?? 0}</p>
                             </div>
                             {
-                                !previewMode &&
-                            <DropDown toggleButton={{
-                                icon: undefined,
-                                arrowIconOpen: menuOpened,
-                                arrowIconClose: menuClosed
-                            }} arrowIconSize={30} onHeaderClick={this.handleMenu}>
-                                    {
-                                        this.props.sessionUserId === creatorId &&
-                                        <DropDown.Item icon={remove} textColor="red" text="Delete" iconSize={30} onClick={() => this.props.onDelete(this.props.keyProp)} />
-                                    }
-                                    <DropDown.Item icon={report} textColor="red" text="Report" iconSize={30} onClick={this.props.onReportClick} />
-                                    {
-                                        this.props.sessionUserId === creatorId &&
-                                        <DropDown.Item icon={edit} text="edit" iconSize={30} onClick={() => this.props.onEdit(this.props.keyProp, this.props.item)} />
-                                    }
-                                    <DropDown.Item icon={rightArrow} text="Jump" iconSize={30} onClick={this.props.onRightArrowClick} />
-                                    <DropDown.Item icon={share} text="Share" iconSize={30} onClick={this.props.onShareClick} />
-                            </DropDown>
+                                this.props.previewMode &&
+                                <img src={menuClosed} width={30} height={30} alt="" />
+                            }
+                            {
+                                !this.props.previewMode &&
+                                <DropDown toggleButton={{
+                                    icon: undefined,
+                                    arrowIconOpen: menuOpened,
+                                    arrowIconClose: menuClosed
+                                }} arrowIconSize={30} onHeaderClick={this.handleMenu}>
+                                        {
+                                            this.props.sessionUserId === creatorId &&
+                                            <DropDown.Item icon={remove} textColor="red" text="Delete" iconSize={30} onClick={() => this.props.onDelete(this.props.keyProp)} />
+                                        }
+                                        <DropDown.Item icon={report} textColor="red" text="Report" iconSize={30} onClick={this.props.onReportClick} />
+                                        {
+                                            this.props.sessionUserId === creatorId &&
+                                            <DropDown.Item icon={edit} text="edit" iconSize={30} onClick={() => this.props.onEdit(this.props.keyProp, this.props.item)} />
+                                        }
+                                        <DropDown.Item icon={rightArrow} text="Jump" iconSize={30} onClick={this.props.onRightArrowClick} />
+                                        <DropDown.Item icon={share} text="Share" iconSize={30} onClick={this.props.onShareClick} />
+                                </DropDown>
                             }
 
                         </span>

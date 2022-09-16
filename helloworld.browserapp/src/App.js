@@ -39,22 +39,25 @@ class App extends Component {
             id: "5bc98757-7755-49fa-94c7-0a1f1febf33a",
         },
         tokens: {
-            token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJBZG1pbkBnbWFpbC5jb20iLCJuYW1lIjoiQWRtaW4iLCJqdGkiOiI0MWY1NDJkZC1kZDRjLTQ0MzQtOGQzNi1mNmQ0ZDcyMDZlYmQiLCJlbWFpbCI6IkFkbWluQGdtYWlsLmNvbSIsImlkIjoiNWJjOTg3NTctNzc1NS00OWZhLTk0YzctMGExZjFmZWJmMzNhIiwicm9sZSI6WyJDb250ZW50QWRtaW4iLCJSb290QWRtaW4iLCJVc2VyQWRtaW4iXSwibmJmIjoxNjU4MzE2OTY1LCJleHAiOjE2OTI5MTU2NjUsImlhdCI6MTY1ODMxNjk2NX0.6iu50Q5RPz_Cjdzp4WI1iTvTfWZlLbQjibi0kQQmYtM"
+            token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJBZG1pbkBnbWFpbC5jb20iLCJuYW1lIjoiQWRtaW4iLCJqdGkiOiJjMzlhYjdjYS1iZTdmLTQ4MDctOWI5ZS1lZWYzZjMwOGZhMzYiLCJlbWFpbCI6IkFkbWluQGdtYWlsLmNvbSIsImlkIjoiNWJjOTg3NTctNzc1NS00OWZhLTk0YzctMGExZjFmZWJmMzNhIiwicm9sZSI6WyJDb250ZW50QWRtaW4iLCJSb290QWRtaW4iLCJVc2VyQWRtaW4iXSwibmJmIjoxNjYzMTY1MzgzLCJleHAiOjE2OTc3NjQwODMsImlhdCI6MTY2MzE2NTM4M30.n9z2f2C7TItuNXGq8J93743672MJuQUJrr_-OM8q2nI"
         },
         errorMessage: "",
         notificationMesasge: "",
         navPages: [
-            "/home", "/discussions", "/posts", "/projects", "/account", "/settings"
+            "/home", "/discussions", "/posts", "/projects", "/account", "/settings", "/saved"
         ]
     };
 
     getUser = (token) => {
-        sendJSONRequest('GET', `/user/get`, undefined, token)
-            .then( response => {
-                    console.log(response.data);
-                    this.setState({ user: response.data });
+        sendJSONRequest('GET', "/user/get", undefined, token)
+            .then(response => {
+                this.setState({ user: response.data });
             }
         )
+    }
+
+    componentDidMount() {
+        this.getUser(this.state.tokens.token);
     }
 
     handleSuccessAuthentication = (token, refreshToken) => {
@@ -139,7 +142,7 @@ class App extends Component {
                         accountsLink="/accounts" accountsIcon={account}
                         projectsLink="/projects" projectsIcon={project}
                         postsLink="/posts" postsIcon={post}
-                        accountLink={`/account/${this.state.user.id}`} accountIcon={account} accountGenIcon={account}
+                        accountLink={`/account/${this.state.user.id}`} accountIcon={this.state.user.imageUrl ?? account} accountGenIcon={account}
                         savedLink="/saved" savedIcon={bookmark}
                         settingsLink="/settings" settingsIcon={setting}
                         logoutLink="/login" logoutIcon={exit} onLogoutClick={this.props.onLogoutClick}
@@ -151,11 +154,15 @@ class App extends Component {
                     <Route path="/registration" element={<Registration onRegistrationSuccess={this.handleSuccessAuthentication} onError={this.handleError} />} />
                     <Route path="/home" element={<Home tokens={this.state.tokens} sessionUserId={this.state.user.id}
                         onError={this.handleError} onNotifcation={this.handleNotification} onLogOutClick={this.handleLogout} />} />
-                    <Route path="/discussions" element={<Discussions onError={this.handleError} tokens={this.state.tokens} sessionUserId={this.state.user.id} />} />
-                    <Route path="/posts" element={<Posts tokens={this.state.tokens} user={this.state.user} onError={this.handleError} sessionUserId={this.state.user.id} />} />
+                    <Route path="/discussions" element={<Discussions onError={this.handleError} user={this.state.user} tokens={this.state.tokens} sessionUserId={this.state.user.id} />} />
+                    <Route path="/posts" element={<Posts tokens={this.state.tokens} user={this.state.user} onError={this.handleError} sessionUserId={this.state.user.id}
+                        onNotification={this.handleNotification} />} />
                     <Route path="/projects" element={<Projects tokens={this.state.tokens} user={this.state.user}
                         onError={this.handleError} onNotification={this.handleNotification} sessionUserId={this.state.user.id} />} />
                     <Route path="/account/:id" element={<Account tokens={this.state.tokens} sessionUserId={this.state.user.id}
+                        onError={this.handleError} onNotification={this.handleNotification} onJumpToAccount={(id) => this.redirectToPage(`/account/${id}`)}
+                        onSettings={() => this.redirectToPage("/settings")} />} />
+                    <Route path="/saved" element={<Account tokens={this.state.tokens} sessionUserId={this.state.user.id} startIndex={3}
                         onError={this.handleError} onNotification={this.handleNotification} onJumpToAccount={(id) => this.redirectToPage(`/account/${id}`)}
                         onSettings={() => this.redirectToPage("/settings")} />} />
                     <Route path="/settings" element={<Settings tokens={this.state.tokens} userId={this.state.user.id}

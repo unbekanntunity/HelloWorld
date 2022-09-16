@@ -6,7 +6,7 @@ import UnderlineItem from './UnderlineItem';
 
 class TopBanner extends Component {
     state = {
-        selectedIndex: 0
+        selectedIndex: this.props.startIndex ?? 0
     }
 
     static SimpleItem = SimpleItem;
@@ -21,7 +21,9 @@ class TopBanner extends Component {
             selectedIndex: index
         })
 
-        this.props.onSelectionChanged(index);
+        if (this.props.onSelectionChanged) {
+            this.props.onSelectionChanged(index);
+        }
     }
 
     renderItem = (item, index) => {

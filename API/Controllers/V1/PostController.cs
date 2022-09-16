@@ -136,13 +136,13 @@ namespace API.Controllers.V1
         public async Task<IActionResult> GetSaved([FromRoute] Guid id)
         {
             var user = await _identityService.GetUserByIdAsync(HttpContext.GetUserId());
-            if(user == null)
+            if (user == null)
             {
                 return NotFound();
             }
 
             var post = await _postService.GetByIdAsync(id);
-            if(post == null)
+            if (post == null)
             {
                 return NotFound();
             }

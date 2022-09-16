@@ -30,6 +30,7 @@ class Posts extends Component {
         showStopPreviewButton: false,
         existsCreatePostDialog: true,
 
+        previewMode: false,
         showDeleteConfirmDialog: false,
         currentDeleteItemIndex: null,
 
@@ -108,6 +109,10 @@ class Posts extends Component {
             return;
         }
 
+        for (const entries of formData) {
+            console.log(entries);
+        }
+
         sendFORMRequest("POST", "/post/create", formData, this.props.tokens.token)
             .then(
                 response => {
@@ -151,7 +156,10 @@ class Posts extends Component {
             tags: [...this.tagSectionRef.current.getTags()],
             rawImages: [...this.imageSectionRef.current.getImages()],
             creatorName: this.props.user.userName,
-            creatorImage: this.props.user.image
+            creatorImage: this.props.user.imageUrl,
+            creatorId: this.props.user.id,
+            createdAt: Date.now(),
+            usersLikedIds: [],
         }
 
         if (!this.validatePost()) {
@@ -162,7 +170,7 @@ class Posts extends Component {
             savedPosts: this.state.posts,
             posts: [previewPost],
             showCreatePostDialog: false,
-            showStopPreviewButton: true
+            previewMode: true
         })
     }
 
@@ -171,7 +179,7 @@ class Posts extends Component {
             posts: this.state.savedPosts,
             savedPosts: [],
             showCreatePostDialog: true,
-            showStopPreviewButton: false,
+            previewMode: false,
         })
     }
 
@@ -203,6 +211,16 @@ class Posts extends Component {
         this.setState({ posts: newPosts })
     }
 
+    handleSave = (id) => {
+        sendJSONRequest("PATCH", `/post/update_saving/${id}`, undefined, this.props.tokens.token)
+            .then(response => {
+                this.props.onNotification("Post successfully saved");
+            }, error => {
+                this.props.onError(error.message);
+            }
+            )
+    }
+
     validatePost = () => {
         const result = this.state.content.length !== 0 || [...this.imageSectionRef.current.getImages()].length !== 0;
 
@@ -224,14 +242,17 @@ class Posts extends Component {
                         {
                             this.state.posts.map((item, index) =>
                                 <div key={index} className="posts-post-container">
-                                    <Post keyProp={index} creatorImage={item.creatorImage} creatorName={item.creatorName} createdAt={item.createdAt}
-                                        tags={item.tags} images={item.imageUrls} imageHeight={200} imageWidth={280} text={item.content} width="100%"
+                                    <Post keyProp={index} item={item} imageHeight={200} imageWidth={280} width="100%"
+                                        sessionUserId={this.props.sessionUserId} previewMode={this.state.previewMode}
                                         onDelete={(index) => this.setState({
                                             showDeleteConfirmDialog: true,
                                             currentDeleteItemIndex: index
                                         })}
                                         onFirstAppear={this.handleCreatorInfos} onReportClick={() => this.setState({ showReportDialog: true })}
-                                        onLike={(index) => handleUpdateRating(item.id, "post", this.props.tokens.token, this.props.onError, (response) => this.handleSuccessRating(index, response))} />
+                                        onLike={(index) => handleUpdateRating(item.id, "post", this.props.tokens.token, this.props.onError,
+                                            (response) => this.handleSuccessRating(index, response))}
+                                        onSave={this.handleSave}
+                                    />
                                 </div>
                             )
                         }
@@ -239,7 +260,7 @@ class Posts extends Component {
                 </div>
                 <div className="actionMenu">
                     {
-                        !this.state.showStopPreviewButton &&
+                        !this.state.previewMode &&
                         <SpeedDial radius={60} iconSize={30} itemFactor={.75}
                             menuOpenedIcon={menuOpened} menuClosedIcon={menuClosed} >
                                 <SpeedDial.Item icon={add} onClick={this.handleCreatePost} />
@@ -247,7 +268,7 @@ class Posts extends Component {
                         </SpeedDial>
                     }
                     {
-                        this.state.showStopPreviewButton &&
+                        this.state.previewMode &&
                         <RoundButton icon={stopPreview} radius={60} iconSize={30} onClick={this.handleStopPreview} />
                     }
                 </div>

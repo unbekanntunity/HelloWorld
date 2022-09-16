@@ -25,7 +25,7 @@ class Discussion extends Component {
     }
 
     render() {
-        let { title, tags, creatorImage, createdAt, creatorId, usersLikedIds, startMessage, previewMode, lastMessage } = this.props.item;
+        let { id, title, tags, creatorImage, createdAt, creatorId, usersLikedIds, startMessage, previewMode, lastMessage } = this.props.item;
 
         return (
             <VisibilitySensor partialVisibility onChange={(isVisible) => isVisible && !creatorImage && this.props.onFirstAppear(this.props.keyProp)} >
@@ -36,7 +36,7 @@ class Discussion extends Component {
                 }}>
 
                 <div className="header-container">
-                    <img src={this.props.creatorImage} alt="" height={30} width={30} />
+                    <img src={creatorImage} alt="" height={30} width={30} />
                     <div className="header-middle">
                         <div className="header-text-container">
                             <p className="header-text">{title}</p>
@@ -51,16 +51,34 @@ class Discussion extends Component {
                         </div>
                     </div>
                         <span className="header-actions">
-                            <div className="header-action" onClick={() => this.props.onSave(this.props.id)}>
-                                <img src={this.props.saved ? saved : save} alt="" height={30} width={30} />
+                            <div className="header-action">
+                                {
+                                    this.props.previewMode &&
+                                    <img src={save} height={30} width={30} alt="" />
+                                }
+                                {
+                                    !this.props.previewMode &&
+                                    <img src={this.props.saved ? saved : save} alt="" height={30} width={30} onClick={() => this.props.onSave(id)} />
+                                }
                             </div>
-                        <div className="header-action" style={{ marginRight: '0px' }}>
-                            <img src={usersLikedIds?.findIndex(id => id === this.props.sessionUserId) !== -1 ? filledHeart : heart} width={30} height={30} alt=""
-                                onClick={() => this.props.onLike(this.props.keyProp)} />
-                            <p className="header-likes">{usersLikedIds?.length ?? 0}</p>
+                            <div className="header-action" style={{ marginRight: '0px' }}>
+                                {
+                                    this.props.previewMode &&
+                                    <img src={heart} height={30} width={30} alt="" />
+                                }
+                                {
+                                    !this.props.previewMode &&
+                                    <img src={usersLikedIds?.findIndex(id => id === this.props.sessionUserId) !== -1 ? filledHeart : heart} width={30} height={30} alt=""
+                                        onClick={() => this.props.onLike(this.props.keyProp)} />
+                                }
+                                <p className="header-likes">{usersLikedIds?.length ?? 0}</p>
                             </div>
                             {
-                                !previewMode &&
+                                this.props.previewMode &&
+                                <img src={menuClosed} height={30} width={30} alt="" />
+                            }
+                            {
+                                !this.props.previewMode &&
                                 <DropDown toggleButton={{
                                     icon: undefined,
                                     arrowIconOpen: menuOpened,

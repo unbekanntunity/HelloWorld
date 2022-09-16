@@ -163,8 +163,11 @@ export class UsersDialog extends Component {
 							</div>
 						</div>
 					)
-                }
-
+				}
+				{
+					this.state.users.length === 0 &&
+					<p>No followers there :( <br /> <br />Maybe you need to upload some content </p>
+				}
 			</Dialog>
 		)
     }

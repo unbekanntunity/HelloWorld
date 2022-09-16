@@ -169,7 +169,8 @@ namespace API.Services
             {
                 Email = email,
                 CreatedAt = DateTime.UtcNow,
-                UserName = userName
+                UserName = userName,
+                Description = "This user is too lazy to write a description :("
             };
 
             var createdUser = await _userManager.CreateAsync(new_user, password);

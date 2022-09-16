@@ -7,18 +7,23 @@
 }
 
 .account-pic-name{
-    text-align: center;
 }
 
 .account-name {
     font-size: 20px;
     font-weight: bold;
+    text-align: center;
     margin-bottom: 0px;
+}
+
+.account-verified{
+    margin-left: 5px;
 }
 
 .account-follower {
     margin-top: 0px;
     margin-bottom: 0px;
+    text-align: center;
 }
 
 .account-follower:hover{

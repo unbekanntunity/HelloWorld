@@ -41,9 +41,9 @@ class Projects extends Component {
             }
         ],
         showReportDialog: false,
-        showStopPreviewButton: false,
         showCreateProjectDialog: false,
         existsCreateProjectDialog: true,
+        previewMode: false,
 
         showDeleteConfirmDialog: false,
         currentDeleteItemIndex: null,
@@ -90,8 +90,6 @@ class Projects extends Component {
 
         sendJSONRequest("GET", `/user/get_minimal/${this.state.projects[index].creatorId}`, undefined, this.props.tokens.token)
             .then(response => {
-                console.log(response);
-
                 newProjects[index].creatorImage = response.data.imageUrl;
                 this.setState({
                     projects: newProjects,
@@ -146,7 +144,8 @@ class Projects extends Component {
             tagName: this.tagSectionRef.current.getTags(),
             rawImages: this.imageSectionRef.current.getImages(),
             links: this.linkSectionRef.current.getLinks(),
-            creatorImage: this.props.user.image
+            creatorImage: this.props.user.imageUrl,
+            createdAt: Date.now(),
         }
 
         if (!this.validateProject()) {
@@ -154,7 +153,7 @@ class Projects extends Component {
         }
 
         this.setState({
-            showStopPreviewButton: true,
+            previewMode: true,
             showCreateProjectDialog: false,
 
             savedProjects: [...this.state.projects],
@@ -166,7 +165,7 @@ class Projects extends Component {
 
     handleStopPreview = () => {
         this.setState({
-            showStopPreviewButton: false,
+            previewMode: false,
             showCreateProjectDialog: true,
 
             savedProjects: [],
@@ -179,6 +178,16 @@ class Projects extends Component {
         let newProjects = this.state.projects;
         newProjects[index].usersLikedIds = response.data.usersLikedIds;
         this.setState({ projects: newProjects })
+    }
+
+    handleSave = (id) => {
+        sendJSONRequest("PATCH", `/project/update_saving/${id}`, undefined, this.props.tokens.token)
+            .then(response => {
+                this.props.onNotification("Project successfully saved");
+            }, error => {
+                this.props.onError(error.message);
+            }
+            )
     }
 
     handleDelete = () => {
@@ -218,27 +227,32 @@ class Projects extends Component {
                 <div className="center-vertical column fill">
                     {
                         this.state.projects.map((item, index) =>
-                            <Project key={index} keyProp={index} title={item.title} createdAt={item.createdAt} description={item.description} usersLikedIds={item.usersLikedIds}
-                                images={item.imageUrls} creatorImage={item.creatorImage} tags={item.tags} width={600} imageHeight={300} imageWidth={500}
+                            <div key={index} style={{
+                                borderBottom: "1px solid black"
+                            }}>
+                                <Project keyProp={index} item={item}
+                                    width={600} imageHeight={300} imageWidth={500} sessionUserId={this.props.sessionUserId} previewMode={this.state.previewMode}
                                 onReportClick={() => this.setState({ showReportDialog: true })} onFirstAppear={this.handleCreatorInfos} sessionUserId={this.props.sessionUserId}
                                 onDelete={(index) => this.setState({
                                     showDeleteConfirmDialog: true,
                                     currentDeleteItemIndex: index
                                 })}
+                                onSave={this.handleSave}
                                 onLike={(index) => handleUpdateRating(item.id, "project", this.props.tokens.token, this.props.onError, (response) => this.handleSuccessRating(index, response))} />
+                                </div>
                         )
                     }
                 </div>
                 <div className="actionMenu">
                     {
-                        !this.state.showStopPreviewButton &&
+                        !this.state.previewMode &&
                         <SpeedDial radius={60} iconSize={30} itemFactor={.75}
                             menuOpenedIcon={menuOpened} menuClosedIcon={menuClosed} >
                             <SpeedDial.Item icon={add} onClick={this.handleCreateProject} />
                         </SpeedDial>
                     }
                     {
-                        this.state.showStopPreviewButton &&
+                        this.state.previewMode &&
                         <RoundButton icon={stopPreview} radius={60} iconSize={30} onClick={this.handleStopPreview} />
                     }
                 </div>

@@ -39,8 +39,7 @@ export class Post extends Component {
     }
 
     render() {
-        let { content, tags, creatorImage, creatorName, createdAt, creatorId, imageUrls, usersLikedIds, previewMode } = this.props.item;
-
+        let { id, content, tags, creatorImage, creatorName, createdAt, creatorId, imageUrls, usersLikedIds } = this.props.item;
         return (
             <VisibilitySensor partialVisibility onChange={(isVisible) => isVisible && !creatorImage && this.props.onFirstAppear(this.props.keyProp)} >
                 <div className="post-container" style={{
@@ -56,18 +55,29 @@ export class Post extends Component {
                         </div>
                         <div className="post-header-menu">
                             {
-                                tags && tags.length > 0 && <Tag name={tags[0]} />
+                                tags && tags.length > 0 && <Tag margin="0px 10px" name={tags[0]} />
                             }
-                            <img src={usersLikedIds?.findIndex(id => id === this.props.sessionUserId) !== -1 ? filledHeart : heart} width={30} height={30} alt=""
-                                onClick={() => this.props.onLike(this.props.keyProp)} />
+                            {
+                                this.props.previewMode &&
+                                <img src={heart} height={30} width={30} alt="" />
+                            }
+                            {
+                                !this.props.previewMode &&
+                                <img src={usersLikedIds?.findIndex(id => id === this.props.sessionUserId) !== -1 ? filledHeart : heart} width={30} height={30} alt=""
+                                    onClick={() => this.props.onLike(this.props.keyProp)} />
+                            }
                             <p className="header-likes">{usersLikedIds?.length ?? 0}</p>
                             {
-                                !previewMode &&
+                                this.props.previewMode &&
+                                <img src={menuClosed} height={30} width={30} alt="" />
+                            }
+                            {
+                                !this.props.previewMode &&
                                 <DropDown toggleButton={{
                                     icon: undefined,
                                     arrowIconOpen: menuOpened,
                                     arrowIconClose: menuClosed
-                                }}
+                                    }}
                                     arrowIconSize={30} onHeaderClick={this.handleMenu}>
                                     {
                                         this.props.sessionUserId === creatorId &&
@@ -77,6 +87,8 @@ export class Post extends Component {
                                     <DropDown.Item icon={unfollow} textColor="red" text="Unfollow" iconSize={30} onClick={this.props.onUnfollowClick} />
                                     <DropDown.Item icon={rightArrow} text="Jump" iconSize={30} onClick={this.props.onRightArrowClick} />
                                     <DropDown.Item icon={share} text="Share" iconSize={30} onClick={this.props.onShareClick} />
+                                    <DropDown.Item icon={this.props.saved ? saved : save} text="Save" iconSize={30} onClick={() => this.props.onSave(id)} />
+                                        
                                 </DropDown>
                             }
                         </div>
@@ -103,10 +115,6 @@ export class DetailedPost extends Component {
 
         currentComment: "",
         currentReply: "",
-    }
-
-    constructor(props) {
-        super(props);
     }
 
     handleMenu = () => {
@@ -238,7 +246,7 @@ export class DetailedPost extends Component {
     }
 
     render() {
-        let { content, tags, creatorImage, createdAt, creatorId, imageUrls, usersLikedIds, previewMode } = this.props.item;
+        let { id, content, tags, creatorImage, createdAt, creatorId, imageUrls, usersLikedIds } = this.props.item;
 
         return (
             <VisibilitySensor partialVisibility onChange={(isVisible) => isVisible && !creatorImage && this.props.onFirstAppear(this.props.keyProp)} >
@@ -254,20 +262,40 @@ export class DetailedPost extends Component {
                                 <div className="detailed-post-tags">
                                 {
                                     tags?.map((item, index) =>
-                                        <Tag key={index} paddingY="2px" name={item} />)
+                                        <Tag key={index} margin="0px 10px 0px 0px" paddingY="2px" name={item} />)
                                     }
                                 </div>
                                 <p className="detailed-post-posted-at">{formatDate(createdAt)}</p>
                             </div> 
                             <div className="post-header-menu">
-                                <img src={this.props.saved ? saved : save} alt="" height={30} width={30} onClick={() => this.props.onSave(this.props.id)} />
+                                <div className="detailed-post-header-saved">
+                                    {
+                                        this.props.previewMode &&
+                                        <img src={save} height={30} width={30} alt="" />
+                                    }
+                                    {
+                                        !this.props.previewMode &&
+                                        <img src={this.props.saved ? saved : save} alt="" height={30} width={30} onClick={() => this.props.onSave(id)} />
+                                    }
+                                </div>
                                 <div className="flex">
-                                    <img src={usersLikedIds?.findIndex(id => id === this.props.sessionUserId) !== -1 ? filledHeart : heart}
-                                        width={30} height={30} alt="" onClick={() => this.props.onLike(this.props.keyProp)} />
+                                    {
+                                        this.props.previewMode &&
+                                        <img src={heart} height={30} width={30} alt="" />
+                                    }
+                                    {
+                                        !this.props.previewMode &&
+                                        <img src={usersLikedIds?.findIndex(id => id === this.props.sessionUserId) !== -1 ? filledHeart : heart}
+                                            width={30} height={30} alt="" onClick={() => this.props.onLike(this.props.keyProp)} />
+                                    }
                                     <p className="header-likes" style={{ marginLeft: 5 }}>{usersLikedIds?.length ?? 0}</p>
                                 </div>
                                 {
-                                    !previewMode &&
+                                    this.props.previewMode &&
+                                    <img src={menuClosed} height={30} width={30} alt="" />
+                                }
+                                {
+                                    !this.props.previewMode &&
                                     <DropDown toggleButton={{
                                         icon: undefined,
                                         arrowIconOpen: menuOpened,
@@ -292,26 +320,35 @@ export class DetailedPost extends Component {
                     </div>
                     <div className="detailed-post-comments-section">
                         <div className="detailed-post-comments-container">
-                        {
+                            {
                                 this.state.comments?.map((item, index) => {
-                                    return ( <div key={index} className="detailed-post-comment">
-                                        <Comment keyProp={index} id={item.id} creatorName={item.creatorName} creatorImage={item.creatorImage}
-                                            content={item.content} replies={item.replies} sessionUserId={this.props.sessionUserId} usersLikedIds={item.usersLikedIds}
-                                            ownComment={this.props.sessionUserId === item.creatorId} ownReply={this.props.checkOwn}
-                                            onFirstAppearReply={this.handleCreatorInfosForReply} onFirstAppear={this.handleCreatorInfos}
-                                            onRemoveClick={this.handleRemoveComment} onRemoveReplyClick={this.handleRemoveReply}
-                                            onReportClick={this.props.onReportClick} onReplyClick={this.handleReply}
-                                            onLike={(index) => handleUpdateRating(item.id, "comment", this.props.tokens.token, this.props.onError, (response) => this.handleSuccessRating(index, response))} />
-                                    </div> )
+                                    return (
+                                        <div key={index} className="detailed-post-comment">
+                                            <Comment keyProp={index} id={item.id} creatorName={item.creatorName} creatorImage={item.creatorImage}
+                                                content={item.content} replies={item.replies} sessionUserId={this.props.sessionUserId} usersLikedIds={item.usersLikedIds}
+                                                ownComment={this.props.sessionUserId === item.creatorId} ownReply={this.props.checkOwn}
+                                                onFirstAppearReply={this.handleCreatorInfosForReply} onFirstAppear={this.handleCreatorInfos}
+                                                onRemoveClick={this.handleRemoveComment} onRemoveReplyClick={this.handleRemoveReply}
+                                                onReportClick={this.props.onReportClick} onReplyClick={this.handleReply}
+                                                onLike={(index) => handleUpdateRating(item.id, "comment", this.props.tokens.token, this.props.onError, (response) => this.handleSuccessRating(index, response))} />
+                                    </div>
+                                    )
                                 }
-                            )
+                                )
                             }
                         </div>
                         <div className="detailed-post-comment-input">
                             <img className="detailed-post-comment-emoji" src={emoji} alt="" height={25} width={25} />
                             <InputField value={this.state.currentComment} design="m2" width="100%" showUnderline={false} fill={true} placeholder="Leave a comment.."
                                 onChange={(event) => this.setState({ currentComment: event.target.value })} />
-                            <img className="" src={send} alt="" height={25} width={25} onClick={this.handleSendComment} />
+                            {
+                                this.props.previewMode && 
+                                <img className="" src={send} alt="" height={25} width={25} />
+                            }
+                            {
+                                !this.props.previewMode && 
+                                <img className="" src={send} alt="" height={25} width={25} onClick={this.handleSendComment} />
+                            }
                         </div>
                     </div>
                  </div>

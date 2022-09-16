@@ -26,6 +26,7 @@ import stopPreview from '../images/eye-close.png';
 import title from '../images/title.png';
 import follow from '../images/follow.png';
 import followed from '../images/followed.png';
+import verified from '../images/verified.png';
 
 import { useParams } from "react-router-dom";
 import { handleUpdateRating, sendFORMRequest, sendJSONRequest } from '../requestFuncs';
@@ -39,14 +40,14 @@ class Account extends Component {
         user: null,
 
         items: [],
-        selectedIndex: 0,
+        selectedIndex: this.props.startIndex ?? 0,
         selectedCreatedIndex: 0,
         selectedSection: 0,
         currentDeleteItemIndex: null,
 
         showReportDialog: false,
         showFollowersDialog: false,
-        showStopPreviewButton: false,
+        previewMode: false,
         showCreateItemDialog: false,
         existsCreateItemDialog: true,
         showDeleteConfirmDialog: false,
@@ -58,6 +59,10 @@ class Account extends Component {
         currentContent: "",
         currentDescription: "",
         currentStartMessage: "",
+
+        savedPosts: [],
+        savedDiscussions: [],
+        savedProjects: []
     }
 
     constructor(props) {
@@ -71,20 +76,14 @@ class Account extends Component {
 
     componentDidMount() {
         const { id } = this.props.params;
-
-        sendJSONRequest("GET", `/user/get/${id}`, undefined, this.props.tokens.token)
+        sendJSONRequest("GET", `/user/get/${id ?? this.props.sessionUserId}`, undefined, this.props.tokens.token)
             .then(response => {
-                console.log(response);
                 this.setState({ user: response.data })
 
-                setTimeout(() => {
-                    this.handleChange(0);
-                }, 100);
-                
+                this.handleChange(0);
             }, error => {
                 this.props.onError(error.message);
             })
-
     }
 
     getUrl = (index, endPoint, id = null) => {
@@ -158,8 +157,6 @@ class Account extends Component {
     }
 
     handleStartPreview = () => {
-        console.log(this.state.items);
-
         const previewItem = {
             previewMode: true,
             id: "00000000000000000",
@@ -194,7 +191,7 @@ class Account extends Component {
         setTimeout(() => this.setState({
             items: [previewItem],
             showCreateItemDialog: false,
-            showStopPreviewButton: true
+            previewMode: true
         }), 100)
     }
 
@@ -202,7 +199,7 @@ class Account extends Component {
         this.setState({
             items: [],
             showCreateItemDialog: true,
-            showStopPreviewButton: false
+            previewMode: false
         })
 
         setTimeout(() => this.setState({
@@ -333,7 +330,7 @@ class Account extends Component {
     handleDelete = () => {
         const id = this.state.items[this.state.currentDeleteItemIndex].id;
         const url = this.getUrl(this.state.selectedIndex, "delete", id);
-        const category = this.state.selectedSection === 0 ? "savedPosts" :
+        const category = this.state.selectedIndex === 0 ? "savedPosts" :
             this.state.selectedSection === 1 ? "savedDiscussions" : "savedProjects";
 
 
@@ -358,10 +355,10 @@ class Account extends Component {
     }
 
     handleSave = (id) => {
-        const url = this.getUrl(this.state.selectedIndex, "update_saving", id);
+        const url = this.getUrl(this.state.selectedIndex !== 3 ? this.state.selectedIndex : this.state.selectedSection, "update_saving", id);
 
-        const category = this.state.selectedIndex === 0 ? "savedPosts" :
-            this.state.selectedIndex === 1 ? "savedDiscussions" : "savedProjects";
+        const category = (this.state.selectedIndex !== 3 ? this.state.selectedIndex : this.state.selectedSection) === 0 ? "savedPosts" :
+            this.state.selectedSection === 1 ? "savedDiscussions" : "savedProjects";
 
         sendJSONRequest("PATCH", url, undefined, this.props.tokens.token)
             .then(response => {
@@ -415,12 +412,11 @@ class Account extends Component {
     renderSections = () => {
         switch (this.state.selectedSection) {
             case 0: 
-                return this.state.user.savedPosts.length > 0 ? (
+                return this.state.user?.savedPosts.length > 0 ? (
                     <div className="account-saved-grid">
                         {
                             this.state.user.savedPosts.map((item, index) =>
-                                <Post key={index} keyProp={index} creatorImage={item.creatorImage} creatorId={item.creatorId} creatorName={item.creatorName} createdAt={item.createdAt}
-                                    tags={item.tags} images={item.imageUrls} imageHeight={200} imageWidth={280} text={item.content} width="300px"
+                                <Post key={index} keyProp={index} item={item} imageHeight={200} imageWidth={280} text={item.content} width="300px"
                                     sessionUserId={this.props.sessionUserId} usersLikedIds={item.usersLikedIds}
                                     onDelete={(index) => this.setState({
                                         showDeleteConfirmDialog: true,
@@ -432,13 +428,11 @@ class Account extends Component {
                     </div>
                 ) : (<p>No posts saved</p>)
             case 1:
-                return this.state.user.savedDiscussions.length > 0 ? (
+                return this.state.user?.savedDiscussions.length > 0 ? (
                     <div className="account-saved-list">
                         {
                             this.state.user.savedDiscussions.map((item, index) =>
-                                <Discussion keyProp={index} width={600} usersLikedIds={item.usersLikedIds} creatorId={item.creatorId}
-                                    title={item.title} startMessage={item.startMessage} createdAt={item.createdAt} tags={item.tags} creatorImage={item.creatorImage} creatorId={item.creatorId}
-                                    lastMessage={item.lastMessage} lastMessageAuthor={item.lastMessageAuthor} lastMessageCreated={item.lastMessageCreated} sessionUserId={this.props.sessionUserId}
+                                <Discussion keyProp={index} width={600} item={item} sessionUserId={this.props.sessionUserId}
                                     onFirstAppear={this.handleCreatorInfos} onReportClick={() => this.setState({ showReportDialog: true })}
                                     onSave={this.handleSave}  onDelete={(index) => this.setState({
                                         showDeleteConfirmDialog: true,
@@ -450,12 +444,11 @@ class Account extends Component {
                     </div>
                 ) : (<p>No discussions saved</p>)
             case 2:
-                return this.state.user.savedProjects.length > 0 ? (
+                return this.state.user?.savedProjects.length > 0 ? (
                     <div className="account-saved-list">
                         {
                             this.state.user.savedProjects.map((item, index) =>
-                                <Project key={index} keyProp={index} title={item.title} createdAt={item.createdAt} description={item.description} usersLikedIds={item.usersLikedIds}
-                                    images={item.imageUrls} creatorImage={item.creatorImage} tags={item.tags} width={600} imageHeight={300} imageWidth={500} memberIds={item.memberIds}
+                                <Project key={index} keyProp={index} item={item} width={600} imageHeight={300} imageWidth={500} memberIds={item.memberIds}
                                     onReportClick={() => this.setState({ showReportDialog: true })} onFirstAppear={this.handleCreatorInfos} sessionUserId={this.props.sessionUserId}
                                     onSave={this.handleSave} onDelete={(index) => this.setState({
                                         showDeleteConfirmDialog: true,
@@ -474,7 +467,7 @@ class Account extends Component {
             case 0:
                 return this.state.items.map((item, index) => 
                     <div className="account-item" key={index} >
-                        <DetailedPost keyProp={index} item={item} imageHeight={200} imageWidth={280} width="800px"
+                        <DetailedPost keyProp={index} item={item} imageHeight={200} imageWidth={280} width="800px" previewMode={this.state.previewMode}
                             onFirstAppear={this.handleCreatorInfos} tokens={this.props.tokens} onError={this.props.onError} sessionUserId={this.props.sessionUserId}
                             onReportClick={() => this.setState({ showReportDialog: true })}
                             onDelete={(index) => this.setState({
@@ -488,7 +481,7 @@ class Account extends Component {
                 return this.state.items.map((item, index) =>    
                     <div className="account-item" key={index}>
                         <Discussion keyProp={index} width={600} item={item} saved={this.state.user.savedDiscussions.map(item => item.id).indexOf(item.id) !== -1}
-                            onFirstAppear={this.handleCreatorInfos} sessionUserId={this.props.sessionUserId}
+                            onFirstAppear={this.handleCreatorInfos} sessionUserId={this.props.sessionUserId} previewMode={this.state.previewMode}
                             onDelete={(index) => this.setState({
                                 showDeleteConfirmDialog: true,
                                 currentDeleteItemIndex: index
@@ -497,16 +490,17 @@ class Account extends Component {
                     </div>
                 )
             case 2:
-                console.log(this.state.items);
                 return this.state.items.map((item, index) =>
                     <div className="account-item" key={index} >
                         <DetailedProject keyProp={index} tokens={this.props.tokens} item={item} width={600} imageHeight={300} imageWidth={500}
-                            sessionUserId={this.props.sessionUserId} onEdit={this.handleEdit}
+                            sessionUserId={this.props.sessionUserId} onEdit={this.handleEdit} previewMode={this.state.previewMode}
                             onFirstAppear={this.handleCreatorInfos} saved={this.state.user.savedPosts.map(item => item.id).indexOf(item.id) !== -1} 
                             onDelete={(index) => this.setState({
                                 showDeleteConfirmDialog: true,
                                  currentDeleteItemIndex: index
-                             })} onReportClick={() => this.setState({ showReportDialog: true })} onSave={this.handleSave} saved={this.state.user.savedProjects.map(item => item.id).indexOf(item.id) !== -1}
+                            })}
+                            onSave={this.handleSave}
+                            onReportClick={() => this.setState({ showReportDialog: true })} onSave={this.handleSave} saved={this.state.user.savedProjects.map(item => item.id).indexOf(item.id) !== -1}
                             onLike={(index) => handleUpdateRating(item.id, "project", this.props.tokens.token, this.props.onError, (response) => this.handleSuccessRating(index, response))} />
                     </div>
                 )
@@ -623,7 +617,7 @@ class Account extends Component {
             <div className="page-body">
                 <div className="actionMenu">
                     {
-                        !this.state.showStopPreviewButton &&
+                        !this.state.previewMode &&
                         <SpeedDial radius={60} iconSize={30} itemFactor={.75} menuOpenedIcon={menuOpened} menuClosedIcon={menuClosed} >
                             <SpeedDial.Item icon={post} onClick={() => this.handleCreateItem(0)} />
                             <SpeedDial.Item icon={discussion} onClick={() => this.handleCreateItem(1)} />
@@ -631,7 +625,7 @@ class Account extends Component {
                         </SpeedDial>
                     }
                     {
-                        this.state.showStopPreviewButton &&
+                        this.state.previewMode &&
                         <RoundButton icon={stopPreview} radius={60} iconSize={30} onClick={this.handleStopPreview} />
                     }
                 </div>
@@ -639,8 +633,14 @@ class Account extends Component {
                     this.state.user !== null &&
                     <div className="account-profile-section">
                         <div className="account-pic-name">
-                            <img src={this.state.user.imageUrl} alt="" width={100} height={100} />
-                                <p className="account-name">{this.state.user.userName}</p>
+                                <img src={this.state.user.imageUrl} alt="" width={100} height={100} />
+                                <div className="center-horizontal center-vertical">
+                                    <p className="account-name">{this.state.user.userName}</p>
+                                    {
+                                        this.state.user.roles.findIndex(item => item.includes("Admin")) !== -1 &&
+                                        <img className="account-verified" src={verified} height={20} width={20} alt="" />
+                                    }
+                                </div>
                                 <p className="account-follower" onClick={() => this.setState({ showFollowersDialog: true })}>
                                     Followers: {this.state.user.followerIds.length}
                                 </p>
@@ -667,14 +667,14 @@ class Account extends Component {
                         </div>
                     </div>
                 }
-                <TopBanner bgColor="#F3F2F2" onSelectionChanged={this.handleChange}>
+                <TopBanner bgColor="#F3F2F2" onSelectionChanged={this.handleChange} startIndex={this.props.startIndex ?? 0}>
                     <TopBanner.UnderlineItem name={`Posts${this.state.selectedIndex === 0 ? `(${this.state.items.length})` : ""}`}
                         selectedBorderColor="#FF9900" textColor="black" />
                     <TopBanner.UnderlineItem name={`Discussions${this.state.selectedIndex === 1 ? `(${this.state.items.length})` : ""}`}
                         selectedBorderColor="#FF9900" textColor="black" />
                     <TopBanner.UnderlineItem name={`Projects${this.state.selectedIndex === 2 ? `(${this.state.items.length})` : ""}`}
                         selectedBorderColor="#FF9900" textColor="black" />
-                    <TopBanner.UnderlineItem name={`Saved${this.state.selectedIndex === 3 ? `(${this.state.items.length})` : ""}`}
+                    <TopBanner.UnderlineItem name={`Saved${this.state.selectedIndex === 3 ? `(${this.state.user?.savedPosts.length + this.state.user?.savedDiscussions.length + this.state.user?.savedProjects.length})` : ""}`}
                         selectedBorderColor="#FF9900" textColor="black" />
                 </TopBanner>
                 {

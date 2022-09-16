@@ -24,25 +24,13 @@ import "./Discussions.css";
 class Discussions extends Component {
 
     state = {
-        discussions: [
-            {
-                creatorId: this.props.sessionUserId,
-                title: "How is ur opinion about MAUI?",
-                startMessage: "Hello guys, I spent the last weeks trying out the new MAUI framework. I liked that fact that the MAUI has similar elements to Xamarin, so that wasnt too tough to learn it.By and large, I had a nice experience and recommend to test it out as well.",
-                createdAt: "24.05",
-                creatorImage: null,
-                tags: ["C++"],
-                lastMessage: "Its quite nice, but some things are still...",
-                lastMessageAuthor: "HelloWorld",
-                lastMessageCreated: "25.05"
-            }
-        ],
+        discussions: [],
         currentTitle: "",
         currentStartMessage: "",
         showReportDialog: false,
-        showStopPreviewButton: false,
         showCreateDiscussionDialog: false,
         existsCreateDiscussionsDialog: true,
+        previewMode: false,
 
         showDeleteConfirmDialog: false,
         currentDeleteItemIndex: null,
@@ -79,6 +67,7 @@ class Discussions extends Component {
             return;
         }
 
+        // In case of image support
         let formData = new FormData();
         formData.append("title", this.state.currentTitle);
         formData.append("startMessage", this.state.currentStartMessage);
@@ -88,7 +77,11 @@ class Discussions extends Component {
             formData.append("tagNames", tags[i]);
         }
 
-        sendFORMRequest("POST", "/discussion/create", formData, this.props.tokens.token)
+        sendJSONRequest("POST", "/discussion/create", {
+            title: this.state.currentTitle,
+            startMessage: this.state.currentStartMessage,
+            tagNames: tags
+        }, this.props.tokens.token)
             .then(response => {
                 if (response.errors) {
                     return;
@@ -110,6 +103,7 @@ class Discussions extends Component {
             startMessage: this.state.currentStartMessage,
             tags: this.tagSectionRef.current.getTags(),
             creatorImage: this.props.user.imageUrl,
+            createdAt: Date.now()
         }
 
         if (!this.validateDiscussion()) {
@@ -120,7 +114,7 @@ class Discussions extends Component {
             savedDiscussions: this.state.discussions,
             discussions: [previewDiscussions],
             showCreateDiscussionDialog: false,
-            showStopPreviewButton: true
+            previewMode: true,
         })
     }
 
@@ -129,7 +123,7 @@ class Discussions extends Component {
             discussions: this.state.savedDiscussions,
             savedDiscussions: [],
             showCreateDiscussionDialog: true,
-            showStopPreviewButton: false,
+            previewMode: false,
         })
     }
 
@@ -207,9 +201,7 @@ class Discussions extends Component {
                     {
                         this.state.discussions.map((item, index) =>
                             <div key={index} style={{ borderBottom: index !== (this.state.discussions.length - 1) ? "1px solid black" : "none" }}>
-                                <Discussion keyProp={index} width={600} usersLikedIds={item.usersLikedIds} item={item}
-                                    title={item.title} startMessage={item.startMessage} createdAt={item.createdAt} tags={item.tags} creatorImage={item.creatorImage} creatorId={item.creatorId}
-                                    lastMessage={item.lastMessage} lastMessageAuthor={item.lastMessageAuthor} lastMessageCreated={item.lastMessageCreated} sessionUserId={this.props.sessionUserId}
+                                <Discussion keyProp={index} width={600} item={item} sessionUserId={this.props.sessionUserId} previewMode={this.state.previewMode}
                                     onFirstAppear={this.handleCreatorInfos} onReportClick={() => this.setState({ showReportDialog: true })}
                                     onDelete={(index) => this.setState({
                                         showDeleteConfirmDialog: true,
@@ -224,14 +216,14 @@ class Discussions extends Component {
                 </div>
                 <div className="actionMenu">
                     {
-                        !this.state.showStopPreviewButton &&
+                        !this.state.previewMode &&
                         <SpeedDial radius={60} iconSize={30} itemFactor={.75}
                             menuOpenedIcon={menuOpened} menuClosedIcon={menuClosed} >
                             <SpeedDial.Item icon={add} onClick={this.handleCreateDiscussion} />
                         </SpeedDial>
                     }
                     {
-                        this.state.showStopPreviewButton &&
+                        this.state.previewMode &&
                         <RoundButton icon={stopPreview} radius={60} iconSize={30} onClick={this.handleStopPreview} />
                     }
                 </div>

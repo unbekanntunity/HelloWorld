@@ -102,8 +102,17 @@ class Home extends Component {
         this.setState({ posts: newPosts })
     }
 
+    handleSave = (id) => {
+        sendJSONRequest("PATCH", `/post/update_saving/${id}`, undefined, this.props.tokens.token)
+            .then(response => {
+                this.props.onNotification("Post successfully saved");
+            }, error => {
+                this.props.onError(error.message);
+            }
+            )
+    }
+
     render() {
-        console.log(this.state.posts)
         return (
             <div style={{height: "100%"} }>
                 <div className="home-body">
@@ -115,9 +124,10 @@ class Home extends Component {
                     <div className="center-vertical column">
                         {
                             Array.from(this.state.posts).map((item, index) =>
-                                <Post key={index} keyProp={index} imageHeight={200} item={item}
+                                <Post key={index} keyProp={index} imageHeight={200} item={item} width={400} 
                                     sessionUserId={this.props.sessionUserId} onShareClick={() => this.setState({ showShareDialog: true })}
-                                    onFirstAppear={this.handleCreatorInfos} onReportClick={() => this.setState({ showReportDialog: true })} width={400} creatorId={item.creatorId}
+                                    onFirstAppear={this.handleCreatorInfos} onReportClick={() => this.setState({ showReportDialog: true })}
+                                    onSave={this.handleSave}
                                     onLike={(index) => handleUpdateRating(item.id, "post", this.props.tokens.token, this.props.onError, (response) => this.handleSuccessRating(index, response))} />
                             )
                         }

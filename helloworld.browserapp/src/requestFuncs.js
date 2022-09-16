@@ -54,7 +54,6 @@ export async function sendFORMRequest(method, url, body = undefined, token = und
     };
 
     if (body) {
-        request.headers['Content-Type'] = 'application / x - www - form - urlencoded';
         request.body = body;
     }
 
@@ -68,7 +67,7 @@ export async function sendFORMRequest(method, url, body = undefined, token = und
 async function sendRequest(urlWithQuery, request) {
     const response = await fetch(domainName + urlWithQuery, request);
 
-    console.log(response);
+    //console.log(response);
 
     if (response.status === 204)
         return;

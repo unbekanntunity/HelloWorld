@@ -63,7 +63,7 @@ class DropDown extends Component {
 	}
 
 	getItem = (x, index) => {
-		if (x.props.linkTo) {
+		if (x.props?.linkTo) {
 			return (
 				<Link key={`link-${index}`} to={x.props.linkTo}>
 					<DropDownItem key={index} icon={x.props.icon} iconSize={x.props.iconSize} text={x.props.text}
@@ -82,14 +82,18 @@ class DropDown extends Component {
 	render() {
 		const { icon } = this.props.toggleButton;
 
+
 		return (
 			<div className="dropdown" ref={this.myRef} style={{ zIndex: this.props.zIndex }}>
 				<div onClick={this.handleToggleButton}>
-					{icon !== undefined && <img src={icon} width={this.props.iconSize} height={this.props.iconSize} alt="" />}
 					{
-						(this.props.toggleButton.arrowIconOpen !== undefined && this.props.toggleButton.arrowIconClose !== undefined) &&
-						<img src={this.state.dropDownArrowIcon} width={this.props.arrowIconSize} height={this.props.arrowIconSize}
-							alt="" />
+						icon !== undefined &&
+						<img style={{ marginRight: this.props.toggleButton.arrowIconOpen ? "10px" : "" }}
+							src={icon} width={this.props.iconSize} height={this.props.iconSize} alt="" />
+					}
+					{
+						(this.props.toggleButton.arrowIconOpen && this.props.toggleButton.arrowIconClose !== undefined) &&
+						<img src={this.state.dropDownArrowIcon} width={this.props.arrowIconSize} height={this.props.arrowIconSize} alt="" />
 					}
 				</div>
 				<div className={this.state.dropDownContentClass} style={{

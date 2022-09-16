@@ -6,6 +6,7 @@ import TagSection from '../components/TagSection';
 
 import edit from '../images/edit.png';
 import text from '../images/title.png';
+
 import { sendFORMRequest, sendJSONRequest } from '../requestFuncs';
 
 import './Settings.css';
@@ -139,7 +140,7 @@ class Settings extends Component {
                         </div>
                         <div className="settings-section">
                             <p className="settings-section-title">Description:</p>
-                            <div className="center-vertical" style={{ padding: "20px 0px 0px 0px" } }>
+                            <div className="center-vertical" style={{ padding: "0px 0px 0px 10px" }}>
                                 <MultiInputField width={400} height={200} maxLetters={300} value={this.state.values.description}
                                     onChange={(event) => this.setState({
                                             values: {
@@ -158,6 +159,10 @@ class Settings extends Component {
                             <div className="settings-section-button" ><Button text="Save" onClick={this.handleSubmit} /></div>
                         </div>
                     </div>
+                )
+            default:
+                return (
+                    <p> Section not implemented yet :( </p>    
                 )
         }
     }
