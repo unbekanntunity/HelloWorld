@@ -1,7 +1,6 @@
 ﻿using API.Contracts.V1.Responses;
 using API.Domain.Database;
 using API.Services;
-using System.Collections.Immutable;
 
 namespace API.Extensions
 {
@@ -199,6 +198,22 @@ namespace API.Extensions
                 Replies = reply.Replies.Count,
                 UpdatedAt = reply.UpdatedAt,
                 UserLiked = reply.Replies.Count
+            };
+        }
+
+        public static ReportResponse ToReponse(this Report report)
+        {
+            return new ReportResponse
+            {
+                ContentId = report.ContentId,
+                ContentType = report.ContentType,
+                CreatedAt = report.CreatedAt,
+                CreatorId = report.CreatorId,
+                Description = report.Description,
+                Id = report.Id,
+                ModId = report.ModId,
+                Status = report.Status,
+                UpdatedAt = report.UpdatedAt
             };
         }
 

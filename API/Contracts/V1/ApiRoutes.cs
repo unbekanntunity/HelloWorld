@@ -160,6 +160,17 @@ namespace API.Contracts.V1
             public const string GetAll = Base + "/reply/get_all";
         }
 
+        public static class Report
+        {
+            public const string Create = Base + "/report/create";
+
+            public const string Update = Base + "/report/update/{id}";
+
+            public const string Get = Base + "/report/get/{id}";
+
+            public const string GetAll = Base + "/report/get_all";
+        }
+
         public static class Tag
         {
             public const string GetAll = Base + "/tag/get_all";

@@ -34,12 +34,12 @@ namespace HelloWorld.IntegrationTests
         }
 
         [Fact]
-        public async Task Create_ReturnCreatedProject_WhenAccountWithNewTags()
+        public async Task Create_ReturnCreatedProject_WhenAccountWithNewTagNames()
         {
             //Arrange
             var title = "HelloWorld";
             var description = "New project here";
-            var tagNames = new List<string>() { "Tags" };
+            var tagNames = new List<string>() { "TagNames" };
 
             await AuthenticateAsync();
 
@@ -76,12 +76,12 @@ namespace HelloWorld.IntegrationTests
         }
 
         [Fact]
-        public async Task Create_ReturnCreatedProject_WhenAccountWithDuplicatedTags()
+        public async Task Create_ReturnCreatedProject_WhenAccountWithDuplicatedTagNames()
         {
             //Arrange
             var title = "HelloWorld";
             var description = "New project here";
-            var tagNames = new List<string>() { "Tags", "Tags" };
+            var tagNames = new List<string>() { "TagNames", "TagNames" };
 
             await AuthenticateAsync();
 
@@ -116,20 +116,20 @@ namespace HelloWorld.IntegrationTests
         }
 
         [Fact]
-        public async Task Create_ReturnCreatedProject_WhenAccountWithMixedTags()
+        public async Task Create_ReturnCreatedProject_WhenAccountWithMixedTagNames()
         {
             //Arrange
 
             var title = "HelloWorld";
             var description = "New project here";
-            var tagNames = new List<string>() { "Tags", "New Tag" };
+            var tagNames = new List<string>() { "TagNames", "New Tag" };
 
             var createedDiscussion = await CreateProjectAsnyc(new CreateProjectRequest
             {
                 Title = "HelloWorld2",
                 Description = "Another new project",
                 MemberIds = new List<string>(),
-                TagNames = new List<string>() { "Tags" }
+                TagNames = new List<string>() { "TagNames" }
             });
 
             await AuthenticateAsync();
@@ -471,7 +471,7 @@ namespace HelloWorld.IntegrationTests
                 {
                     Description = "Test",
                     MemberIds = new List<string>(),
-                    Tags = new List<string>(),
+                    TagNames = new List<string>(),
                     Title = "Test"
                 }));
 
@@ -499,7 +499,7 @@ namespace HelloWorld.IntegrationTests
                 {
                     Description = "Test",
                     MemberIds = new List<string>(),
-                    Tags = new List<string>(),
+                    TagNames = new List<string>(),
                     Title = "Test"
                 }));
 
@@ -527,7 +527,7 @@ namespace HelloWorld.IntegrationTests
                 {
                     Description = "Test",
                     MemberIds = new List<string>(),
-                    Tags = new List<string>(),
+                    TagNames = new List<string>(),
                     Title = "Test"
                 }));
 
@@ -547,7 +547,7 @@ namespace HelloWorld.IntegrationTests
                 {
                     Description = "Test",
                     MemberIds = new List<string>(),
-                    Tags = new List<string>(),
+                    TagNames = new List<string>(),
                     Title = "Test"
                 }));
 
@@ -556,7 +556,7 @@ namespace HelloWorld.IntegrationTests
         }
 
         [Fact]
-        public async Task Update_ReturnsUpdatedProject_WhenOwnAndProjectExistsWithNewTags()
+        public async Task Update_ReturnsUpdatedProject_WhenOwnAndProjectExistsWithNewTagNames()
         {
             //Arrange
             var token = await AuthenticateAsSecondAsync();
@@ -564,7 +564,7 @@ namespace HelloWorld.IntegrationTests
             var newTitle = "Updated HelloWorld";
             var newDescription = "Update project here";
             var newMembers = new List<string>() { GetUserId(token) };
-            var newTags = new List<string>() { "Tag" };
+            var newTagNames = new List<string>() { "Tag" };
 
             var createdProject = await CreateProjectAsnyc(new CreateProjectRequest
             {
@@ -582,7 +582,7 @@ namespace HelloWorld.IntegrationTests
                 {
                     MemberIds = newMembers,
                     Description = newDescription,
-                    Tags = newTags,
+                    TagNames = newTagNames,
                     Title = newTitle
                 }));
 
@@ -593,7 +593,7 @@ namespace HelloWorld.IntegrationTests
             returnedProject.Data.Title.Should().Be(newTitle);
             returnedProject.Data.Description.Should().Be(newDescription);
             returnedProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
-            returnedProject.Data.Tags.Should().BeEquivalentTo(newTags);
+            returnedProject.Data.Tags.Should().BeEquivalentTo(newTagNames);
 
             var doubleCheck = await TestClient.GetAsync(ApiRoutes.Project.Get.Replace("{id}", createdProject.Id.ToString()));
             doubleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -602,11 +602,11 @@ namespace HelloWorld.IntegrationTests
             doubleCheckProject.Data.Title.Should().Be(newTitle);
             doubleCheckProject.Data.Description.Should().Be(newDescription);
             doubleCheckProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
-            doubleCheckProject.Data.Tags.Should().BeEquivalentTo(newTags);
+            doubleCheckProject.Data.Tags.Should().BeEquivalentTo(newTagNames);
         }
 
         [Fact]
-        public async Task Update_ReturnsUpdatedProject_WhenOwnAndProjectExistsWithWithDuplicateTags()
+        public async Task Update_ReturnsUpdatedProject_WhenOwnAndProjectExistsWithWithDuplicateTagNames()
         {
             //Arrange
             var token = await AuthenticateAsSecondAsync();
@@ -614,7 +614,7 @@ namespace HelloWorld.IntegrationTests
             var newTitle = "Updated HelloWorld";
             var newDescription = "Update project here";
             var newMembers = new List<string>() { GetUserId(token) };
-            var newTags = new List<string>() { "Tag", "Tag" };
+            var newTagNames = new List<string>() { "Tag", "Tag" };
 
             var createdProject = await CreateProjectAsnyc(new CreateProjectRequest
             {
@@ -632,7 +632,7 @@ namespace HelloWorld.IntegrationTests
                 {
                     MemberIds = newMembers,
                     Description = newDescription,
-                    Tags = newTags,
+                    TagNames = newTagNames,
                     Title = newTitle
                 }));
 
@@ -643,7 +643,7 @@ namespace HelloWorld.IntegrationTests
             returnedProject.Data.Title.Should().Be(newTitle);
             returnedProject.Data.Description.Should().Be(newDescription);
             returnedProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
-            returnedProject.Data.Tags.Should().BeEquivalentTo(newTags.Distinct());
+            returnedProject.Data.Tags.Should().BeEquivalentTo(newTagNames.Distinct());
 
             var doubleCheck = await TestClient.GetAsync(ApiRoutes.Project.Get.Replace("{id}", createdProject.Id.ToString()));
             doubleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -652,11 +652,11 @@ namespace HelloWorld.IntegrationTests
             doubleCheckProject.Data.Title.Should().Be(newTitle);
             doubleCheckProject.Data.Description.Should().Be(newDescription);
             doubleCheckProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
-            doubleCheckProject.Data.Tags.Should().BeEquivalentTo(newTags.Distinct());
+            doubleCheckProject.Data.Tags.Should().BeEquivalentTo(newTagNames.Distinct());
         }
 
         [Fact]
-        public async Task Update_ReturnsUpdatedProject_WhenOwnAndProjectExistsWithWithMixedTags()
+        public async Task Update_ReturnsUpdatedProject_WhenOwnAndProjectExistsWithWithMixedTagNames()
         {
             //Arrange
             var token = await AuthenticateAsSecondAsync();
@@ -664,7 +664,7 @@ namespace HelloWorld.IntegrationTests
             var newTitle = "Updated HelloWorld";
             var newDescription = "Update project here";
             var newMembers = new List<string>() { GetUserId(token) };
-            var newTags = new List<string>() { "Tag", "new Tag" };
+            var newTagNames = new List<string>() { "Tag", "new Tag" };
 
             var createdProject = await CreateProjectAsnyc(new CreateProjectRequest
             {
@@ -690,7 +690,7 @@ namespace HelloWorld.IntegrationTests
                 {
                     MemberIds = newMembers,
                     Description = newDescription,
-                    Tags = newTags,
+                    TagNames = newTagNames,
                     Title = newTitle
                 }));
 
@@ -701,7 +701,7 @@ namespace HelloWorld.IntegrationTests
             returnedProject.Data.Title.Should().Be(newTitle);
             returnedProject.Data.Description.Should().Be(newDescription);
             returnedProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
-            returnedProject.Data.Tags.Should().BeEquivalentTo(newTags);
+            returnedProject.Data.Tags.Should().BeEquivalentTo(newTagNames);
 
             var doubleCheck = await TestClient.GetAsync(ApiRoutes.Project.Get.Replace("{id}", createdProject.Id.ToString()));
             doubleCheck.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -710,7 +710,7 @@ namespace HelloWorld.IntegrationTests
             doubleCheckProject.Data.Title.Should().Be(newTitle);
             doubleCheckProject.Data.Description.Should().Be(newDescription);
             doubleCheckProject.Data.UpdatedAt.Day.Should().Be(DateTime.UtcNow.Day);
-            doubleCheckProject.Data.Tags.Should().BeEquivalentTo(newTags);
+            doubleCheckProject.Data.Tags.Should().BeEquivalentTo(newTagNames);
         }
 
         [Fact]

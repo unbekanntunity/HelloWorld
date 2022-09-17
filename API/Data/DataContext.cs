@@ -16,6 +16,7 @@ namespace API.Data
         public DbSet<Tag> Tags { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Reply> Replies { get; set; }
+        public DbSet<Report> Reports { get; set; }
 
         public DbSet<Link> Links { get; set; }
 

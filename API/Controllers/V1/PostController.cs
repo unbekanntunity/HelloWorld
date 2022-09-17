@@ -37,10 +37,9 @@ namespace API.Controllers.V1
         [HttpPost(ApiRoutes.Post.Create)]
         public async Task<IActionResult> Create([FromForm] CreatePostRequest request)
         {
-            var id = HttpContext.GetUserId();
             var post = new Post
             {
-                CreatorId = id,
+                CreatorId = HttpContext.GetUserId(),
                 Content = request.Content,
             };
 

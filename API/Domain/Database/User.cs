@@ -36,5 +36,9 @@ namespace API.Domain.Database
         public List<Post> SavedPosts { get; set; } = new();
         public List<Discussion> SavedDiscussions { get; set; } = new();
         public List<Project> SavedProjects { get; set; } = new();
+        public List<Report> CreatedReports { get; set; } = new();
+
+        //Only accesable by mods
+        public List<Report> ClosedReports { get; set; } = new();
     }
 }

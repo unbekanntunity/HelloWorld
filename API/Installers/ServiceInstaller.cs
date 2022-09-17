@@ -25,6 +25,7 @@ namespace API.Installers
             services.AddScoped<IPostRepository, PostRepository>();
             services.AddScoped<ICommentRepository, CommentRepository>();
             services.AddScoped<IReplyRepository, ReplyRepository>();
+            services.AddScoped<IReportRepository, ReportRepository>();
             services.AddScoped(typeof(INonQueryRepository<>), typeof(NonQueryRepository<>));
 
             services.AddScoped<ISeedService, SeedService>();
@@ -35,6 +36,7 @@ namespace API.Installers
             services.AddScoped<IPostService, PostService>();
             services.AddScoped<ICommentService, CommentService>();
             services.AddScoped<IReplyService, ReplyService>();
+            services.AddScoped<IReportService, ReportService>();
             services.AddScoped(typeof(IRateableService<>), typeof(RateableService<>));
             services.AddScoped(typeof(ISaveService<>), typeof(SaveService<>));
 
